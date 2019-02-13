@@ -87,7 +87,7 @@ class Helper {
     static async getTranslate(data) {
         return await rp("https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=fr&dt=t&q=" + encodeURI(data) + "&ie=UTF-8&oe=UTF-8")
             .then((body) => {
-                return JSON.parse(body)[0].map(x => x[0]).toString()
+                return JSON.parse(body)[0].map(x => x[0]).join('')
             })
             .catch((e) => {
                 console.log(e)
