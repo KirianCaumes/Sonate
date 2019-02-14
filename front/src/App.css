@@ -1,8 +1,7 @@
 /* @font-face {
   font-family: digital-7;
   src: url(font/digital-7.ttf);
-} */
-
+} 
 body{
   text-align: center;
   padding: 0;
@@ -91,13 +90,6 @@ input[type="text"]{
 }
 
 
-
-
-
-
-
-
-/* index.php */
 #columnAccueil{
   background: #c0392b;
   min-height: 100vh;
@@ -152,3 +144,4 @@ input[type="text"]{
 -webkit-transform: translate(0px,5px);
   border-bottom: 5px #e74c3c solid;
 }
+*/

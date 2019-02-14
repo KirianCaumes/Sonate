@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import '../App.css';
-import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom"
-import Game from "./game"
+import { Link } from "react-router-dom"
+import 'react-bulma-components/dist/react-bulma-components.min.css'
+import { Button } from 'react-bulma-components'
 
 class Home extends Component {
     constructor() {
@@ -18,10 +19,10 @@ class Home extends Component {
             <div>
                 <h1>Home sweet home</h1>
                 <Link to="/" >
-                    Home
-				</Link>
-                <Link to="/game" >
-                    Game
+                    <Button color="primary">Home</Button>
+                </Link>
+                <Link to="/mode" >
+                    <Button color="primary">Start a game</Button>
 				</Link>
             </div>
         );
