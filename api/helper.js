@@ -1,6 +1,6 @@
 const rp = require('request-promise');
 const HTMLParser = require('node-html-parser');
-const titleRegexp = /(.+) - (.+) Lyrics.+/;
+const titleRegexp = /(.+):(.+) Lyrics.+/;
 
 class Helper {
     /**
@@ -9,11 +9,13 @@ class Helper {
     * @returns {String}
     */
     static async getLyricUrl(data) {
-        return await rp(`https://search.azlyrics.com/search.php?q=${data.replace(/\s/g, "+")}`)
+        return await rp(`http://lyrics.wikia.com/wiki/Special:Search?search=${data.replace(/\s/g, "+")}`)
             .then((body) => {
                 const parsedBandItemBody = HTMLParser.parse(body);
-                const songsList = parsedBandItemBody.querySelectorAll('a').map(item => item.attributes.href).filter(href => href ? href.indexOf('/lyrics') > 0 : null)
-                return songsList[0];
+                return parsedBandItemBody
+                    .querySelectorAll('ul.Results h1 a')
+                    .map(item => item.attributes.href)
+                    .filter(href => href.split(':').length > 2)[0]
             })
             .catch((e) => {
                 console.log(e)
@@ -26,18 +28,26 @@ class Helper {
     * @returns {String}
     */
     static async getLyrics(data) {
-        return await rp(data.replace("../", "https://www.azlyrics.com/"))
+        return await rp(data)
             .then((body) => {
                 const parsedItemBody = HTMLParser.parse(body);
                 const htmlTitle = parsedItemBody.querySelector('title').text;
                 const titleComponent = titleRegexp.exec(htmlTitle);
                 let artist = titleComponent[1].trim();
                 let song = titleComponent[2].trim();
-                let lyrics = parsedItemBody.querySelectorAll('div.col-xs-12.col-lg-8.text-center div')[4].text.trim();
+                let lyrics = parsedItemBody.querySelectorAll('div.lyricbox')[0].innerHTML.replace("<div class='lyricsbreak'></div>", '').replace(/<br\s*[\/]?>/gi, "\n")
+                let albums = []
+                parsedItemBody
+                    .querySelectorAll('#song-header-container i')
+                    .map(i => i.text)
+                    .map(i => i.substr(0, i.length - 1)
+                        .split(' ('))
+                    .forEach(e => albums.push({ "name": e[0], "year": e[1] }))
                 return {
                     lyrics,
                     song,
-                    artist
+                    artist,
+                    albums
                 }
             })
             .catch((e) => {
@@ -51,10 +61,14 @@ class Helper {
     * @returns {String}
     */
     static async getBandUrl(data) {
-        return await rp(`https://search.azlyrics.com/search.php?q=${data.replace(/\s/g, "+")}`)
+        return await rp(`http://lyrics.wikia.com/wiki/Special:Search?search=${data.replace(/\s/g, "+")}`)
             .then((body) => {
                 const parsedBody = HTMLParser.parse(body)
-                return parsedBody.querySelectorAll('a').map(item => item.attributes.href).filter(href => href.indexOf('/' + data.charAt(0) + '/') > 0)[0]
+                return parsedBody
+                    .querySelectorAll('ul.Results h1 a')
+                    .map(item => item.attributes.href)
+                    .filter(href => href.split(':').length < 3)[0]
+
             })
             .catch((e) => {
                 console.log(e)
@@ -70,15 +84,15 @@ class Helper {
         return await rp(data)
             .then((body) => {
                 const parsedBandItemBody = HTMLParser.parse(body);
-                const songsList = parsedBandItemBody.querySelectorAll('a').map(item => item.attributes.href).filter(href => href ? href.indexOf('/lyrics') > 0 : null)
-                return songsList[Math.floor(Math.random() * songsList.length) + 0];
+                const songsList = parsedBandItemBody.querySelectorAll('ol li b a').map(item => item.attributes.href)
+                return "http://lyrics.wikia.com/"+songsList[Math.floor(Math.random() * songsList.length) + 0];
             })
             .catch((e) => {
                 console.log(e)
             })
     }
 
-    
+
     /**
     * Translate lyrics
     * @param {String} lyrics

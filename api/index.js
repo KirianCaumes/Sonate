@@ -22,7 +22,8 @@ app.get('/api/song/byname/:name', (req, res) => {
                                     lyricsTranslated: lyricsTranslated,
                                     lyrics: song.lyrics,
                                     song: song.song,
-                                    artist: song.artist
+                                    artist: song.artist,
+                                    album: song.albums
                                 }
                             );
                         })
@@ -45,13 +46,18 @@ app.get('/api/song/byband/:name', (req, res) => {
                                             lyricsTranslated: lyricsTranslated,
                                             lyrics: song.lyrics,
                                             song: song.song,
-                                            artist: song.artist
+                                            artist: song.artist,
+                                            album: song.albums
                                         }
                                     );
                                 })
+                                .catch((e) => res.json({ error: "Lyrics not found" }))
                         })
+                        .catch((e) => res.json({ error: "Random lyrics not found" }))
                 })
+                .catch((e) => res.json({ error: "Band not found" }))
         })
+        .catch((e) => res.json({ error: "Band not found" }))
 });
 
 app.get('*', (req, res) => {
