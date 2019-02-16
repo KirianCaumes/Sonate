@@ -20,18 +20,18 @@ app.get('/api/song/byname', (req, res) => {
                         {
                             lyricsTranslated: lyricsTranslated,
                             lyrics: song.lyrics,
-                            song: song.song,
+                            title: song.title,
                             artist: song.artist,
-                            album: song.albums
+                            albums: song.albums
                         }
                     );
                 })
-                .catch((e) => res.json({ error: e }))
+                .catch((e) => res.status(500).json({ error: e }))
         })
-        .catch((e) => res.json({ error: e }))
+        .catch((e) => res.status(500).json({ error: e }))
 });
 
-//ex: http://localhost:5000/api/song/byname?band=in%20flames
+//ex: http://localhost:5000/api/song/byband?band=in%20flames
 app.get('/api/song/byband', (req, res) => {
     if (!req.query.band) res.json({ error: "Argument BAND is required" })
     helper.getRandomSongNameByBand(req.query.band)
@@ -44,17 +44,17 @@ app.get('/api/song/byband', (req, res) => {
                                 {
                                     lyricsTranslated: lyricsTranslated,
                                     lyrics: song.lyrics,
-                                    song: song.song,
+                                    title: song.title,
                                     artist: song.artist,
-                                    album: song.albums
+                                    albums: song.albums
                                 }
                             );
                         })
-                        .catch((e) => res.json({ error: e }))
+                        .catch((e) => res.status(500).json({ error: e }))
                 })
-                .catch((e) => res.json({ error: e }))
+                .catch((e) => res.status(500).json({ error: e }))
         })
-        .catch((e) => res.json({ error: e }))
+        .catch((e) => res.status(500).json({ error: e }))
 });
 
 //ex: http://localhost:5000/api/song/byalbum?band=in%20flames&album=come clarity&year=2006
@@ -70,18 +70,34 @@ app.get('/api/song/byalbum', (req, res) => {
                                 {
                                     lyricsTranslated: lyricsTranslated,
                                     lyrics: song.lyrics,
-                                    song: song.song,
+                                    title: song.title,
                                     artist: song.artist,
-                                    album: song.albums
+                                    albums: song.albums
                                 }
                             );
                         })
-                        .catch((e) => res.json({ error: e }))
+                        .catch((e) => res.status(500).json({ error: e }))
                 })
-                .catch((e) => res.json({ error: e }))
+                .catch((e) => res.status(500).json({ error: e }))
         })
-        .catch((e) => res.json({ error: e }))
+        .catch((e) => res.status(500).json({ error: e }))
 });
+
+
+//ex: http://localhost:5000/api/getArt?band=in%20flames&album=come clarity&year=2006
+app.get('/api/getArt', (req, res) => {
+    if (!req.query.band || !req.query.album || !req.query.year) res.json({ error: "Arguments BAND, ALBUM and YEAR are required" })
+    helper.getArt(req.query.band, req.query.album, req.query.year)
+        .then((artUrl) => {
+            res.json(
+                {
+                    artUrl: artUrl
+                }
+            );
+        })
+        .catch((e) => res.status(500).json({ error: e }))
+});
+
 
 app.get('*', (req, res) => {
     res.send("Api");
