@@ -20,6 +20,8 @@ import Container from 'react-bulma-components/lib/components/container';
 import Image from 'react-bulma-components/lib/components/image';
 import Media from 'react-bulma-components/lib/components/media';
 import Heading from 'react-bulma-components/lib/components/heading';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import Icon from 'react-bulma-components/lib/components/icon'
 
 
 class Game extends Component {
@@ -37,7 +39,15 @@ class Game extends Component {
             lyricsDisplay: "",
             timeOut: null,
             loading: true,
-            answer: ""
+            answer: {
+                title: "",
+                artist: ""
+            },
+            answerValid: {
+                title: false,
+                artist: false
+            },
+            showAnswer: false
         }
     }
     componentDidMount() {
@@ -78,7 +88,16 @@ class Game extends Component {
             art: null,
             lyricsDisplay: "",
             loading: true,
-            timeOut: null
+            timeOut: null,
+            answer: {
+                title: "",
+                artist: ""
+            },
+            answerValid: {
+                title: false,
+                artist: false
+            },
+            showAnswer: false
         })
         let that = this
         $.ajax({
@@ -96,8 +115,10 @@ class Game extends Component {
                     },
                     loading: false
                 })
-                that.showText(that.state.song.lyricsTranslated, 0, 80)
-                that.getArt()
+                if (that.state.song.lyricsTranslated) {
+                    that.showText(that.state.song.lyricsTranslated, 0, 80)
+                    that.getArt()
+                }
             },
             error: (x) => { }
         });
@@ -120,7 +141,42 @@ class Game extends Component {
     }
 
     check() {
-        console.log(this.state.answer)
+        this.state.answerValid.artist = this.similarity(this.state.answer.artist, this.state.song.artist) < 3
+        this.state.answerValid.title = this.similarity(this.state.answer.title, this.state.song.title) < 3
+        if (this.state.answerValid.artist && this.state.answerValid.title) {
+            this.setState({ showAnswer: true })
+        }
+    }
+
+    //Get similirity between two strings: Levenshtein distance
+    similarity(s1, s2) {
+        s1 = s1.toLowerCase();
+        s2 = s2.toLowerCase();
+        var costs = new Array();
+        for (var i = 0; i <= s1.length; i++) {
+            var lastValue = i;
+            for (var j = 0; j <= s2.length; j++) {
+                if (i == 0)
+                    costs[j] = j;
+                else {
+                    if (j > 0) {
+                        var newValue = costs[j - 1];
+                        if (s1.charAt(i - 1) != s2.charAt(j - 1))
+                            newValue = Math.min(Math.min(newValue, lastValue),
+                                costs[j]) + 1;
+                        costs[j - 1] = lastValue;
+                        lastValue = newValue;
+                    }
+                }
+            }
+            if (i > 0)
+                costs[s2.length] = lastValue;
+        }
+        return costs[s2.length];
+    }
+
+    showAnswer() {
+        this.setState({ showAnswer: !this.state.showAnswer })
     }
 
     render() {
@@ -140,7 +196,6 @@ class Game extends Component {
                                                 :
                                                 <p dangerouslySetInnerHTML={{ __html: this.state.song.lyricsTranslated }} />
                                         }
-
                                     </Content>
                                 </Card.Content>
                             </Card>
@@ -159,47 +214,113 @@ class Game extends Component {
                                 <Card.Content>
                                     <Content>
                                         <h2>Votre réponse</h2>
-                                        <Field className="field has-addons">
-                                            <Control>
-                                                <Input
-                                                    type="text"
-                                                    placeholder="Artiste et Titre"
-                                                    onChange={(e) => this.setState({ answer: e.target.value })}
-                                                    value={this.state.answer}
-                                                />
-                                            </Control>
-                                            <Control>
-                                                <Button color="primary" onClick={this.check.bind(this)}>Check</Button>
-                                            </Control>
-                                        </Field>
-                                    </Content>
-                                </Card.Content>
-                            </Card>
+                                        <Columns>
+                                            <Columns.Column>
+                                                <Field>
+                                                    <Label>Groupe</Label>
+                                                    <Control iconLeft iconRight>
+                                                        <Input
+                                                            type="text"
+                                                            placeholder="Groupe"
+                                                            onChange={(e) => this.setState({ answer: { artist: e.target.value, title: this.state.answer.title } })}
+                                                            value={this.state.answer.artist}
+                                                            disabled={this.state.loading || this.state.answerValid.artist}
+                                                            color={this.state.answerValid.artist ? "success" : ''}
+                                                            onKeyPress={(e) => e.key == 'Enter' ? this.check() : ''}
+                                                        />
+                                                        <Icon align="left">
+                                                            <FontAwesomeIcon icon="users" />
+                                                        </Icon>
 
-                            <Card>
-                                <Card.Content>
-                                    <Media>
-                                        <Media.Item renderAs="figure" position="left">
-                                            <Image renderAs="p" size={128} src={this.state.art} style={{ background: 'rgba(0,0,0,0.15)', boxShadow: '0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)' }} />
-                                        </Media.Item>
-                                        <Media.Item>
-                                            <Heading size={4}>{this.state.song.artist}</Heading>
-                                            <Heading subtitle size={5}>{this.state.song.title}</Heading>
-                                            <Heading subtitle size={6}>
-                                                {this.state.song.albums.length ? this.state.song.albums.map((album) => <span key={album.name}>{album.name} - {album.year}<br /></span>) : ''}
-                                            </Heading>
-                                        </Media.Item>
-                                    </Media>
+                                                        <Icon align="right">
+                                                            {this.state.answerValid.artist ? <FontAwesomeIcon icon="check" /> : ''}
+                                                        </Icon>
+                                                    </Control>
+                                                    <Help color="danger"></Help>
+                                                </Field>
+                                            </Columns.Column>
+                                            <Columns.Column>
+                                                <Field>
+                                                    <Label>Titre</Label>
+                                                    <Control iconLeft iconRight>
+                                                        <Input
+                                                            type="text"
+                                                            placeholder="Titre"
+                                                            onChange={(e) => this.setState({ answer: { title: e.target.value, artist: this.state.answer.artist } })}
+                                                            value={this.state.answer.title}
+                                                            disabled={this.state.loading || this.state.answerValid.title}
+                                                            color={this.state.answerValid.title ? "success" : ''}
+                                                            onKeyPress={e => e.key == 'Enter' ? this.check() : ''}
+                                                        />
+                                                        <Icon align="left">
+                                                            <FontAwesomeIcon icon="font" />
+                                                        </Icon>
+                                                        <Icon align="right">
+                                                            {this.state.answerValid.title ? <FontAwesomeIcon icon="check" /> : ''}
+                                                        </Icon>
+                                                    </Control>
+                                                    <Help color="danger"></Help>
+                                                </Field>
+                                            </Columns.Column>
+                                        </Columns>
+
+                                        <Button
+                                            color="primary"
+                                            onClick={this.check.bind(this)}
+                                            disabled={this.state.loading}
+                                            className="is-fullwidth"
+                                        >
+                                            <FontAwesomeIcon icon="plus" style={{ marginRight: '5px' }} />
+                                            Check
+                                        </Button>
+                                    </Content>
                                 </Card.Content>
                             </Card>
 
                             <Card>
                                 <Card.Content>
                                     <Content>
-                                        <Button onClick={this.getSong.bind(this)} color={`primary ${this.state.loading ? 'is-loading' : ''}`}>Restart</Button>
+                                        <Columns>
+                                            <Columns.Column>
+                                                <Button className="is-fullwidth" onClick={this.getSong.bind(this)} color={`primary ${this.state.loading ? 'is-loading' : ''}`}>
+                                                    <FontAwesomeIcon icon="redo-alt" style={{ marginRight: '5px' }} />
+                                                    Recommencer
+                                        </Button>
+                                            </Columns.Column>
+                                            <Columns.Column>
+                                                <Button className="is-fullwidth" onClick={this.showAnswer.bind(this)} color="primary" disabled={this.state.loading}>
+                                                    <FontAwesomeIcon icon="eye" style={{ marginRight: '5px' }} />
+                                                    Réponse
+                                        </Button>
+                                            </Columns.Column>
+                                        </Columns>
                                     </Content>
                                 </Card.Content>
                             </Card>
+
+                            {
+                                this.state.showAnswer
+                                    ?
+                                    <Card>
+                                        <Card.Content>
+                                            <Media>
+                                                <Media.Item position="left">
+                                                    <Image size={128} src={this.state.art} style={{ background: 'rgba(0,0,0,0.15)', boxShadow: '0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)' }} />
+                                                </Media.Item>
+                                                <Media.Item>
+                                                    <Heading size={4}>{this.state.song.artist}</Heading>
+                                                    <Heading subtitle size={5}>{this.state.song.title}</Heading>
+                                                    <Heading subtitle size={6}>
+                                                        {this.state.song.albums.length ? this.state.song.albums.map((album) => <span key={album.name}>{album.name} - {album.year}<br /></span>) : ''}
+                                                    </Heading>
+                                                </Media.Item>
+                                            </Media>
+                                        </Card.Content>
+                                    </Card>
+                                    : ''
+                            }
+
+
                         </Columns.Column>
                     </Columns>
 

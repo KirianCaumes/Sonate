@@ -145,3 +145,16 @@ input[type="text"]{
   border-bottom: 5px #e74c3c solid;
 }
 */
+
+.card {
+  margin: 25px 0;
+}
+
+body {
+  min-height: 100vh;
+  background: #F8F8F8 !important;
+}
+
+button:active, a:active, button, a {
+  outline: 0;
+}
