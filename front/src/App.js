@@ -24,8 +24,8 @@ class App extends Component {
                     <Header/>                
                     <Route exact path="/" component={Home} />
                     <Route path="/mode" component={PickMode} />
-                    <Route path="/select" component={SelectMode} />
-                    <Route path="/game" render={(props) => <Game {...props} />} />
+                    <Route path="/select/:modeId" component={SelectMode} />
+                    <Route path="/game/:modeId" component={Game} />
                     {/* <Route path="/game" component={Game} /> */}
                 </div>
             </Router>

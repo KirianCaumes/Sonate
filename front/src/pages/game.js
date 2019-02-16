@@ -23,11 +23,16 @@ import Heading from 'react-bulma-components/lib/components/heading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Icon from 'react-bulma-components/lib/components/icon'
 
+import DATAS from "../datas/modes.json"
 
 class Game extends Component {
     constructor(props) {
         super(props)
+        console.log(this.props.history)
+        if (!this.props.location.title && !this.props.location.artist && !this.props.location.album && !this.props.location.yearAlbum) this.props.history.goBack()
+        let settings = DATAS.find(x => x.name == this.props.match.params.modeId)
         this.state = {
+            api: settings.api,
             song: {
                 lyricsTranslated: null,
                 lyrics: null,
@@ -102,7 +107,11 @@ class Game extends Component {
         let that = this
         $.ajax({
             crossDomain: true,
-            url: this.props.location.url && this.props.location.value ? this.props.location.url + encodeURI(this.props.location.value) : "http://localhost:5000/api/song/byband?band=in%20flames",
+            url: this.state.api + 
+                "?song=" + encodeURI(this.props.location.title).replace(/\&/g, "%26") + 
+                "&band=" + encodeURI(this.props.location.artist).replace(/\&/g, "%26") + 
+                "&album=" + encodeURI(this.props.location.album).replace(/\&/g, "%26") + 
+                "&year=" + encodeURI(this.props.location.yearAlbum).replace(/\&/g, "%26"),
             method: "GET",
             success: (x) => {
                 that.setState({
@@ -186,9 +195,11 @@ class Game extends Component {
                     <Columns>
                         <Columns.Column>
                             <Card>
+                                <Card.Header>
+                                    <Card.Header.Title>Paroles de la chanson</Card.Header.Title>
+                                </Card.Header>
                                 <Card.Content>
                                     <Content>
-                                        <h2>Paroles de la chanson</h2>
                                         {
                                             this.state.loading
                                                 ?
@@ -202,18 +213,22 @@ class Game extends Component {
                         </Columns.Column>
                         <Columns.Column>
                             <Card>
+                                <Card.Header>
+                                    <Card.Header.Title>Temps restant</Card.Header.Title>
+                                </Card.Header>
                                 <Card.Content>
                                     <Content>
-                                        <h2>Temps restant</h2>
                                         <p>00:00:00</p>
                                     </Content>
                                 </Card.Content>
                             </Card>
 
                             <Card>
+                                <Card.Header>
+                                    <Card.Header.Title>Votre réponse</Card.Header.Title>
+                                </Card.Header>
                                 <Card.Content>
                                     <Content>
-                                        <h2>Votre réponse</h2>
                                         <Columns>
                                             <Columns.Column>
                                                 <Field>

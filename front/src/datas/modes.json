@@ -1,0 +1,68 @@
+[
+    {
+        "name": "byname",
+        "inputsSelect": {
+            "title": true,
+            "artist": true,
+            "album": false,
+            "yearAlbum": false
+        },
+        "api": "http://localhost:5000/api/song/byname",
+        "inputGame":{
+            "title": true,
+            "artist": true,
+            "album": false,
+            "yearAlbum": false
+        },
+        "infosGame":{
+            "title": false,
+            "artist": false,
+            "album": false,
+            "yearAlbum": false
+        }
+    },
+    {
+        "name": "byband",
+        "inputsSelect": {
+            "title": false,
+            "artist": true,
+            "album": false,
+            "yearAlbum": false
+        },
+        "api": "http://localhost:5000/api/song/byband",
+        "inputGame":{
+            "title": true,
+            "artist": false,
+            "album": false,
+            "yearAlbum": false
+        },
+        "infosGame":{
+            "title": false,
+            "artist": true,
+            "album": false,
+            "yearAlbum": false
+        }
+    },
+    {
+        "name": "byalbum",
+        "inputsSelect": {
+            "title": false,
+            "artist": true,
+            "album": true,
+            "yearAlbum": true
+        },
+        "api": "http://localhost:5000/api/song/byalbum",
+        "inputGame":{
+            "title": true,
+            "artist": false,
+            "album": false,
+            "yearAlbum": false
+        },
+        "infosGame":{
+            "title": false,
+            "artist": true,
+            "album": true,
+            "yearAlbum": true
+        }
+    }
+]
