@@ -27,32 +27,44 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom"
 import DATAS from "../datas/modes.json"
 
 export default class SelectMode extends Component {
+    settings = DATAS.find(x => x.name == this.props.match.params.modeId)
     constructor(props) {
         super(props)
-        let settings = DATAS.find(x => x.name == this.props.match.params.modeId)
         this.state = {
-            pick: null,
-            title: "",
-            artist: "",
-            album: "",
-            yearAlbum: "",
-            input: {
-                title: settings.inputsSelect.title,
-                artist: settings.inputsSelect.artist,
-                album: settings.inputsSelect.album,
-                yearAlbum: settings.inputsSelect.yearAlbum
+            title: undefined,
+            artist: undefined,
+            album: undefined,
+            yearAlbum: undefined,
+            error: {
+                title: false,
+                artist: false,
+                album: false,
+                yearAlbum: false
             }
+
         }
     }
 
     send() {
-        this.props.history.push({
-            pathname: "/game/" + this.props.match.params.modeId,
-            title: this.state.title,
-            artist: this.state.artist,
-            album: this.state.album,
-            yearAlbum: this.state.yearAlbum
-        })
+        if ((this.settings.inputsSelect.title && !this.state.title) || (this.settings.inputsSelect.artist && !this.state.artist) || (this.settings.inputsSelect.album && !this.state.album) || (this.settings.inputsSelect.yearAlbum && !this.state.yearAlbum)) {
+            this.state.error.title = this.settings.inputsSelect.title && !this.state.title
+            this.state.error.artist = this.settings.inputsSelect.artist && !this.state.artist
+            this.state.error.album = this.settings.inputsSelect.album && !this.state.album
+            this.state.error.yearAlbum = this.settings.inputsSelect.yearAlbum && !this.state.yearAlbum
+        } else {
+            this.state.error.title = false
+            this.state.error.artist = false
+            this.state.error.album = false
+            this.state.error.yearAlbum = false
+            this.props.history.push({
+                pathname: "/game/" + this.props.match.params.modeId,
+                title: this.state.title,
+                artist: this.state.artist,
+                album: this.state.album,
+                yearAlbum: this.state.yearAlbum
+            })
+        }
+        this.setState({})
     }
 
     render() {
@@ -68,29 +80,7 @@ export default class SelectMode extends Component {
                                 <Content>
                                     <Columns>
                                         {
-                                            this.state.input.title ?
-                                                <Columns.Column>
-                                                    <Field>
-                                                        <Label>Titre</Label>
-                                                        <Control iconLeft>
-                                                            <Input
-                                                                type="text"
-                                                                placeholder="Titre"
-                                                                onChange={(e) => this.setState({ title: e.target.value })}
-                                                                value={this.state.title}
-                                                                onKeyPress={(e) => e.key == 'Enter' ? this.send() : ''}
-                                                            />
-                                                            <Icon align="left">
-                                                                <FontAwesomeIcon icon="users" />
-                                                            </Icon>
-                                                        </Control>
-                                                        <Help color="danger"></Help>
-                                                    </Field>
-                                                </Columns.Column>
-                                                : ''
-                                        }
-                                        {
-                                            this.state.input.artist ?
+                                            this.settings.inputsSelect.artist ?
                                                 <Columns.Column>
                                                     <Field>
                                                         <Label>Groupe</Label>
@@ -101,21 +91,44 @@ export default class SelectMode extends Component {
                                                                 onChange={(e) => this.setState({ artist: e.target.value })}
                                                                 value={this.state.artist}
                                                                 onKeyPress={e => e.key == 'Enter' ? this.send() : ''}
+                                                                color={this.state.error.artist ? "danger" : ''}
+                                                            />
+                                                            <Icon align="left">
+                                                                <FontAwesomeIcon icon="users" />
+                                                            </Icon>
+                                                        </Control>
+                                                        {this.state.error.artist ? <Help color="danger">Veuillez remplir le champs</Help> : ''}
+                                                    </Field>
+                                                </Columns.Column>
+                                                : ''
+                                        }
+                                        {
+                                            this.settings.inputsSelect.title ?
+                                                <Columns.Column>
+                                                    <Field>
+                                                        <Label>Titre</Label>
+                                                        <Control iconLeft>
+                                                            <Input
+                                                                type="text"
+                                                                placeholder="Titre"
+                                                                onChange={(e) => this.setState({ title: e.target.value })}
+                                                                value={this.state.title}
+                                                                onKeyPress={(e) => e.key == 'Enter' ? this.send() : ''}
+                                                                color={this.state.error.title ? "danger" : ''}
                                                             />
                                                             <Icon align="left">
                                                                 <FontAwesomeIcon icon="font" />
                                                             </Icon>
                                                         </Control>
-                                                        <Help color="danger"></Help>
+                                                        {this.state.error.title ? <Help color="danger">Veuillez remplir le champs</Help> : ''}
                                                     </Field>
                                                 </Columns.Column>
-
                                                 : ''
                                         }
                                     </Columns>
                                     <Columns>
                                         {
-                                            this.state.input.album ?
+                                            this.settings.inputsSelect.album ?
                                                 <Columns.Column>
                                                     <Field>
                                                         <Label>Album</Label>
@@ -126,18 +139,19 @@ export default class SelectMode extends Component {
                                                                 onChange={(e) => this.setState({ album: e.target.value })}
                                                                 value={this.state.album}
                                                                 onKeyPress={(e) => e.key == 'Enter' ? this.send() : ''}
+                                                                color={this.state.error.album ? "danger" : ''}
                                                             />
                                                             <Icon align="left">
-                                                                <FontAwesomeIcon icon="users" />
+                                                                <FontAwesomeIcon icon="music" />
                                                             </Icon>
                                                         </Control>
-                                                        <Help color="danger"></Help>
+                                                        {this.state.error.album ? <Help color="danger">Veuillez remplir le champs</Help> : ''}
                                                     </Field>
                                                 </Columns.Column>
                                                 : ''
                                         }
                                         {
-                                            this.state.input.yearAlbum ?
+                                            this.settings.inputsSelect.yearAlbum ?
                                                 <Columns.Column>
                                                     <Field>
                                                         <Label>Année de se sortie de l'album</Label>
@@ -148,19 +162,26 @@ export default class SelectMode extends Component {
                                                                 onChange={(e) => this.setState({ yearAlbum: e.target.value })}
                                                                 value={this.state.yearAlbum}
                                                                 onKeyPress={(e) => e.key == 'Enter' ? this.send() : ''}
+                                                                color={this.state.error.yearAlbum ? "danger" : ''}
                                                             />
                                                             <Icon align="left">
-                                                                <FontAwesomeIcon icon="users" />
+                                                                <FontAwesomeIcon icon="calendar-day" />
                                                             </Icon>
                                                         </Control>
-                                                        <Help color="danger"></Help>
+                                                        {this.state.error.yearAlbum ? <Help color="danger">Veuillez remplir le champs</Help> : ''}
                                                     </Field>
                                                 </Columns.Column>
                                                 : ''
                                         }
                                     </Columns>
-
-                                    <Button color="primary" className="is-fullwidth" onClick={this.send.bind(this)}>Jouer !</Button>
+                                    <Button
+                                        color="primary"
+                                        className="is-fullwidth" 
+                                        onClick={this.send.bind(this)}
+                                    >
+                                        <FontAwesomeIcon icon="play" style={{ marginRight: '5px' }} />
+                                        Jouer !
+                                    </Button>
                                 </Content>
                             </Card.Content>
                         </Card>

@@ -11,7 +11,8 @@ class Helper {
     * @returns {String}
     */
     static async getLyrics(band, song) {
-        return await rp(`http://lyrics.wikia.com/wiki/${this.toCapitalize(band).replace(/\s/g, "_")}:${this.toCapitalize(song).replace(/\s/g, "_")}`)
+        console.log(`http://lyrics.wikia.com/wiki/${this.toProper(band)}:${this.toProper(song)}`)
+        return await rp(`http://lyrics.wikia.com/wiki/${this.toProper(band)}:${this.toProper(song)}`)
             .then((body) => {
                 let parsedItemBody = HTMLParser.parse(body);
                 let htmlTitle = parsedItemBody.querySelector('title').text;
@@ -45,13 +46,15 @@ class Helper {
     * @returns {String}
     */
     static async getRandomSongNameByBand(band) {
-        return await rp(`http://lyrics.wikia.com/wiki/${this.toCapitalize(band).replace(/\s/g, "_")}`)
+        console.log(`http://lyrics.wikia.com/wiki/${this.toProper(band)}`)
+        return await rp(`http://lyrics.wikia.com/wiki/${this.toProper(band)}`)
             .then((body) => {
                 let songsList = HTMLParser.parse(body)
                     .querySelectorAll('ol li b a')
                     .map(item => item.attributes.title)
-                    .filter(x => x.includes(this.toCapitalize(band)))
+                    .filter(x => x.toLowerCase().includes(band.toLowerCase()))
                     .filter(x => !x.includes("(page does not exist)"))
+                    console.log(songsList)
                 return songsList[Math.floor(Math.random() * songsList.length) + 0].split(':')[1];
             })
             .catch((e) => {
@@ -67,7 +70,7 @@ class Helper {
     * @returns {String}
     */
     static async getRandomSongNameByAlbum(band, album, year) {
-        return await rp(`http://lyrics.wikia.com/wiki/${this.toCapitalize(band).replace(/\s/g, "_")}:${this.toCapitalize(album).replace(/\s/g, "_")}_(${year})`)
+        return await rp(`http://lyrics.wikia.com/wiki/${this.toProper(band)}:${this.toProper(album)}_(${year})`)
             .then((body) => {
                 let songsList = HTMLParser.parse(body).querySelectorAll('ol li b a').map(item => item.attributes.title).filter(x => !x.includes("(page does not exist)"))
                 return songsList[Math.floor(Math.random() * songsList.length) + 0].split(':')[1];
@@ -85,7 +88,7 @@ class Helper {
     * @returns {String}
     */
     static async getArt(band, album, year) {
-        return await rp(`http://lyrics.wikia.com/wiki/${this.toCapitalize(band).replace(/\s/g, "_")}:${this.toCapitalize(album).replace(/\s/g, "_")}_(${year})`)
+        return await rp(`http://lyrics.wikia.com/wiki/${this.toProper(band)}:${this.toProper(album)}_(${year})`)
             .then((body) => {
                 return HTMLParser.parse(body).querySelectorAll('img.thumbborder')[0].attributes.src
             })
@@ -117,8 +120,18 @@ class Helper {
 
     }
 
-    static toCapitalize(text) {
-        return text.toLowerCase().split(' ').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' ');
+    static toProper(text) {
+        return text
+            .toLowerCase()
+            .split(' ') //Put First letter of each word to uppercase
+            .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+            .join(' ')
+            .split('.') //Put First letter of each word separate by dot to uppercase
+            .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+            .join('.')
+            .replace(/\&/g, "%26")
+            .replace(/\?/g, "%3F")
+            .replace(/\s/g, "_");
     }
 }
 

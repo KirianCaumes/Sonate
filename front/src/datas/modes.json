@@ -7,7 +7,7 @@
             "album": false,
             "yearAlbum": false
         },
-        "api": "http://localhost:5000/api/song/byname",
+        "api": "byname",
         "inputGame":{
             "title": true,
             "artist": true,
@@ -29,7 +29,7 @@
             "album": false,
             "yearAlbum": false
         },
-        "api": "http://localhost:5000/api/song/byband",
+        "api": "byband",
         "inputGame":{
             "title": true,
             "artist": false,
@@ -51,7 +51,7 @@
             "album": true,
             "yearAlbum": true
         },
-        "api": "http://localhost:5000/api/song/byalbum",
+        "api": "byalbum",
         "inputGame":{
             "title": true,
             "artist": false,

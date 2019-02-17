@@ -24,15 +24,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Icon from 'react-bulma-components/lib/components/icon'
 
 import DATAS from "../datas/modes.json"
+import Request from "../helpers/request"
+import Similarity from "../helpers/similarity"
 
 class Game extends Component {
+    settings = DATAS.find(x => x.name == this.props.match.params.modeId)
     constructor(props) {
         super(props)
-        console.log(this.props.history)
-        if (!this.props.location.title && !this.props.location.artist && !this.props.location.album && !this.props.location.yearAlbum) this.props.history.goBack()
-        let settings = DATAS.find(x => x.name == this.props.match.params.modeId)
+        // if (!this.props.location.title && !this.props.location.artist && !this.props.location.album && !this.props.location.yearAlbum) this.props.history.goBack()
         this.state = {
-            api: settings.api,
             song: {
                 lyricsTranslated: null,
                 lyrics: null,
@@ -52,7 +52,12 @@ class Game extends Component {
                 title: false,
                 artist: false
             },
-            showAnswer: false
+            showAnswer: false,
+            disableAnswer: false,
+            timeOutAnswer: {
+                title: null,
+                artist: null
+            }
         }
     }
     componentDidMount() {
@@ -61,131 +66,89 @@ class Game extends Component {
 
     componentWillUnmount() {
         clearTimeout(this.state.timeOut)
-    }
-
-    getArt() {
-        if (this.state.song.albums.length) {
-            let that = this
-            $.ajax({
-                crossDomain: true,
-                url: "http://localhost:5000/api/getArt?band=" + encodeURI(this.state.song.artist).replace(/\&/g, "%26") + "&album=" + encodeURI(this.state.song.albums[0].name).replace(/\&/g, "%26") + "&year=" + encodeURI(this.state.song.albums[0].year).replace(/\&/g, "%26"),
-                method: "GET",
-                success: (x) => {
-                    that.setState({
-                        art: x.artUrl
-                    })
-                },
-                error: (x) => { }
-            });
-        }
+        clearTimeout(this.state.timeOutAnswer.title)
+        clearTimeout(this.state.timeOutAnswer.artist)
     }
 
     getSong() {
         clearTimeout(this.state.timeOut)
         this.setState({
-            song: {
-                lyricsTranslated: null,
-                lyrics: null,
-                title: null,
-                artist: null,
-                albums: []
-            },
-            art: null,
+            song: { lyricsTranslated: null, lyrics: null, title: null, artist: null, albums: [] },
             lyricsDisplay: "",
             loading: true,
             timeOut: null,
-            answer: {
-                title: "",
-                artist: ""
-            },
-            answerValid: {
-                title: false,
-                artist: false
-            },
-            showAnswer: false
+            answer: { title: "", artist: "" },
+            answerValid: { title: false, artist: false },
+            showAnswer: false,
+            disableAnswer: false
         })
-        let that = this
-        $.ajax({
-            crossDomain: true,
-            url: this.state.api + 
-                "?song=" + encodeURI(this.props.location.title).replace(/\&/g, "%26") + 
-                "&band=" + encodeURI(this.props.location.artist).replace(/\&/g, "%26") + 
-                "&album=" + encodeURI(this.props.location.album).replace(/\&/g, "%26") + 
-                "&year=" + encodeURI(this.props.location.yearAlbum).replace(/\&/g, "%26"),
-            method: "GET",
-            success: (x) => {
-                that.setState({
+        if (!this.settings.infosGame.album) this.setState({ art: null })
+
+        let getParameters = Request.toQueryData({
+            song: this.props.location.title || "",
+            band: this.props.location.artist || "in flames",
+            album: this.props.location.album || "",
+            year: this.props.location.yearAlbum || ""
+        })
+
+        Request.send('GET', ['song', this.settings.api, getParameters], undefined,
+            (data) => {
+                this.setState({
                     song: {
-                        lyricsTranslated: x.lyricsTranslated ? x.lyricsTranslated.replace(/\n/g, "<br>") : x.lyricsTranslated,
-                        lyrics: x.lyricsTranslated ? x.lyrics.replace(/\n/g, "<br>") : x.lyricsTranslated,
-                        title: x.title,
-                        artist: x.artist,
-                        albums: x.albums
+                        lyricsTranslated: data.lyricsTranslated ? data.lyricsTranslated.replace(/\n/g, "<br>") : data.lyricsTranslated,
+                        lyrics: data.lyricsTranslated ? data.lyrics.replace(/\n/g, "<br>") : data.lyricsTranslated,
+                        title: data.title,
+                        artist: data.artist,
+                        albums: data.albums
                     },
                     loading: false
                 })
-                if (that.state.song.lyricsTranslated) {
-                    that.showText(that.state.song.lyricsTranslated, 0, 80)
-                    that.getArt()
+                if (this.state.song.lyricsTranslated) {
+                    this.showText(this.state.song.lyricsTranslated, 0, 80)
+                    if (this.state.song.albums.length) {
+                        let getParametersArt = Request.toQueryData({
+                            band: this.props.location.artist || this.state.song.artist,
+                            album: this.props.location.album || this.state.song.albums[0].name,
+                            year: this.props.location.yearAlbum || this.state.song.albums[0].year
+                        })
+                        Request.send('GET', ['getArt', getParametersArt], undefined, (data) => { this.setState({ art: data.artUrl }) })
+                    }
                 }
             },
-            error: (x) => { }
-        });
+            (data) => {
+                this.setState({
+                    loading: false
+                })
+            }
+        );
+
     }
 
     showText(message, index, interval) {
         if (index < message.length) {
             if (message[index] === "<" && message[index + 1] === "b" && message[index + 2] === "r" && message[index + 3] === ">") {
-                this.setState({
-                    lyricsDisplay: this.state.lyricsDisplay + "<br>"
-                })
-                index += 4;
+                this.setState({ lyricsDisplay: this.state.lyricsDisplay + "<br>" })
+                index += 4
             } else {
-                this.setState({
-                    lyricsDisplay: this.state.lyricsDisplay + message[index++]
-                })
+                this.setState({ lyricsDisplay: this.state.lyricsDisplay + message[index++] })
             }
             this.setState({ timeOut: setTimeout(() => { this.showText(message, index, interval); }, interval) })
         }
     }
 
     check() {
-        this.state.answerValid.artist = this.similarity(this.state.answer.artist, this.state.song.artist) < 3
-        this.state.answerValid.title = this.similarity(this.state.answer.title, this.state.song.title) < 3
+        console.log("lol")
+        this.state.answerValid.artist = !this.settings.inputGame.artist || Similarity.isOk(this.state.answer.artist, this.state.song.artist)
+        this.state.answerValid.title = !this.settings.inputGame.title || Similarity.isOk(this.state.answer.title, this.state.song.title)
         if (this.state.answerValid.artist && this.state.answerValid.title) {
-            this.setState({ showAnswer: true })
-        }
-    }
+            this.setState({ showAnswer: true, disableAnswer: true })
+        } else {
 
-    //Get similirity between two strings: Levenshtein distance
-    similarity(s1, s2) {
-        s1 = s1.toLowerCase();
-        s2 = s2.toLowerCase();
-        var costs = new Array();
-        for (var i = 0; i <= s1.length; i++) {
-            var lastValue = i;
-            for (var j = 0; j <= s2.length; j++) {
-                if (i == 0)
-                    costs[j] = j;
-                else {
-                    if (j > 0) {
-                        var newValue = costs[j - 1];
-                        if (s1.charAt(i - 1) != s2.charAt(j - 1))
-                            newValue = Math.min(Math.min(newValue, lastValue),
-                                costs[j]) + 1;
-                        costs[j - 1] = lastValue;
-                        lastValue = newValue;
-                    }
-                }
-            }
-            if (i > 0)
-                costs[s2.length] = lastValue;
         }
-        return costs[s2.length];
     }
 
     showAnswer() {
-        this.setState({ showAnswer: !this.state.showAnswer })
+        if (!this.state.showAnswer) this.setState({ showAnswer: !this.state.showAnswer, disableAnswer: true })
     }
 
     render() {
@@ -222,120 +185,143 @@ class Game extends Component {
                                     </Content>
                                 </Card.Content>
                             </Card>
-
                             <Card>
                                 <Card.Header>
                                     <Card.Header.Title>Votre réponse</Card.Header.Title>
                                 </Card.Header>
                                 <Card.Content>
-                                    <Content>
+                                    <Content style={{ marginBottom: '.75rem' }}>
                                         <Columns>
-                                            <Columns.Column>
-                                                <Field>
-                                                    <Label>Groupe</Label>
-                                                    <Control iconLeft iconRight>
-                                                        <Input
-                                                            type="text"
-                                                            placeholder="Groupe"
-                                                            onChange={(e) => this.setState({ answer: { artist: e.target.value, title: this.state.answer.title } })}
-                                                            value={this.state.answer.artist}
-                                                            disabled={this.state.loading || this.state.answerValid.artist}
-                                                            color={this.state.answerValid.artist ? "success" : ''}
-                                                            onKeyPress={(e) => e.key == 'Enter' ? this.check() : ''}
-                                                        />
-                                                        <Icon align="left">
-                                                            <FontAwesomeIcon icon="users" />
-                                                        </Icon>
+                                            {
+                                                this.settings.inputGame.artist ?
+                                                    <Columns.Column>
+                                                        <Field>
+                                                            <Label>Groupe</Label>
+                                                            <Control iconLeft iconRight>
+                                                                <Input
+                                                                    type="text"
+                                                                    placeholder="Groupe"
+                                                                    onChange={(e) => {
+                                                                        this.setState({ answer: { artist: e.target.value, title: this.state.answer.title } })
+                                                                        clearInterval(this.state.timeOutAnswer.artist)
+                                                                        this.state.timeOutAnswer.artist = setTimeout(() => { this.check() }, 500)
+                                                                    }}
+                                                                    value={this.state.answer.artist}
+                                                                    disabled={this.state.loading || this.state.answerValid.artist || this.state.disableAnswer}
+                                                                    color={this.state.answerValid.artist ? "success" : ''}
+                                                                />
+                                                                <Icon align="left">
+                                                                    <FontAwesomeIcon icon="users" />
+                                                                </Icon>
 
-                                                        <Icon align="right">
-                                                            {this.state.answerValid.artist ? <FontAwesomeIcon icon="check" /> : ''}
-                                                        </Icon>
-                                                    </Control>
-                                                    <Help color="danger"></Help>
-                                                </Field>
-                                            </Columns.Column>
-                                            <Columns.Column>
-                                                <Field>
-                                                    <Label>Titre</Label>
-                                                    <Control iconLeft iconRight>
-                                                        <Input
-                                                            type="text"
-                                                            placeholder="Titre"
-                                                            onChange={(e) => this.setState({ answer: { title: e.target.value, artist: this.state.answer.artist } })}
-                                                            value={this.state.answer.title}
-                                                            disabled={this.state.loading || this.state.answerValid.title}
-                                                            color={this.state.answerValid.title ? "success" : ''}
-                                                            onKeyPress={e => e.key == 'Enter' ? this.check() : ''}
-                                                        />
-                                                        <Icon align="left">
-                                                            <FontAwesomeIcon icon="font" />
-                                                        </Icon>
-                                                        <Icon align="right">
-                                                            {this.state.answerValid.title ? <FontAwesomeIcon icon="check" /> : ''}
-                                                        </Icon>
-                                                    </Control>
-                                                    <Help color="danger"></Help>
-                                                </Field>
-                                            </Columns.Column>
+                                                                <Icon align="right">
+                                                                    {this.state.answerValid.artist ? <FontAwesomeIcon icon="check" /> : ''}
+                                                                </Icon>
+                                                            </Control>
+                                                            <Help color="danger"></Help>
+                                                        </Field>
+                                                    </Columns.Column>
+                                                    :
+                                                    ''
+                                            }
+                                            {
+                                                this.settings.inputGame.title ?
+                                                    <Columns.Column>
+                                                        <Field>
+                                                            <Label>Titre</Label>
+                                                            <Control iconLeft iconRight>
+                                                                <Input
+                                                                    type="text"
+                                                                    placeholder="Titre"
+                                                                    onChange={(e) => {
+                                                                        this.setState({ answer: { title: e.target.value, artist: this.state.answer.artist } })
+                                                                        clearInterval(this.state.timeOutAnswer.title)
+                                                                        this.state.timeOutAnswer.title = setTimeout(() => { this.check() }, 500)
+                                                                    }}
+
+                                                                    // onChange={(e) => }
+                                                                    value={this.state.answer.title}
+                                                                    disabled={this.state.loading || this.state.answerValid.title || this.state.disableAnswer}
+                                                                    color={this.state.answerValid.title ? "success" : ''}
+                                                                />
+                                                                <Icon align="left">
+                                                                    <FontAwesomeIcon icon="font" />
+                                                                </Icon>
+                                                                <Icon align="right">
+                                                                    {this.state.answerValid.title ? <FontAwesomeIcon icon="check" /> : ''}
+                                                                </Icon>
+                                                            </Control>
+                                                            <Help color="danger"></Help>
+                                                        </Field>
+                                                    </Columns.Column>
+                                                    :
+                                                    ''
+                                            }
                                         </Columns>
 
-                                        <Button
+                                        {/* <Button
                                             color="primary"
                                             onClick={this.check.bind(this)}
-                                            disabled={this.state.loading}
+                                            disabled={this.state.loading || this.state.disableAnswer}
                                             className="is-fullwidth"
                                         >
                                             <FontAwesomeIcon icon="plus" style={{ marginRight: '5px' }} />
                                             Check
-                                        </Button>
+                                        </Button> */}
                                     </Content>
+                                    <Columns>
+                                        {
+                                            this.settings.name != "byname" ?
+                                                <Columns.Column>
+                                                    <Button className="is-fullwidth" onClick={this.getSong.bind(this)} color={`primary ${this.state.loading ? 'is-loading' : ''}`}>
+                                                        <FontAwesomeIcon icon="redo-alt" style={{ marginRight: '5px' }} />
+                                                        Recommencer
+                                                    </Button>
+                                                </Columns.Column>
+                                                :
+                                                ''
+                                        }
+                                        <Columns.Column>
+                                            <Button className="is-fullwidth" onClick={this.showAnswer.bind(this)} color="primary" disabled={this.state.loading || this.state.disableAnswer}>
+                                                <FontAwesomeIcon icon="eye" style={{ marginRight: '5px' }} />
+                                                Réponse
+                                        </Button>
+                                        </Columns.Column>
+                                    </Columns>
                                 </Card.Content>
                             </Card>
-
                             <Card>
                                 <Card.Content>
-                                    <Content>
-                                        <Columns>
-                                            <Columns.Column>
-                                                <Button className="is-fullwidth" onClick={this.getSong.bind(this)} color={`primary ${this.state.loading ? 'is-loading' : ''}`}>
-                                                    <FontAwesomeIcon icon="redo-alt" style={{ marginRight: '5px' }} />
-                                                    Recommencer
-                                        </Button>
-                                            </Columns.Column>
-                                            <Columns.Column>
-                                                <Button className="is-fullwidth" onClick={this.showAnswer.bind(this)} color="primary" disabled={this.state.loading}>
-                                                    <FontAwesomeIcon icon="eye" style={{ marginRight: '5px' }} />
-                                                    Réponse
-                                        </Button>
-                                            </Columns.Column>
-                                        </Columns>
-                                    </Content>
+                                    <Media>
+
+                                        <Media.Item position="left">
+                                            <Image
+                                                size={128}
+                                                src={this.settings.infosGame.album || this.state.showAnswer ? this.state.art : null}
+                                                style={{ background: 'rgba(0,0,0,0.15)', boxShadow: '0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)' }}
+                                            />
+                                        </Media.Item>
+                                        <Media.Item>
+                                            <Heading size={4} style={{ textTransform: 'uppercase' }}>
+                                                {this.settings.infosGame.artist || this.state.showAnswer ? this.state.song.artist || this.props.location.artist || '?' : '?'}
+                                            </Heading>
+                                            <Heading subtitle size={5} style={{ textTransform: 'capitalize' }}>
+                                                {this.settings.infosGame.title || this.state.showAnswer ? this.state.song.title : '?'}
+                                            </Heading>
+                                            <Heading subtitle size={6} style={{ textTransform: 'capitalize' }}>
+                                                {this.settings.infosGame.album ?
+                                                    this.props.location.album + " - " + this.props.location.yearAlbum
+                                                    :
+                                                    this.state.showAnswer && this.state.song.albums.length ?
+                                                        this.state.song.albums.map((album) => <span key={album.name}>{album.name} - {album.year}<br /></span>)
+                                                        :
+                                                        '?'
+                                                }
+                                            </Heading>
+                                        </Media.Item>
+                                    </Media>
                                 </Card.Content>
                             </Card>
-
-                            {
-                                this.state.showAnswer
-                                    ?
-                                    <Card>
-                                        <Card.Content>
-                                            <Media>
-                                                <Media.Item position="left">
-                                                    <Image size={128} src={this.state.art} style={{ background: 'rgba(0,0,0,0.15)', boxShadow: '0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)' }} />
-                                                </Media.Item>
-                                                <Media.Item>
-                                                    <Heading size={4}>{this.state.song.artist}</Heading>
-                                                    <Heading subtitle size={5}>{this.state.song.title}</Heading>
-                                                    <Heading subtitle size={6}>
-                                                        {this.state.song.albums.length ? this.state.song.albums.map((album) => <span key={album.name}>{album.name} - {album.year}<br /></span>) : ''}
-                                                    </Heading>
-                                                </Media.Item>
-                                            </Media>
-                                        </Card.Content>
-                                    </Card>
-                                    : ''
-                            }
-
-
                         </Columns.Column>
                     </Columns>
 

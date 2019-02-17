@@ -7,10 +7,10 @@ import PickMode from './pages/mode';
 import SelectMode from './pages/select';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faIgloo, faRedoAlt, faEye, faUsers, faCheck, faFont, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faIgloo, faRedoAlt, faEye, faUsers, faCheck, faFont, faPlus, faMusic, faCalendarDay, faPlay } from '@fortawesome/free-solid-svg-icons'
 import Header from './components/header';
 
-library.add(faIgloo, faRedoAlt, faEye, faUsers, faCheck, faFont, faPlus)
+library.add(faIgloo, faRedoAlt, faEye, faUsers, faCheck, faFont, faPlus, faMusic, faCalendarDay, faPlay)
 
 
 class App extends Component {

@@ -40,9 +40,7 @@ export default class PickMode extends Component {
                                 <Content>
                                     <Link
                                         to={{
-                                            pathname: '/select/byname',
-                                            title: "Selectionner chanson",
-                                            url: "http://localhost:5000/api/song/byname/"
+                                            pathname: '/select/byname'
                                         }}
                                     >
                                         <Button color="primary" className="is-fullwidth">Une chanson</Button>
@@ -50,9 +48,7 @@ export default class PickMode extends Component {
                                     <br />
                                     <Link
                                         to={{
-                                            pathname: '/select/byband',
-                                            title: "Chanson aléatoire pour un artiste",
-                                            url: "http://localhost:5000/api/song/byband/"
+                                            pathname: '/select/byband'
                                         }}
                                     >
                                         <Button color="primary" className="is-fullwidth">Plusieurs chansons aléatoire pour un artiste</Button>
@@ -60,9 +56,7 @@ export default class PickMode extends Component {
                                     <br />
                                     <Link
                                         to={{
-                                            pathname: '/select/byalbum',
-                                            title: "Chanson aléatoire pour un artiste",
-                                            url: "http://localhost:5000/api/song/byband/"
+                                            pathname: '/select/byalbum'
                                         }}
                                     >
                                         <Button color="primary" className="is-fullwidth">Plusieurs chansons aléatoire pour un artiste et un album</Button>

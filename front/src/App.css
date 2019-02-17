@@ -158,3 +158,5 @@ body {
 button:active, a:active, button, a {
   outline: 0;
 }
+:focus {outline:none;}
+::-moz-focus-inner {border:0;}
