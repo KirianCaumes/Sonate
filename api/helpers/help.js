@@ -20,6 +20,11 @@ class Help {
             .replace(/\?/g, "%3F")
             .replace(/\s/g, "_");
     }
+
+    static pushUrl(data, url) {
+        data.url = url
+        return data
+    }
 }
 
 module.exports = Help

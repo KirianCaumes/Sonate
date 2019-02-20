@@ -160,3 +160,11 @@ button:active, a:active, button, a {
 }
 :focus {outline:none;}
 ::-moz-focus-inner {border:0;}
+
+
+a:not([href]) {
+  cursor: default;
+}
+a[href] {
+  cursor: pointer!important;
+}

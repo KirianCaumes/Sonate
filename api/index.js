@@ -15,7 +15,8 @@ app.get('/api/song/byname', (req, res) => {
             RequestTranslations.getTranslate(song.lyrics)
                 .then((lyricsTranslated) => {
                     res.json(
-                        {
+                        {   
+                            url: song.url,
                             lyricsTranslated: lyricsTranslated,
                             lyrics: song.lyrics,
                             title: song.title,
@@ -40,6 +41,7 @@ app.get('/api/song/byband', (req, res) => {
                         .then((lyricsTranslated) => {
                             res.json(
                                 {
+                                    url: song.url,
                                     lyricsTranslated: lyricsTranslated,
                                     lyrics: song.lyrics,
                                     title: song.title,
@@ -66,6 +68,7 @@ app.get('/api/song/byalbum', (req, res) => {
                         .then((lyricsTranslated) => {
                             res.json(
                                 {
+                                    url: song.url,
                                     lyricsTranslated: lyricsTranslated,
                                     lyrics: song.lyrics,
                                     title: song.title,

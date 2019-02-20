@@ -10,17 +10,21 @@ class RequestsSongs {
     * @returns {String}
     */
     static async getLyrics(band, song) {
-        return await rp(`http://lyrics.wikia.com/wiki/${Help.toFirstUpper(band)}:${Help.toFirstUpper(song)}`)
-            .then((body) => { return Parse.lyrics(body) })
+        let url = `http://lyrics.wikia.com/wiki/${Help.toFirstUpper(band)}:${Help.toFirstUpper(song)}`
+        return await rp(url)
+            .then((body) => { return Help.pushUrl(Parse.lyrics(body), url) })
             .catch(() => {
-                return rp(`http://lyrics.wikia.com/wiki/${Help.toFirstUpper(band)}:${Help.toFullUpper(song)}`)
-                    .then((body) => { return Parse.lyrics(body) })
+                url = `http://lyrics.wikia.com/wiki/${Help.toFirstUpper(band)}:${Help.toFullUpper(song)}`
+                return rp(url)
+                    .then((body) => { return Help.pushUrl(Parse.lyrics(body), url) })
                     .catch(() => {
-                        return rp(`http://lyrics.wikia.com/wiki/${Help.toFullUpper(band)}:${Help.toFirstUpper(song)}`)
-                            .then((body) => { return Parse.lyrics(body) })
+                        url = `http://lyrics.wikia.com/wiki/${Help.toFullUpper(band)}:${Help.toFirstUpper(song)}`
+                        return rp(url)
+                            .then((body) => { return Help.pushUrl(Parse.lyrics(body), url) })
                             .catch(() => {
-                                return rp(`http://lyrics.wikia.com/wiki/${Help.toFullUpper(band)}:${Help.toFullUpper(song)}`)
-                                    .then((body) => { return Parse.lyrics(body) })
+                                url = `http://lyrics.wikia.com/wiki/${Help.toFullUpper(band)}:${Help.toFullUpper(song)}`
+                                return rp(url)
+                                    .then((body) => { return Help.pushUrl(Parse.lyrics(body), url) })
                                     .catch(() => {
                                         throw "Lyrics not found"
                                     })
@@ -36,11 +40,12 @@ class RequestsSongs {
     */
     static async getRandomSongNameByBand(band) {
         return await rp(`http://lyrics.wikia.com/wiki/${Help.toFirstUpper(band)}`)
-            .then((body) => { return Parse.randomSong(body) })
+            .then((body) => { return Parse.randomSong(body, band) })
             .catch((e) => {
                 return rp(`http://lyrics.wikia.com/wiki/${Help.toFullUpper(band)}`)
-                    .then((body) => { return Parse.randomSong(body) })
+                    .then((body) => { return Parse.randomSong(body, band) })
                     .catch((e) => {
+                        console.log(e)
                         throw "Band or random song not found"
                     })
             })

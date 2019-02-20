@@ -34,6 +34,7 @@ class Game extends Component {
         // if (!this.props.location.title && !this.props.location.artist && !this.props.location.album && !this.props.location.yearAlbum) this.props.history.goBack()
         this.state = {
             song: {
+                url: null,
                 lyricsTranslated: null,
                 lyrics: null,
                 title: null,
@@ -73,7 +74,7 @@ class Game extends Component {
     getSong() {
         clearTimeout(this.state.timeOut)
         this.setState({
-            song: { lyricsTranslated: null, lyrics: null, title: null, artist: null, albums: [] },
+            song: { url: null, lyricsTranslated: null, lyrics: null, title: null, artist: null, albums: [] },
             lyricsDisplay: "",
             loading: true,
             timeOut: null,
@@ -95,6 +96,7 @@ class Game extends Component {
             (data) => {
                 this.setState({
                     song: {
+                        url: data.url,
                         lyricsTranslated: data.lyricsTranslated ? data.lyricsTranslated.replace(/\n/g, "<br>") : data.lyricsTranslated,
                         lyrics: data.lyricsTranslated ? data.lyrics.replace(/\n/g, "<br>") : data.lyricsTranslated,
                         title: data.title,
@@ -115,10 +117,8 @@ class Game extends Component {
                     }
                 }
             },
-            (data) => {
-                this.setState({
-                    loading: false
-                })
+            () => {
+                this.setState({ loading: false })
             }
         );
 
@@ -258,16 +258,6 @@ class Game extends Component {
                                                     ''
                                             }
                                         </Columns>
-
-                                        {/* <Button
-                                            color="primary"
-                                            onClick={this.check.bind(this)}
-                                            disabled={this.state.loading || this.state.disableAnswer}
-                                            className="is-fullwidth"
-                                        >
-                                            <FontAwesomeIcon icon="plus" style={{ marginRight: '5px' }} />
-                                            Check
-                                        </Button> */}
                                     </Content>
                                     <Columns>
                                         {
@@ -295,11 +285,13 @@ class Game extends Component {
                                     <Media>
 
                                         <Media.Item position="left">
-                                            <Image
-                                                size={128}
-                                                src={this.settings.infosGame.album || this.state.showAnswer ? this.state.art : null}
-                                                style={{ background: 'rgba(0,0,0,0.15)', boxShadow: '0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)' }}
-                                            />
+                                            <a href={this.settings.infosGame.album || this.state.showAnswer ? this.state.song.url : null} target="_blank">
+                                                <Image
+                                                    size={128}
+                                                    src={this.settings.infosGame.album || this.state.showAnswer ? this.state.art : null}
+                                                    style={{ background: 'rgba(0,0,0,0.15)', boxShadow: '0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)' }}
+                                                />
+                                            </a>
                                         </Media.Item>
                                         <Media.Item>
                                             <Heading size={4} style={{ textTransform: 'uppercase' }}>

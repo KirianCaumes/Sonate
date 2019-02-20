@@ -17,7 +17,7 @@ class Parse {
         return { lyrics, title: titleComponent[2].trim(), artist: titleComponent[1].trim(), albums }
     }
 
-    static randomSong(body) {
+    static randomSong(body, band) {
         let songsList = HTMLParser.parse(body)
             .querySelectorAll('ol li b a')
             .map(item => item.attributes.title)
