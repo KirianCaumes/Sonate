@@ -22,6 +22,8 @@ import Media from 'react-bulma-components/lib/components/media';
 import Heading from 'react-bulma-components/lib/components/heading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Icon from 'react-bulma-components/lib/components/icon'
+import Modal from 'react-bulma-components/lib/components/modal';
+import Section from 'react-bulma-components/lib/components/section';
 
 import DATAS from "../datas/modes.json"
 import Request from "../helpers/request"
@@ -58,7 +60,8 @@ class Game extends Component {
             timeOutAnswer: {
                 title: null,
                 artist: null
-            }
+            },
+            error: false
         }
     }
     componentDidMount() {
@@ -118,7 +121,7 @@ class Game extends Component {
                 }
             },
             () => {
-                this.setState({ loading: false })
+                this.setState({ loading: false, error: true })
             }
         );
 
@@ -153,174 +156,202 @@ class Game extends Component {
 
     render() {
         return (
-            <div>
-                <Container>
-                    <Columns>
-                        <Columns.Column>
-                            <Card>
-                                <Card.Header>
-                                    <Card.Header.Title>Paroles de la chanson</Card.Header.Title>
-                                </Card.Header>
-                                <Card.Content>
-                                    <Content>
-                                        {
-                                            this.state.loading
-                                                ?
-                                                <Loader style={{ width: 50, height: 50, margin: '0 auto' }} />
-                                                :
-                                                <p dangerouslySetInnerHTML={{ __html: this.state.song.lyricsTranslated }} />
-                                        }
-                                    </Content>
-                                </Card.Content>
-                            </Card>
-                        </Columns.Column>
-                        <Columns.Column>
-                            <Card>
-                                <Card.Header>
-                                    <Card.Header.Title>Temps restant</Card.Header.Title>
-                                </Card.Header>
-                                <Card.Content>
-                                    <Content>
-                                        <p>00:00:00</p>
-                                    </Content>
-                                </Card.Content>
-                            </Card>
-                            <Card>
-                                <Card.Header>
-                                    <Card.Header.Title>Votre réponse</Card.Header.Title>
-                                </Card.Header>
-                                <Card.Content>
-                                    <Content style={{ marginBottom: '.75rem' }}>
-                                        <Columns>
-                                            {
-                                                this.settings.inputGame.artist ?
-                                                    <Columns.Column>
-                                                        <Field>
-                                                            <Label>Groupe</Label>
-                                                            <Control iconLeft iconRight>
-                                                                <Input
-                                                                    type="text"
-                                                                    placeholder="Groupe"
-                                                                    onChange={(e) => {
-                                                                        this.setState({ answer: { artist: e.target.value, title: this.state.answer.title } })
-                                                                        clearInterval(this.state.timeOutAnswer.artist)
-                                                                        this.state.timeOutAnswer.artist = setTimeout(() => { this.check() }, 500)
-                                                                    }}
-                                                                    value={this.state.answer.artist}
-                                                                    disabled={this.state.loading || this.state.answerValid.artist || this.state.disableAnswer}
-                                                                    color={this.state.answerValid.artist ? "success" : ''}
-                                                                />
-                                                                <Icon align="left">
-                                                                    <FontAwesomeIcon icon="users" />
-                                                                </Icon>
+            <Container>
 
-                                                                <Icon align="right">
-                                                                    {this.state.answerValid.artist ? <FontAwesomeIcon icon="check" /> : ''}
-                                                                </Icon>
-                                                            </Control>
-                                                            <Help color="danger"></Help>
-                                                        </Field>
-                                                    </Columns.Column>
-                                                    :
-                                                    ''
-                                            }
-                                            {
-                                                this.settings.inputGame.title ?
-                                                    <Columns.Column>
-                                                        <Field>
-                                                            <Label>Titre</Label>
-                                                            <Control iconLeft iconRight>
-                                                                <Input
-                                                                    type="text"
-                                                                    placeholder="Titre"
-                                                                    onChange={(e) => {
-                                                                        this.setState({ answer: { title: e.target.value, artist: this.state.answer.artist } })
-                                                                        clearInterval(this.state.timeOutAnswer.title)
-                                                                        this.state.timeOutAnswer.title = setTimeout(() => { this.check() }, 500)
-                                                                    }}
+                
+                <Modal show={this.state.error}>
+                    <Modal.Card>
+                        <Modal.Card.Head showClose={false}>
+                            <Modal.Card.Title>Erreur</Modal.Card.Title>
+                        </Modal.Card.Head>
+                        <Modal.Card.Body>
+                            <p>La chanson n'à pas été trouvée.</p>
+                        </Modal.Card.Body>
+                        <Modal.Card.Foot>
+                            <Button
+                                onClick={() => { window.history.back() }}
+                                color="primary"
+                            >
+                                <FontAwesomeIcon icon="eye" style={{ marginRight: '5px' }} />
+                                Retour
+                            </Button>
+                            <Button
+                                onClick={() => { this.setState({ error: false }); this.getSong() }}
+                                color="primary"
+                            >
+                                <FontAwesomeIcon icon="eye" style={{ marginRight: '5px' }} />
+                                Réessayer
+                            </Button>
+                        </Modal.Card.Foot>
+                    </Modal.Card>
+                </Modal>
 
-                                                                    // onChange={(e) => }
-                                                                    value={this.state.answer.title}
-                                                                    disabled={this.state.loading || this.state.answerValid.title || this.state.disableAnswer}
-                                                                    color={this.state.answerValid.title ? "success" : ''}
-                                                                />
-                                                                <Icon align="left">
-                                                                    <FontAwesomeIcon icon="font" />
-                                                                </Icon>
-                                                                <Icon align="right">
-                                                                    {this.state.answerValid.title ? <FontAwesomeIcon icon="check" /> : ''}
-                                                                </Icon>
-                                                            </Control>
-                                                            <Help color="danger"></Help>
-                                                        </Field>
-                                                    </Columns.Column>
-                                                    :
-                                                    ''
-                                            }
-                                        </Columns>
-                                    </Content>
+
+                <Columns>
+                    <Columns.Column>
+                        <Card>
+                            <Card.Header>
+                                <Card.Header.Title>Paroles de la chanson</Card.Header.Title>
+                            </Card.Header>
+                            <Card.Content>
+                                <Content>
+                                    {
+                                        this.state.loading
+                                            ?
+                                            <Loader style={{ width: 50, height: 50, margin: '0 auto' }} />
+                                            :
+                                            <p dangerouslySetInnerHTML={{ __html: this.state.lyricsDisplay  }} />
+                                    }
+                                </Content>
+                            </Card.Content>
+                        </Card>
+                    </Columns.Column>
+                    <Columns.Column>
+                        <Card>
+                            <Card.Header>
+                                <Card.Header.Title>Temps restant</Card.Header.Title>
+                            </Card.Header>
+                            <Card.Content>
+                                <Content>
+                                    <p>00:00:00</p>
+                                </Content>
+                            </Card.Content>
+                        </Card>
+                        <Card>
+                            <Card.Header>
+                                <Card.Header.Title>Votre réponse</Card.Header.Title>
+                            </Card.Header>
+                            <Card.Content>
+                                <Content style={{ marginBottom: '.75rem' }}>
                                     <Columns>
                                         {
-                                            this.settings.name != "byname" ?
+                                            this.settings.inputGame.artist ?
                                                 <Columns.Column>
-                                                    <Button className="is-fullwidth" onClick={this.getSong.bind(this)} color={`primary ${this.state.loading ? 'is-loading' : ''}`}>
-                                                        <FontAwesomeIcon icon="redo-alt" style={{ marginRight: '5px' }} />
-                                                        Recommencer
-                                                    </Button>
+                                                    <Field>
+                                                        <Label>Groupe</Label>
+                                                        <Control iconLeft iconRight>
+                                                            <Input
+                                                                type="text"
+                                                                placeholder="Groupe"
+                                                                onChange={(e) => {
+                                                                    this.setState({ answer: { artist: e.target.value, title: this.state.answer.title } })
+                                                                    clearInterval(this.state.timeOutAnswer.artist)
+                                                                    this.state.timeOutAnswer.artist = setTimeout(() => { this.check() }, 500)
+                                                                }}
+                                                                onKeyPress={e => { if (e.key == 'Enter') this.check(); }}
+                                                                value={this.state.answer.artist}
+                                                                disabled={this.state.loading || this.state.answerValid.artist || this.state.disableAnswer}
+                                                                color={this.state.answerValid.artist ? "success" : ''}
+                                                            />
+                                                            <Icon align="left">
+                                                                <FontAwesomeIcon icon="users" />
+                                                            </Icon>
+
+                                                            <Icon align="right">
+                                                                {this.state.answerValid.artist ? <FontAwesomeIcon icon="check" /> : ''}
+                                                            </Icon>
+                                                        </Control>
+                                                        <Help color="danger"></Help>
+                                                    </Field>
                                                 </Columns.Column>
                                                 :
                                                 ''
                                         }
-                                        <Columns.Column>
-                                            <Button className="is-fullwidth" onClick={this.showAnswer.bind(this)} color="primary" disabled={this.state.loading || this.state.disableAnswer}>
-                                                <FontAwesomeIcon icon="eye" style={{ marginRight: '5px' }} />
-                                                Réponse
-                                        </Button>
-                                        </Columns.Column>
+                                        {
+                                            this.settings.inputGame.title ?
+                                                <Columns.Column>
+                                                    <Field>
+                                                        <Label>Titre</Label>
+                                                        <Control iconLeft iconRight>
+                                                            <Input
+                                                                type="text"
+                                                                placeholder="Titre"
+                                                                onChange={(e) => {
+                                                                    this.setState({ answer: { title: e.target.value, artist: this.state.answer.artist } })
+                                                                    clearInterval(this.state.timeOutAnswer.title)
+                                                                    this.state.timeOutAnswer.title = setTimeout(() => { this.check() }, 500)
+                                                                }}
+                                                                onKeyPress={e => { if (e.key == 'Enter') this.check(); }}
+                                                                value={this.state.answer.title}
+                                                                disabled={this.state.loading || this.state.answerValid.title || this.state.disableAnswer}
+                                                                color={this.state.answerValid.title ? "success" : ''}
+                                                            />
+                                                            <Icon align="left">
+                                                                <FontAwesomeIcon icon="font" />
+                                                            </Icon>
+                                                            <Icon align="right">
+                                                                {this.state.answerValid.title ? <FontAwesomeIcon icon="check" /> : ''}
+                                                            </Icon>
+                                                        </Control>
+                                                        <Help color="danger"></Help>
+                                                    </Field>
+                                                </Columns.Column>
+                                                :
+                                                ''
+                                        }
                                     </Columns>
-                                </Card.Content>
-                            </Card>
-                            <Card>
-                                <Card.Content>
-                                    <Media>
+                                </Content>
+                                <Columns>
+                                    {
+                                        this.settings.name != "byname" ?
+                                            <Columns.Column>
+                                                <Button className="is-fullwidth" onClick={this.getSong.bind(this)} color={`primary ${this.state.loading ? 'is-loading' : ''}`}>
+                                                    <FontAwesomeIcon icon="redo-alt" style={{ marginRight: '5px' }} />
+                                                    Recommencer
+                                                    </Button>
+                                            </Columns.Column>
+                                            :
+                                            ''
+                                    }
+                                    <Columns.Column>
+                                        <Button className="is-fullwidth" onClick={this.showAnswer.bind(this)} color="primary" disabled={this.state.loading || this.state.disableAnswer}>
+                                            <FontAwesomeIcon icon="eye" style={{ marginRight: '5px' }} />
+                                            Réponse
+                                        </Button>
+                                    </Columns.Column>
+                                </Columns>
+                            </Card.Content>
+                        </Card>
+                        <Card>
+                            <Card.Content>
+                                <Media>
 
-                                        <Media.Item position="left">
-                                            <a href={this.settings.infosGame.album || this.state.showAnswer ? this.state.song.url : null} target="_blank">
-                                                <Image
-                                                    size={128}
-                                                    src={this.settings.infosGame.album || this.state.showAnswer ? this.state.art : null}
-                                                    style={{ background: 'rgba(0,0,0,0.15)', boxShadow: '0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)' }}
-                                                />
-                                            </a>
-                                        </Media.Item>
-                                        <Media.Item>
-                                            <Heading size={4} style={{ textTransform: 'uppercase' }}>
-                                                {this.settings.infosGame.artist || this.state.showAnswer ? this.state.song.artist || this.props.location.artist || '?' : '?'}
-                                            </Heading>
-                                            <Heading subtitle size={5} style={{ textTransform: 'capitalize' }}>
-                                                {this.settings.infosGame.title || this.state.showAnswer ? this.state.song.title : '?'}
-                                            </Heading>
-                                            <Heading subtitle size={6} style={{ textTransform: 'capitalize' }}>
-                                                {this.settings.infosGame.album ?
-                                                    this.props.location.album + " - " + this.props.location.yearAlbum
+                                    <Media.Item position="left">
+                                        <a href={this.settings.infosGame.album || this.state.showAnswer ? this.state.song.url : null} target="_blank">
+                                            <Image
+                                                size={128}
+                                                src={this.settings.infosGame.album || this.state.showAnswer ? this.state.art : null}
+                                                style={{ background: 'rgba(0,0,0,0.15)', boxShadow: '0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)', overflow: 'hidden' }}
+                                            />
+                                        </a>
+                                    </Media.Item>
+                                    <Media.Item>
+                                        <Heading size={4} style={{ textTransform: 'uppercase' }}>
+                                            {this.settings.infosGame.artist || this.state.showAnswer ? this.state.song.artist || this.props.location.artist || '?' : '?'}
+                                        </Heading>
+                                        <Heading subtitle size={5} style={{ textTransform: 'capitalize' }}>
+                                            {this.settings.infosGame.title || this.state.showAnswer ? this.state.song.title : '?'}
+                                        </Heading>
+                                        <Heading subtitle size={6} style={{ textTransform: 'capitalize' }}>
+                                            {this.settings.infosGame.album ?
+                                                this.props.location.album + " - " + this.props.location.yearAlbum
+                                                :
+                                                this.state.showAnswer && this.state.song.albums.length ?
+                                                    this.state.song.albums.map((album) => <span key={album.name}>{album.name} - {album.year}<br /></span>)
                                                     :
-                                                    this.state.showAnswer && this.state.song.albums.length ?
-                                                        this.state.song.albums.map((album) => <span key={album.name}>{album.name} - {album.year}<br /></span>)
-                                                        :
-                                                        '?'
-                                                }
-                                            </Heading>
-                                        </Media.Item>
-                                    </Media>
-                                </Card.Content>
-                            </Card>
-                        </Columns.Column>
-                    </Columns>
+                                                    '?'
+                                            }
+                                        </Heading>
+                                    </Media.Item>
+                                </Media>
+                            </Card.Content>
+                        </Card>
+                    </Columns.Column>
+                </Columns>
 
 
 
-                </Container>
-            </div>
+            </Container >
         );
     }
 }

@@ -35,36 +35,53 @@ export default class SelectMode extends Component {
             artist: undefined,
             album: undefined,
             yearAlbum: undefined,
+            time: "01:00",
+            songs: 1,
             error: {
                 title: false,
                 artist: false,
                 album: false,
-                yearAlbum: false
+                yearAlbum: false,
+                time: false,
+                songs: false
             }
 
         }
     }
 
     send() {
-        if ((this.settings.inputsSelect.title && !this.state.title) || (this.settings.inputsSelect.artist && !this.state.artist) || (this.settings.inputsSelect.album && !this.state.album) || (this.settings.inputsSelect.yearAlbum && !this.state.yearAlbum)) {
-            this.state.error.title = this.settings.inputsSelect.title && !this.state.title
-            this.state.error.artist = this.settings.inputsSelect.artist && !this.state.artist
-            this.state.error.album = this.settings.inputsSelect.album && !this.state.album
-            this.state.error.yearAlbum = this.settings.inputsSelect.yearAlbum && !this.state.yearAlbum
+        if ((this.settings.inputsSelect.title && !this.state.title) || (this.settings.inputsSelect.artist && !this.state.artist) || (this.settings.inputsSelect.album && !this.state.album) || (this.settings.inputsSelect.yearAlbum && !this.state.yearAlbum) || (this.settings.inputsSelect.time && !this.state.time) || (this.settings.inputsSelect.songs && !this.state.songs)) {
+            this.setState({
+                error: {
+                    title: this.settings.inputsSelect.title && !this.state.title,
+                    artist: this.settings.inputsSelect.artist && !this.state.artist,
+                    album: this.settings.inputsSelect.album && !this.state.album,
+                    yearAlbum: this.settings.inputsSelect.yearAlbum && !this.state.yearAlbum,
+                    time: this.settings.inputsSelect.time && !this.state.time,
+                    songs: this.settings.inputsSelect.songs && !this.state.songs
+                }
+            })
         } else {
-            this.state.error.title = false
-            this.state.error.artist = false
-            this.state.error.album = false
-            this.state.error.yearAlbum = false
+            this.setState({
+                error: {
+                    title: false,
+                    artist: false,
+                    album: false,
+                    yearAlbum: false,
+                    time: false,
+                    songs: false
+                }
+            })
             this.props.history.push({
                 pathname: "/game/" + this.props.match.params.modeId,
                 title: this.state.title,
                 artist: this.state.artist,
                 album: this.state.album,
-                yearAlbum: this.state.yearAlbum
+                yearAlbum: this.state.yearAlbum,
+                time: this.state.time,
+                songs: this.state.songs
             })
         }
-        this.setState({})
     }
 
     render() {
@@ -78,6 +95,7 @@ export default class SelectMode extends Component {
                             </Card.Header>
                             <Card.Content>
                                 <Content>
+                                    <h2 className="title is-4">Parametres</h2>
                                     <Columns>
                                         {
                                             this.settings.inputsSelect.artist ?
@@ -174,9 +192,62 @@ export default class SelectMode extends Component {
                                                 : ''
                                         }
                                     </Columns>
+
+                                </Content>
+                                <br />
+                                <Content>
+                                    <h2 className="title is-4">Options</h2>
+                                    <Columns>
+                                        {
+                                            this.settings.inputsOptions.time ?
+                                                <Columns.Column>
+                                                    <Field>
+                                                        <Label>Temps maximum</Label>
+                                                        <Control iconLeft>
+                                                            <Input
+                                                                type="time"
+                                                                placeholder="Temps"
+                                                                onChange={(e) => this.setState({ time: e.target.value })}
+                                                                value={this.state.time}
+                                                                onKeyPress={e => e.key == 'Enter' ? this.send() : ''}
+                                                                color={this.state.error.time ? "danger" : ''}
+                                                            />
+                                                            <Icon align="left">
+                                                                <FontAwesomeIcon icon="clock" />
+                                                            </Icon>
+                                                        </Control>
+                                                        {this.state.error.time ? <Help color="danger">Veuillez remplir le champs</Help> : ''}
+                                                    </Field>
+                                                </Columns.Column>
+                                                : ''
+                                        }
+                                        {
+                                            this.settings.inputsOptions.songs ?
+                                                <Columns.Column>
+                                                    <Field>
+                                                        <Label>Chansons maximum</Label>
+                                                        <Control iconLeft>
+                                                            <Input
+                                                                type="number"
+                                                                placeholder="Chansons"
+                                                                onChange={(e) => this.setState({ songs: e.target.value })}
+                                                                value={this.state.songs}
+                                                                onKeyPress={e => e.key == 'Enter' ? this.send() : ''}
+                                                                color={this.state.error.songs ? "danger" : ''}
+                                                            />
+                                                            <Icon align="left">
+                                                                <FontAwesomeIcon icon="hand-paper" />
+                                                            </Icon>
+                                                        </Control>
+                                                        {this.state.error.songs ? <Help color="danger">Veuillez remplir le champs</Help> : ''}
+                                                    </Field>
+                                                </Columns.Column>
+                                                : ''
+                                        }
+                                    </Columns>
                                     <Button
                                         color="primary"
-                                        className="is-fullwidth" 
+                                        className="is-fullwidth"
                                         onClick={this.send.bind(this)}
                                     >
                                         <FontAwesomeIcon icon="play" style={{ marginRight: '5px' }} />

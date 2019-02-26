@@ -7,6 +7,10 @@
             "album": false,
             "yearAlbum": false
         },
+        "inputsOptions": {
+            "time": true,
+            "songs": false
+        },
         "api": "byname",
         "inputGame":{
             "title": true,
@@ -29,6 +33,10 @@
             "album": false,
             "yearAlbum": false
         },
+        "inputsOptions": {
+            "time": true,
+            "songs": true
+        },
         "api": "byband",
         "inputGame":{
             "title": true,
@@ -50,6 +58,10 @@
             "artist": true,
             "album": true,
             "yearAlbum": true
+        },
+        "inputsOptions": {
+            "time": true,
+            "songs": true
         },
         "api": "byalbum",
         "inputGame":{

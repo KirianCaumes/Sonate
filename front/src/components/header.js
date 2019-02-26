@@ -41,7 +41,7 @@ class Header extends Component {
                 <Navbar.Menu active={this.state.open}>
                     <Navbar.Container>
                         <Link to="/" className="navbar-item">Accueil</Link>
-                        <Link to="/mode" className="navbar-item">Mode</Link>
+                        {/* <Link to="/mode" className="navbar-item">Mode</Link> */}
                     </Navbar.Container>
                 </Navbar.Menu>
             </Navbar>

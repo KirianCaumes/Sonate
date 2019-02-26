@@ -146,25 +146,41 @@ input[type="text"]{
 }
 */
 
-.card {
-  margin: 25px 0;
-}
 
+
+/****************
+**** GENERAL ****
+*****************/
 body {
   min-height: 100vh;
   background: #F8F8F8 !important;
 }
-
 button:active, a:active, button, a {
   outline: 0;
 }
 :focus {outline:none;}
 ::-moz-focus-inner {border:0;}
 
-
-a:not([href]) {
+/****************
+***** GAME ******
+*****************/
+.card {
+  margin: 25px 0;
+}
+.media-left a:not([href]) {
   cursor: default;
 }
-a[href] {
+.media-left a[href] {
   cursor: pointer!important;
+}
+
+/****************
+***** MODE ******
+*****************/
+.tabs li:first-child {
+  margin-top: 0.25em!important;
+}
+li.is-active a {
+  color: #00d1b2!important;
+  border-bottom-color: #00d1b2!important;
 }
