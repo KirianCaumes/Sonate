@@ -25,6 +25,9 @@ import Icon from 'react-bulma-components/lib/components/icon'
 import Modal from 'react-bulma-components/lib/components/modal';
 import Section from 'react-bulma-components/lib/components/section';
 
+// import ReactStopwatch from 'react-stopwatch';
+import Timer from '../helpers/timer'
+
 import DATAS from "../datas/modes.json"
 import Request from "../helpers/request"
 import Similarity from "../helpers/similarity"
@@ -118,6 +121,11 @@ class Game extends Component {
                         })
                         Request.send('GET', ['getArt', getParametersArt], undefined, (data) => { this.setState({ art: data.artUrl }) })
                     }
+                    if (this.bandInput) {
+                        this.bandInput.focus()
+                    } else {
+                        this.titleInput.focus()
+                    }
                 }
             },
             () => {
@@ -140,25 +148,40 @@ class Game extends Component {
     }
 
     check() {
-        console.log("lol")
         this.state.answerValid.artist = !this.settings.inputGame.artist || Similarity.isOk(this.state.answer.artist, this.state.song.artist)
         this.state.answerValid.title = !this.settings.inputGame.title || Similarity.isOk(this.state.answer.title, this.state.song.title)
         if (this.state.answerValid.artist && this.state.answerValid.title) {
-            this.setState({ showAnswer: true, disableAnswer: true })
+            clearTimeout(this.state.timeOut)
+            this.setState(
+                {
+                    showAnswer: true,
+                    disableAnswer: true,
+                    lyricsDisplay: this.state.song.lyricsTranslated
+                }
+            )
         } else {
 
         }
     }
 
     showAnswer() {
-        if (!this.state.showAnswer) this.setState({ showAnswer: !this.state.showAnswer, disableAnswer: true })
+        if (!this.state.showAnswer) {
+            clearTimeout(this.state.timeOut)
+            this.setState(
+                {
+                    showAnswer: !this.state.showAnswer,
+                    disableAnswer: true,
+                    lyricsDisplay: this.state.song.lyricsTranslated
+                }
+            )
+        }
     }
 
     render() {
         return (
             <Container>
 
-                
+
                 <Modal show={this.state.error}>
                     <Modal.Card>
                         <Modal.Card.Head showClose={false}>
@@ -200,7 +223,7 @@ class Game extends Component {
                                             ?
                                             <Loader style={{ width: 50, height: 50, margin: '0 auto' }} />
                                             :
-                                            <p dangerouslySetInnerHTML={{ __html: this.state.lyricsDisplay  }} />
+                                            <p dangerouslySetInnerHTML={{ __html: this.state.lyricsDisplay }} />
                                     }
                                 </Content>
                             </Card.Content>
@@ -213,7 +236,14 @@ class Game extends Component {
                             </Card.Header>
                             <Card.Content>
                                 <Content>
-                                    <p>00:00:00</p>
+                                    <Timer
+                                        time={this.props.time || "00:00:05"}
+                                        play={!this.state.loading && !this.state.showAnswer}
+                                        onDone={() => {
+                                            clearTimeout(this.state.timeOut)
+                                            this.setState({ showAnswer: true, gameOver: true, disableAnswer: true, lyricsDisplay: this.state.song.lyricsTranslated })
+                                        }}
+                                    />
                                 </Content>
                             </Card.Content>
                         </Card>
@@ -230,7 +260,8 @@ class Game extends Component {
                                                     <Field>
                                                         <Label>Groupe</Label>
                                                         <Control iconLeft iconRight>
-                                                            <Input
+                                                            <input
+                                                                className="input"
                                                                 type="text"
                                                                 placeholder="Groupe"
                                                                 onChange={(e) => {
@@ -242,6 +273,7 @@ class Game extends Component {
                                                                 value={this.state.answer.artist}
                                                                 disabled={this.state.loading || this.state.answerValid.artist || this.state.disableAnswer}
                                                                 color={this.state.answerValid.artist ? "success" : ''}
+                                                                ref={(input) => { this.bandInput = input }}
                                                             />
                                                             <Icon align="left">
                                                                 <FontAwesomeIcon icon="users" />
@@ -263,7 +295,8 @@ class Game extends Component {
                                                     <Field>
                                                         <Label>Titre</Label>
                                                         <Control iconLeft iconRight>
-                                                            <Input
+                                                            <input
+                                                                className="input"
                                                                 type="text"
                                                                 placeholder="Titre"
                                                                 onChange={(e) => {
@@ -275,6 +308,7 @@ class Game extends Component {
                                                                 value={this.state.answer.title}
                                                                 disabled={this.state.loading || this.state.answerValid.title || this.state.disableAnswer}
                                                                 color={this.state.answerValid.title ? "success" : ''}
+                                                                ref={(input) => { this.titleInput = input }}
                                                             />
                                                             <Icon align="left">
                                                                 <FontAwesomeIcon icon="font" />
@@ -295,7 +329,12 @@ class Game extends Component {
                                     {
                                         this.settings.name != "byname" ?
                                             <Columns.Column>
-                                                <Button className="is-fullwidth" onClick={this.getSong.bind(this)} color={`primary ${this.state.loading ? 'is-loading' : ''}`}>
+                                                <Button
+                                                    className="is-fullwidth"
+                                                    onClick={this.getSong.bind(this)}
+                                                    color={`primary ${this.state.loading ? 'is-loading' : ''}`}
+                                                    disabled={this.state.gameOver}
+                                                >
                                                     <FontAwesomeIcon icon="redo-alt" style={{ marginRight: '5px' }} />
                                                     Recommencer
                                                     </Button>
