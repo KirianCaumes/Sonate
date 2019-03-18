@@ -27,6 +27,18 @@ button:active, a:active, button, a {
 }
 
 /****************
+**** HEADER *****
+*****************/
+
+@media (max-width: 1023px) {
+  .navbar-menu {
+    position: absolute;
+    width: 65%;
+    right: 0;
+  }
+}
+
+/****************
 ***** GAME ******
 *****************/
 
@@ -50,7 +62,6 @@ button:active, a:active, button, a {
     top: 53px;
     right: 0;
     left: 0;
-    z-index: 99;
   }
   .infos .column {
     padding: 0;
@@ -68,6 +79,9 @@ button:active, a:active, button, a {
   /* lyrics */
   .lyrics {
     margin-top: 3.5em;
+  }
+  .lyrics .card-header {
+    display: none;
   }
   /* inputs */
   .inputs {
@@ -93,15 +107,18 @@ button:active, a:active, button, a {
   .inputs .columns:last-child {
     display: flex!important;
   }
-  .inputs .columns:last-child svg{
+  .inputs .control.has-icons-left .icon.is-left {
+    display: flex!important;
+  }
+  .inputs .columns:last-child svg {
     margin-right: 0!important;
   }
-  .inputs .columns:last-child span{
+  .inputs .columns:last-child span {
     display: none;
   }
   /* answer */
   .answer {
-    margin: -2em 0 245px 0;
+    margin: -2em 0 110px 0;
   }
 }
 

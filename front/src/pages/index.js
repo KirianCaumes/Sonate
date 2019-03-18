@@ -1,25 +1,11 @@
 import React, { Component } from 'react';
 import '../App.css';
 import { Link } from "react-router-dom"
-import $ from 'jquery'
 import 'react-bulma-components/dist/react-bulma-components.min.css'
-import { Columns, Loader, Button } from 'react-bulma-components'
-import {
-    Field,
-    Control,
-    Label,
-    Input,
-    Textarea,
-    Select,
-    Checkbox,
-    Radio,
-    Help,
-} from 'react-bulma-components/lib/components/form';
+import { Columns, Button } from 'react-bulma-components'
 import Card from 'react-bulma-components/lib/components/card';
 import Container from 'react-bulma-components/lib/components/container';
 import Content from 'react-bulma-components/lib/components/content';
-import Tabs from 'react-bulma-components/lib/components/tabs';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export default class Index extends Component {
@@ -56,12 +42,12 @@ export default class Index extends Component {
                                     <Columns>
                                         <Columns.Column>
                                             <Link to={{ pathname: '/select/byband' }} >
-                                                <Button color="primary" className="is-fullwidth">Chansons aléatoires pour un artiste</Button>
+                                                <Button color="primary" className="is-fullwidth">Un artiste</Button>
                                             </Link>
                                         </Columns.Column>
                                         <Columns.Column>
                                             <Link to={{ pathname: '/select/byalbum' }} >
-                                                <Button color="primary" className="is-fullwidth">Chansons aléatoires pour un artiste et un album</Button>
+                                                <Button color="primary" className="is-fullwidth">Un artiste & un album</Button>
                                             </Link>
                                         </Columns.Column>
                                     </Columns>

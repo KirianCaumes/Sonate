@@ -7,11 +7,6 @@ import {
     Field,
     Control,
     Label,
-    Input,
-    Textarea,
-    Select,
-    Checkbox,
-    Radio,
     Help,
 } from 'react-bulma-components/lib/components/form';
 import Content from 'react-bulma-components/lib/components/content';
@@ -23,7 +18,6 @@ import Heading from 'react-bulma-components/lib/components/heading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Icon from 'react-bulma-components/lib/components/icon'
 import Modal from 'react-bulma-components/lib/components/modal';
-import Section from 'react-bulma-components/lib/components/section';
 
 // import ReactStopwatch from 'react-stopwatch';
 import Timer from '../components/timer'
@@ -74,12 +68,10 @@ class Game extends Component {
     componentDidMount() {
         this.getSong()
         window.onscroll = () => {
-            if (parseInt($('.infos').css('top'), 10) >= 0) {
+            if (parseInt($('.infos').css('top'), 10) >= 1 || window.pageYOffset < 52) {
                 $('.infos').css('top', 53 - window.pageYOffset) 
-            } else if(window.pageYOffset <= 53) {
-                $('.infos').css('top', 53 + window.pageYOffset)
             } else {
-                $('.infos').css('top', 53)
+                $('.infos').css('top', 0)
             }
             // console.log($('.infos').css('top'))
             // $('.infos').css('top', 40 - window.pageYOffset)

@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import '../App.css';
 import { Link } from "react-router-dom"
 import 'react-bulma-components/dist/react-bulma-components.min.css'
-import { Field, Control } from 'react-bulma-components/lib/components/form';
-import Button from 'react-bulma-components/lib/components/button';
 import Navbar from 'react-bulma-components/lib/components/navbar'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 class Header extends Component {
     constructor(props) {
@@ -40,7 +39,10 @@ class Header extends Component {
                 </Navbar.Brand>
                 <Navbar.Menu active={this.state.open}>
                     <Navbar.Container>
-                        <Link to="/" className="navbar-item">Accueil</Link>
+                        <Link to="/" className="navbar-item" onClick={() => this.setState({ open: !this.state.open })}>
+                            <FontAwesomeIcon icon="home" style={{ marginRight: '5px' }} />
+                            Accueil
+                        </Link>
                         {/* <Link to="/mode" className="navbar-item">Mode</Link> */}
                     </Navbar.Container>
                 </Navbar.Menu>

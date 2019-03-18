@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import '../App.css';
-import $ from 'jquery'
 import 'react-bulma-components/dist/react-bulma-components.min.css'
 import { Columns, Loader, Button } from 'react-bulma-components'
 import {
@@ -18,11 +17,8 @@ import {
 import Card from 'react-bulma-components/lib/components/card';
 import Container from 'react-bulma-components/lib/components/container';
 import Content from 'react-bulma-components/lib/components/content';
-import Game from './game';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Icon from 'react-bulma-components/lib/components/icon'
-
-import { BrowserRouter as Router, Route, Link } from "react-router-dom"
 
 import DATAS from "../datas/modes.json"
 import LEVELS from "../datas/level.json"
