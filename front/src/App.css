@@ -1,186 +1,114 @@
-/* @font-face {
-  font-family: digital-7;
-  src: url(font/digital-7.ttf);
-} 
-body{
-  text-align: center;
-  padding: 0;
-  margin: 0;
-  background: #f39c12;
-}
-h1, h2{
-  font-family: 'Roboto', sans-serif;
-}
-p{
-  font-family: 'Roboto', sans-serif;
-  color: black;
-}
-section {
-  
-  display: flex;
-  flex-direction: row;
-}
-.column {
-  width: 50vw;
-  height: 100vh;
-}
-div[id^="column"]{    
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-#column1{
-  background: #d35400;
-  min-height: 100vh;
-  height: unset;
-}
-#column1 .content{
-  background: #e67e22;
-}
-#column2{
-  background: #f39c12;
-}
-#column2 .content{
-  background: #f1c40f;
-}
-.content{    
-  width: 75%;
-  margin: 50px auto;
-  padding: 15px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-}
-
-.content:hover{
-  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
-}
-
-
-#timer {
-  font-family: 'digital-7', sans-serif;
-  font-size: 50px;
-  font-weight: bold;
-  margin: 0 0 30px;
-}
-#myInputs{
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);    
-}
-
-#myInputs button{
-  background: #f6b959;
-  border: none;
-  padding: 0 0 3.5px;
-  outline: none;
-  margin-left: -4px;
-  width: 15%;
-  cursor: pointer;
-  transition: .3s;
-  font-size: 35px;
-  vertical-align: bottom;
-}
-#myInputs button:hover {
-  background-color: #f4a529
-}
-input[type="text"]{
-  background: #f6b959;
-  border: none;
-  padding: 15px;
-  outline: none;
-  width: calc(85% - 30px);
-}
-
-
-#columnAccueil{
-  background: #c0392b;
-  min-height: 100vh;
-  height: unset;
-  width: 100vw;
-  height: 100vh;
-}
-#columnAccueil .content{
-  height: 50%;
-  width: 50%;
-  background: #e74c3c;
-}
-#allButtons{
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-}
-
-.action-button
-{
-  transition: all 0.1s;
-  -webkit-transition: all 0.1s;
-
-  position: relative;
-  padding: 10px 40px;
-  margin: 0px 10px 10px 0px;
-  float: left;
-  border-radius: 10px;
-  font-family: 'roboto', cursive;
-  font-size: 25px;
-  color: #FFF;
-  text-decoration: none;  
-}
-
-.blue
-{
-  background-color: #3498DB;
-  border-bottom: 5px solid #2980B9;
-  text-shadow: 0px -2px #2980B9;
-}
-
-.purple
-{
-  background-color: #9b59b6;
-  border-bottom: 5px solid #8e44ad;
-  text-shadow: 0px -2px #8e44ad;
-}
-
-.action-button:active
-{
-  transform: translate(0px,5px);
--webkit-transform: translate(0px,5px);
-  border-bottom: 5px #e74c3c solid;
-}
-*/
-
-
-
 /****************
 **** GENERAL ****
 *****************/
+
 body {
   min-height: 100vh;
   background: #F8F8F8 !important;
 }
+
 button:active, a:active, button, a {
   outline: 0;
 }
-:focus {outline:none;}
-::-moz-focus-inner {border:0;}
+
+:focus {
+  outline: none;
+}
+
+::-moz-focus-inner {
+  border: 0;
+}
+
+/* input required */
+
+.required:after {
+  content: " *";
+  color: #C41817;
+}
 
 /****************
 ***** GAME ******
 *****************/
+
 .card {
   margin: 25px 0;
 }
+
 .media-left a:not([href]) {
   cursor: default;
 }
+
 .media-left a[href] {
   cursor: pointer!important;
+}
+
+@media (max-width: 768px) {
+  /* Score and time */
+  .infos {
+    display: flex;
+    position: fixed;
+    top: 53px;
+    right: 0;
+    left: 0;
+    z-index: 99;
+  }
+  .infos .column {
+    padding: 0;
+  }
+  .infos .card {
+    margin: 12px 0 0 0;
+  }
+  .infos .card-header {
+    display: none
+  }
+  .infos .card-content {
+    padding: .5em;
+    text-align: center;
+  }
+  /* lyrics */
+  .lyrics {
+    margin-top: 3.5em;
+  }
+  /* inputs */
+  .inputs {
+    position: fixed!important;
+    bottom: 0;
+    z-index: 99;
+    left: 0;
+    right: 0;
+    margin: 0;
+  }
+  .inputs .card-header {
+    display: none
+  }
+  .inputs .card-content {
+    padding: .5em;
+  }
+  .inputs .card-content .column:first-child {
+    padding-bottom: 0;
+  }
+  .inputs label {
+    display: none;
+  }
+  .inputs .columns:last-child {
+    display: flex!important;
+  }
+  .inputs .columns:last-child svg{
+    margin-right: 0!important;
+  }
+  .inputs .columns:last-child span{
+    display: none;
+  }
+  /* answer */
+  .answer {
+    margin: -2em 0 245px 0;
+  }
 }
 
 /****************
 ***** MODE ******
 *****************/
-.tabs li:first-child {
-  margin-top: 0.25em!important;
-}
-li.is-active a {
-  color: #00d1b2!important;
-  border-bottom-color: #00d1b2!important;
+
+.select, .select select {
+  width: 100%;
 }

@@ -45,7 +45,6 @@ class RequestsSongs {
                 return rp(`http://lyrics.wikia.com/wiki/${Help.toFullUpper(band)}`)
                     .then((body) => { return Parse.randomSong(body, band) })
                     .catch((e) => {
-                        console.log(e)
                         throw "Band or random song not found"
                     })
             })
