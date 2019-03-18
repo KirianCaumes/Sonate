@@ -1,6 +1,6 @@
 import React from 'react';
 
-class Timer extends React.Component {
+export default class Timer extends React.Component {
     constructor(props) {
         super(props)
         let a = this.props.time.split(':')
@@ -20,6 +20,13 @@ class Timer extends React.Component {
     }
 
     componentDidMount() {
+        this.setState({
+            timer: {
+                sec: parseInt(this.state.timeRemaining % 60, 10),
+                min: parseInt(this.state.timeRemaining / 60, 10)
+            },
+            timeRemaining: this.state.timeRemaining-1
+        })
         this.timerInterval = setInterval(() => {
             if (this.state.isOn){
                 this.setState({
@@ -56,5 +63,3 @@ class Timer extends React.Component {
         )
     }
 }
-
-export default Timer

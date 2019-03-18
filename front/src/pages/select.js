@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import '../App.css';
-import $ from 'jquery'
 import 'react-bulma-components/dist/react-bulma-components.min.css'
 import { Columns, Loader, Button } from 'react-bulma-components'
 import {
@@ -18,25 +17,26 @@ import {
 import Card from 'react-bulma-components/lib/components/card';
 import Container from 'react-bulma-components/lib/components/container';
 import Content from 'react-bulma-components/lib/components/content';
-import Game from './game';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Icon from 'react-bulma-components/lib/components/icon'
 
-import { BrowserRouter as Router, Route, Link } from "react-router-dom"
-
 import DATAS from "../datas/modes.json"
+import LEVELS from "../datas/level.json"
 
 export default class SelectMode extends Component {
-    settings = DATAS.find(x => x.name == this.props.match.params.modeId)
     constructor(props) {
         super(props)
+        this.settings = DATAS.find(x => x.name == this.props.match.params.modeId)
+        this.levels = LEVELS
+        console.log(this.levels.find(x=> x.name == "perso").songs)
         this.state = {
             title: undefined,
             artist: undefined,
             album: undefined,
             yearAlbum: undefined,
-            time: "01:00",
-            songs: 1,
+            time: this.levels.find(x=> x.name == "perso").time,
+            songs: this.levels.find(x=> x.name == "perso").songs,
+            level: "perso",
             error: {
                 title: false,
                 artist: false,
@@ -45,7 +45,6 @@ export default class SelectMode extends Component {
                 time: false,
                 songs: false
             }
-
         }
     }
 
@@ -90,9 +89,9 @@ export default class SelectMode extends Component {
                 <Columns>
                     <Columns.Column>
                         <Card>
-                            <Card.Header>
+                            {/* <Card.Header>
                                 <Card.Header.Title>Remplissez précisément les informations</Card.Header.Title>
-                            </Card.Header>
+                            </Card.Header> */}
                             <Card.Content>
                                 <Content>
                                     <h2 className="title is-4">Parametres</h2>
@@ -101,7 +100,7 @@ export default class SelectMode extends Component {
                                             this.settings.inputsSelect.artist ?
                                                 <Columns.Column>
                                                     <Field>
-                                                        <Label>Groupe</Label>
+                                                        <Label className="required">Groupe</Label>
                                                         <Control iconLeft>
                                                             <Input
                                                                 type="text"
@@ -124,7 +123,7 @@ export default class SelectMode extends Component {
                                             this.settings.inputsSelect.title ?
                                                 <Columns.Column>
                                                     <Field>
-                                                        <Label>Titre</Label>
+                                                        <Label className="required">Titre</Label>
                                                         <Control iconLeft>
                                                             <Input
                                                                 type="text"
@@ -198,6 +197,24 @@ export default class SelectMode extends Component {
                                 <Content>
                                     <h2 className="title is-4">Options</h2>
                                     <Columns>
+                                        <Columns.Column>
+                                            <Field>
+                                                <Label>Niveau</Label>
+                                                <Control iconLeft>
+                                                    <div className="select">
+                                                        <select defaultValue={this.state.level} onChange={(e) => this.setState({ level: e.target.value, time: this.levels.find(x => x.name == e.target.value).time, songs: this.levels.find(x => x.name == e.target.value).songs })}>
+                                                            <option value="short">Court</option>
+                                                            <option value="medium">Moyen</option>
+                                                            <option value="long">Long</option>
+                                                            <option value="perso">Personalisé</option>
+                                                        </select>
+                                                    </div>
+                                                    <Icon align="left">
+                                                        <FontAwesomeIcon icon="hand-pointer" />
+                                                    </Icon>
+                                                </Control>
+                                            </Field>
+                                        </Columns.Column>
                                         {
                                             this.settings.inputsOptions.time ?
                                                 <Columns.Column>
@@ -211,6 +228,7 @@ export default class SelectMode extends Component {
                                                                 value={this.state.time}
                                                                 onKeyPress={e => e.key == 'Enter' ? this.send() : ''}
                                                                 color={this.state.error.time ? "danger" : ''}
+                                                                disabled={this.state.level != "perso"}
                                                             />
                                                             <Icon align="left">
                                                                 <FontAwesomeIcon icon="clock" />
@@ -234,6 +252,7 @@ export default class SelectMode extends Component {
                                                                 value={this.state.songs}
                                                                 onKeyPress={e => e.key == 'Enter' ? this.send() : ''}
                                                                 color={this.state.error.songs ? "danger" : ''}
+                                                                disabled={this.state.level != "perso"}
                                                             />
                                                             <Icon align="left">
                                                                 <FontAwesomeIcon icon="hand-paper" />

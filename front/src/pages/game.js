@@ -7,11 +7,6 @@ import {
     Field,
     Control,
     Label,
-    Input,
-    Textarea,
-    Select,
-    Checkbox,
-    Radio,
     Help,
 } from 'react-bulma-components/lib/components/form';
 import Content from 'react-bulma-components/lib/components/content';
@@ -23,19 +18,19 @@ import Heading from 'react-bulma-components/lib/components/heading';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Icon from 'react-bulma-components/lib/components/icon'
 import Modal from 'react-bulma-components/lib/components/modal';
-import Section from 'react-bulma-components/lib/components/section';
 
 // import ReactStopwatch from 'react-stopwatch';
-import Timer from '../helpers/timer'
+import Timer from '../components/timer'
 
 import DATAS from "../datas/modes.json"
 import Request from "../helpers/request"
 import Similarity from "../helpers/similarity"
 
-class Game extends Component {
+export default class Game extends Component {
     settings = DATAS.find(x => x.name == this.props.match.params.modeId)
     constructor(props) {
         super(props)
+        console.log(this.props.location.songs)
         // if (!this.props.location.title && !this.props.location.artist && !this.props.location.album && !this.props.location.yearAlbum) this.props.history.goBack()
         this.state = {
             song: {
@@ -64,11 +59,24 @@ class Game extends Component {
                 title: null,
                 artist: null
             },
-            error: false
+            error: false,
+            time: this.props.location.time || "00:59:59",
+            songs: this.props.location.songs || 999
         }
+        this.refInfos = React.createRef();
     }
     componentDidMount() {
         this.getSong()
+        window.onscroll = () => {
+            if (parseInt($('.infos').css('top'), 10) >= 1 || window.pageYOffset < 52) {
+                $('.infos').css('top', 53 - window.pageYOffset) 
+            } else {
+                $('.infos').css('top', 0)
+            }
+            // console.log($('.infos').css('top'))
+            // $('.infos').css('top', 40 - window.pageYOffset)
+
+        }
     }
 
     componentWillUnmount() {
@@ -78,6 +86,8 @@ class Game extends Component {
     }
 
     getSong() {
+        // this.refInfos.current.style.top = - window.pageYOffset
+        // $('.infos').css('top', -window.pageYOffset)
         clearTimeout(this.state.timeOut)
         this.setState({
             song: { url: null, lyricsTranslated: null, lyrics: null, title: null, artist: null, albums: [] },
@@ -156,7 +166,9 @@ class Game extends Component {
                 {
                     showAnswer: true,
                     disableAnswer: true,
-                    lyricsDisplay: this.state.song.lyricsTranslated
+                    lyricsDisplay: this.state.song.lyricsTranslated,
+                    songs: this.state.songs - 1,
+                    gameOver: this.state.songs - 1 < 1
                 }
             )
         } else {
@@ -212,7 +224,7 @@ class Game extends Component {
 
                 <Columns>
                     <Columns.Column>
-                        <Card>
+                        <Card className="lyrics">
                             <Card.Header>
                                 <Card.Header.Title>Paroles de la chanson</Card.Header.Title>
                             </Card.Header>
@@ -230,24 +242,49 @@ class Game extends Component {
                         </Card>
                     </Columns.Column>
                     <Columns.Column>
-                        <Card>
-                            <Card.Header>
-                                <Card.Header.Title>Temps restant</Card.Header.Title>
-                            </Card.Header>
-                            <Card.Content>
-                                <Content>
-                                    <Timer
-                                        time={this.props.time || "00:10:00"}
-                                        play={!this.state.loading && !this.state.showAnswer}
-                                        onDone={() => {
-                                            clearTimeout(this.state.timeOut)
-                                            this.setState({ showAnswer: true, gameOver: true, disableAnswer: true, lyricsDisplay: this.state.song.lyricsTranslated })
-                                        }}
-                                    />
-                                </Content>
-                            </Card.Content>
-                        </Card>
-                        <Card>
+                        <Columns className="infos" ref={this.refInfos}>
+                            {
+                                this.settings.inputsOptions.time ?
+                                    <Columns.Column>
+                                        <Card style={{ marginBottom: '-12.5px' }}>
+                                            <Card.Header>
+                                                <Card.Header.Title>Temps restant</Card.Header.Title>
+                                            </Card.Header>
+                                            <Card.Content>
+                                                <Content>
+                                                    <Timer
+                                                        time={this.state.time}
+                                                        play={!this.state.loading && !this.state.showAnswer}
+                                                        onDone={() => {
+                                                            clearTimeout(this.state.timeOut)
+                                                            this.setState({ showAnswer: true, gameOver: true, disableAnswer: true, lyricsDisplay: this.state.song.lyricsTranslated })
+                                                        }}
+                                                    />
+                                                </Content>
+                                            </Card.Content>
+                                        </Card>
+                                    </Columns.Column>
+                                    : ''
+                            }
+                            {
+                                this.settings.inputsOptions.songs ?
+                                    <Columns.Column>
+                                        <Card style={{ marginBottom: '-12.5px' }}>
+                                            <Card.Header>
+                                                <Card.Header.Title>Chansons restantes</Card.Header.Title>
+                                            </Card.Header>
+                                            <Card.Content>
+                                                <Content>
+                                                    <p>{this.state.songs} / {this.props.location.songs || '∞'}</p>
+                                                </Content>
+                                            </Card.Content>
+                                        </Card>
+                                    </Columns.Column>
+                                    : ''
+                            }
+
+                        </Columns>
+                        <Card className="inputs">
                             <Card.Header>
                                 <Card.Header.Title>Votre réponse</Card.Header.Title>
                             </Card.Header>
@@ -269,7 +306,7 @@ class Game extends Component {
                                                                     clearInterval(this.state.timeOutAnswer.artist)
                                                                     this.state.timeOutAnswer.artist = setTimeout(() => { this.check() }, 500)
                                                                 }}
-                                                                onKeyPress={e => { if (e.key == 'Enter') this.check(); }}
+                                                                onKeyPress={e => { if (e.key == 'Enter') this.check(); clearInterval(this.state.timeOutAnswer.artist); }}
                                                                 value={this.state.answer.artist}
                                                                 disabled={this.state.loading || this.state.answerValid.artist || this.state.disableAnswer}
                                                                 color={this.state.answerValid.artist ? "success" : ''}
@@ -304,7 +341,7 @@ class Game extends Component {
                                                                     clearInterval(this.state.timeOutAnswer.title)
                                                                     this.state.timeOutAnswer.title = setTimeout(() => { this.check() }, 500)
                                                                 }}
-                                                                onKeyPress={e => { if (e.key == 'Enter') this.check(); }}
+                                                                onKeyPress={e => { if (e.key == 'Enter') this.check(); clearInterval(this.state.timeOutAnswer.title); }}
                                                                 value={this.state.answer.title}
                                                                 disabled={this.state.loading || this.state.answerValid.title || this.state.disableAnswer}
                                                                 color={this.state.answerValid.title ? "success" : ''}
@@ -336,8 +373,8 @@ class Game extends Component {
                                                     disabled={this.state.gameOver}
                                                 >
                                                     <FontAwesomeIcon icon="redo-alt" style={{ marginRight: '5px' }} />
-                                                    Recommencer
-                                                    </Button>
+                                                    <span>Recommencer</span>
+                                                </Button>
                                             </Columns.Column>
                                             :
                                             ''
@@ -345,13 +382,13 @@ class Game extends Component {
                                     <Columns.Column>
                                         <Button className="is-fullwidth" onClick={this.showAnswer.bind(this)} color="primary" disabled={this.state.loading || this.state.disableAnswer}>
                                             <FontAwesomeIcon icon="eye" style={{ marginRight: '5px' }} />
-                                            Réponse
+                                            <span>Réponse</span>
                                         </Button>
                                     </Columns.Column>
                                 </Columns>
                             </Card.Content>
                         </Card>
-                        <Card>
+                        <Card className="answer">
                             <Card.Content>
                                 <Media>
 
@@ -394,5 +431,3 @@ class Game extends Component {
         );
     }
 }
-
-export default Game;
