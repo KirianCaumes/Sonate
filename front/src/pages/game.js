@@ -237,7 +237,7 @@ class Game extends Component {
                             <Card.Content>
                                 <Content>
                                     <Timer
-                                        time={this.props.time || "00:00:05"}
+                                        time={this.props.time || "00:10:00"}
                                         play={!this.state.loading && !this.state.showAnswer}
                                         onDone={() => {
                                             clearTimeout(this.state.timeOut)
