@@ -3,27 +3,27 @@
 *****************/
 
 body {
-  min-height: 100vh;
-  background: #F8F8F8 !important;
+    min-height: 100vh;
+    background: #F8F8F8 !important;
 }
 
 button:active, a:active, button, a {
-  outline: 0;
+    outline: 0;
 }
 
 :focus {
-  outline: none;
+    outline: none;
 }
 
 ::-moz-focus-inner {
-  border: 0;
+    border: 0;
 }
 
 /* input required */
 
 .required:after {
-  content: " *";
-  color: #C41817;
+    content: " *";
+    color: #C41817;
 }
 
 /****************
@@ -31,11 +31,11 @@ button:active, a:active, button, a {
 *****************/
 
 @media (max-width: 1023px) {
-  .navbar-menu {
-    position: absolute;
-    width: 65%;
-    right: 0;
-  }
+    .navbar-menu {
+        position: absolute;
+        width: 65%;
+        right: 0;
+    }
 }
 
 /****************
@@ -43,83 +43,83 @@ button:active, a:active, button, a {
 *****************/
 
 .card {
-  margin: 25px 0;
+    margin: 25px 0;
 }
 
 .media-left a:not([href]) {
-  cursor: default;
+    cursor: default;
 }
 
 .media-left a[href] {
-  cursor: pointer!important;
+    cursor: pointer!important;
 }
 
 @media (max-width: 768px) {
-  /* Score and time */
-  .infos {
-    display: flex;
-    position: fixed;
-    top: 53px;
-    right: 0;
-    left: 0;
-  }
-  .infos .column {
-    padding: 0;
-  }
-  .infos .card {
-    margin: 12px 0 0 0;
-  }
-  .infos .card-header {
-    display: none
-  }
-  .infos .card-content {
-    padding: .5em;
-    text-align: center;
-  }
-  /* lyrics */
-  .lyrics {
-    margin-top: 3.5em;
-  }
-  .lyrics .card-header {
-    display: none;
-  }
-  /* inputs */
-  .inputs {
-    position: fixed!important;
-    bottom: 0;
-    z-index: 99;
-    left: 0;
-    right: 0;
-    margin: 0;
-  }
-  .inputs .card-header {
-    display: none
-  }
-  .inputs .card-content {
-    padding: .5em;
-  }
-  .inputs .card-content .column:first-child {
-    padding-bottom: 0;
-  }
-  .inputs label {
-    display: none;
-  }
-  .inputs .columns:last-child {
-    display: flex!important;
-  }
-  .inputs .control.has-icons-left .icon.is-left {
-    display: flex!important;
-  }
-  .inputs .columns:last-child svg {
-    margin-right: 0!important;
-  }
-  .inputs .columns:last-child span {
-    display: none;
-  }
-  /* answer */
-  .answer {
-    margin: -2em 0 110px 0;
-  }
+    /* Score and time */
+    .infos {
+        display: flex;
+        position: fixed;
+        top: 53px;
+        right: 0;
+        left: 0;
+    }
+    .infos .column {
+        padding: 0;
+    }
+    .infos .card {
+        margin: 12px 0 0 0;
+    }
+    .infos .card-header {
+        display: none
+    }
+    .infos .card-content {
+        padding: .5em;
+        text-align: center;
+    }
+    /* lyrics */
+    .lyrics {
+        margin-top: 3.5em;
+    }
+    .lyrics .card-header {
+        display: none;
+    }
+    /* inputs */
+    .inputs {
+        position: fixed!important;
+        bottom: 0;
+        z-index: 99;
+        left: 0;
+        right: 0;
+        margin: 0;
+    }
+    .inputs .card-header {
+        display: none
+    }
+    .inputs .card-content {
+        padding: .5em;
+    }
+    .inputs .card-content .columns:first-child .column {
+        padding-bottom: 0;
+    }
+    .inputs label {
+        display: none;
+    }
+    .inputs .columns:last-child {
+        display: flex!important;
+    }
+    .inputs .control.has-icons-left .icon.is-left {
+        display: flex!important;
+    }
+    .inputs .columns:last-child svg {
+        margin-right: 0!important;
+    }
+    .inputs .columns:last-child span {
+        display: none;
+    }
+    /* answer */
+    .answer {
+        margin: -2em 0 110px 0;
+    }
 }
 
 /****************
@@ -127,5 +127,5 @@ button:active, a:active, button, a {
 *****************/
 
 .select, .select select {
-  width: 100%;
+    width: 100%;
 }

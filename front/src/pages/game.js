@@ -60,6 +60,7 @@ class Game extends Component {
                 artist: null
             },
             error: false,
+            errorMessage: "",
             time: this.props.location.time || "00:59:59",
             songs: this.props.location.songs || 999
         }
@@ -69,13 +70,10 @@ class Game extends Component {
         this.getSong()
         window.onscroll = () => {
             if (parseInt($('.infos').css('top'), 10) >= 1 || window.pageYOffset < 52) {
-                $('.infos').css('top', 53 - window.pageYOffset) 
+                $('.infos').css('top', 53 - window.pageYOffset)
             } else {
                 $('.infos').css('top', 0)
             }
-            // console.log($('.infos').css('top'))
-            // $('.infos').css('top', 40 - window.pageYOffset)
-
         }
     }
 
@@ -86,8 +84,7 @@ class Game extends Component {
     }
 
     getSong() {
-        // this.refInfos.current.style.top = - window.pageYOffset
-        // $('.infos').css('top', -window.pageYOffset)
+        $("html, body").animate({ scrollTop: 0 }, 500);
         clearTimeout(this.state.timeOut)
         this.setState({
             song: { url: null, lyricsTranslated: null, lyrics: null, title: null, artist: null, albums: [] },
@@ -110,6 +107,7 @@ class Game extends Component {
 
         Request.send('GET', ['song', this.settings.api, getParameters], undefined,
             (data) => {
+                console.log(data)
                 this.setState({
                     song: {
                         url: data.url,
@@ -129,7 +127,7 @@ class Game extends Component {
                             album: this.props.location.album || this.state.song.albums[0].name,
                             year: this.props.location.yearAlbum || this.state.song.albums[0].year
                         })
-                        Request.send('GET', ['getArt', getParametersArt], undefined, (data) => { this.setState({ art: data.artUrl }) })
+                        Request.send('GET', ['art', getParametersArt], undefined, (data) => { this.setState({ art: data.artUrl }) })
                     }
                     if (this.bandInput) {
                         this.bandInput.focus()
@@ -138,8 +136,8 @@ class Game extends Component {
                     }
                 }
             },
-            () => {
-                this.setState({ loading: false, error: true })
+            (e) => {
+                this.setState({ loading: false, error: true, errorMessage: e.responseJSON.error })
             }
         );
 
@@ -160,7 +158,10 @@ class Game extends Component {
     check() {
         this.state.answerValid.artist = !this.settings.inputGame.artist || Similarity.isOk(this.state.answer.artist, this.state.song.artist)
         this.state.answerValid.title = !this.settings.inputGame.title || Similarity.isOk(this.state.answer.title, this.state.song.title)
+        if (this.state.answerValid.artist && this.bandInput) this.bandInput.blur(); if (this.titleInput) this.titleInput.focus()
+        if (this.state.answerValid.title && this.titleInput) this.titleInput.blur()
         if (this.state.answerValid.artist && this.state.answerValid.title) {
+            if($(window).width() < '768') $("html, body").animate({ scrollTop: $(document).height() }, 1000);
             clearTimeout(this.state.timeOut)
             this.setState(
                 {
@@ -178,6 +179,7 @@ class Game extends Component {
 
     showAnswer() {
         if (!this.state.showAnswer) {
+            if($(window).width() < '768') $("html, body").animate({ scrollTop: $(document).height() }, 1000);
             clearTimeout(this.state.timeOut)
             this.setState(
                 {
@@ -197,24 +199,27 @@ class Game extends Component {
                 <Modal show={this.state.error}>
                     <Modal.Card>
                         <Modal.Card.Head showClose={false}>
-                            <Modal.Card.Title>Erreur</Modal.Card.Title>
+                            <Modal.Card.Title>
+                                <FontAwesomeIcon icon="exclamation-triangle" style={{ marginRight: '5px' }} />
+                                Erreur
+                            </Modal.Card.Title>
                         </Modal.Card.Head>
                         <Modal.Card.Body>
-                            <p>La chanson n'à pas été trouvée.</p>
+                            <p>Un problème est survenu : <br /><b>{this.state.errorMessage}</b></p>
                         </Modal.Card.Body>
                         <Modal.Card.Foot>
                             <Button
                                 onClick={() => { window.history.back() }}
                                 color="primary"
                             >
-                                <FontAwesomeIcon icon="eye" style={{ marginRight: '5px' }} />
+                                <FontAwesomeIcon icon="chevron-left" style={{ marginRight: '5px' }} />
                                 Retour
                             </Button>
                             <Button
                                 onClick={() => { this.setState({ error: false }); this.getSong() }}
                                 color="primary"
                             >
-                                <FontAwesomeIcon icon="eye" style={{ marginRight: '5px' }} />
+                                <FontAwesomeIcon icon="redo-alt" style={{ marginRight: '5px' }} />
                                 Réessayer
                             </Button>
                         </Modal.Card.Foot>
@@ -252,14 +257,17 @@ class Game extends Component {
                                             </Card.Header>
                                             <Card.Content>
                                                 <Content>
-                                                    <Timer
-                                                        time={this.state.time}
-                                                        play={!this.state.loading && !this.state.showAnswer}
-                                                        onDone={() => {
-                                                            clearTimeout(this.state.timeOut)
-                                                            this.setState({ showAnswer: true, gameOver: true, disableAnswer: true, lyricsDisplay: this.state.song.lyricsTranslated })
-                                                        }}
-                                                    />
+                                                    <p>
+                                                        <FontAwesomeIcon icon="stopwatch" style={{ marginRight: '5px' }} />
+                                                        <Timer
+                                                            time={this.state.time}
+                                                            play={!this.state.loading && !this.state.showAnswer}
+                                                            onDone={() => {
+                                                                clearTimeout(this.state.timeOut)
+                                                                this.setState({ showAnswer: true, gameOver: true, disableAnswer: true, lyricsDisplay: this.state.song.lyricsTranslated })
+                                                            }}
+                                                        />
+                                                    </p>
                                                 </Content>
                                             </Card.Content>
                                         </Card>
@@ -275,7 +283,10 @@ class Game extends Component {
                                             </Card.Header>
                                             <Card.Content>
                                                 <Content>
-                                                    <p>{this.state.songs} / {this.props.location.songs || '∞'}</p>
+                                                    <p>
+                                                        <FontAwesomeIcon icon="hand-paper" style={{ marginRight: '5px' }} />
+                                                        {this.state.songs} / {this.props.location.songs || '∞'}
+                                                    </p>
                                                 </Content>
                                             </Card.Content>
                                         </Card>
@@ -330,12 +341,12 @@ class Game extends Component {
                                             this.settings.inputGame.title ?
                                                 <Columns.Column>
                                                     <Field>
-                                                        <Label>Titre</Label>
+                                                        <Label>Chanson</Label>
                                                         <Control iconLeft iconRight>
                                                             <input
                                                                 className="input"
                                                                 type="text"
-                                                                placeholder="Titre"
+                                                                placeholder="Chanson"
                                                                 onChange={(e) => {
                                                                     this.setState({ answer: { title: e.target.value, artist: this.state.answer.artist } })
                                                                     clearInterval(this.state.timeOutAnswer.title)
@@ -348,7 +359,7 @@ class Game extends Component {
                                                                 ref={(input) => { this.titleInput = input }}
                                                             />
                                                             <Icon align="left">
-                                                                <FontAwesomeIcon icon="font" />
+                                                                <FontAwesomeIcon icon="compact-disc" />
                                                             </Icon>
                                                             <Icon align="right">
                                                                 {this.state.answerValid.title ? <FontAwesomeIcon icon="check" /> : ''}
@@ -373,7 +384,7 @@ class Game extends Component {
                                                     disabled={this.state.gameOver}
                                                 >
                                                     <FontAwesomeIcon icon="redo-alt" style={{ marginRight: '5px' }} />
-                                                    <span>Recommencer</span>
+                                                    <span>Suivante</span>
                                                 </Button>
                                             </Columns.Column>
                                             :

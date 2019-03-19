@@ -55,11 +55,11 @@ class Timer extends React.Component {
 
     render() {
         return (
-            <p>{ 
+            <span>{ 
                 (this.state.timer.min >= 10 ? this.state.timer.min : '0' + this.state.timer.min) + 
                 ':' + 
                 (this.state.timer.sec >= 10 ? this.state.timer.sec : '0' + this.state.timer.sec)
-            }</p>
+            }</span>
         )
     }
 }

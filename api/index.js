@@ -15,7 +15,7 @@ app.get('/api/song/byname', (req, res) => {
             RequestTranslations.getTranslate(song.lyrics)
                 .then((lyricsTranslated) => {
                     res.json(
-                        {   
+                        {
                             url: song.url,
                             lyricsTranslated: lyricsTranslated,
                             lyrics: song.lyrics,
@@ -85,8 +85,8 @@ app.get('/api/song/byalbum', (req, res) => {
 });
 
 
-//ex: http://localhost:5000/api/getArt?band=in%20flames&album=come clarity&year=2006
-app.get('/api/getArt', (req, res) => {
+//ex: http://localhost:5000/api/art?band=in%20flames&album=come clarity&year=2006
+app.get('/api/art', (req, res) => {
     if (!req.query.band || !req.query.album || !req.query.year) res.status(500).json({ error: "Arguments BAND, ALBUM and YEAR are required" })
     RequestsSongs.getArt(req.query.band, req.query.album, req.query.year)
         .then((artUrl) => {
@@ -99,6 +99,24 @@ app.get('/api/getArt', (req, res) => {
         .catch((e) => res.status(500).json({ error: e }))
 });
 
+//ex: http://localhost:5000/api/clues/byBand?band=in%20flames
+app.get('/api/clues/byBand', (req, res) => {
+    if (!req.query.band) res.status(500).json({ error: "Arguments BAND is required" })
+    RequestsSongs.getClues(req.query.band, req.query.song)
+        .then((band) => {
+            res.json(
+                {
+                    country: band.country,
+                    flag: band.flag,
+                    band: band.band,
+                    styles: band.styles,
+                    members: band.members,
+                    labels: band.labels
+                }
+            );
+        })
+        .catch((e) => res.status(500).json({ error: e }))
+});
 
 app.get('*', (req, res) => {
     res.send("Sonate's Api");

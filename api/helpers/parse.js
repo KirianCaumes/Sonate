@@ -31,15 +31,48 @@ class Parse {
         return songsList[Math.floor(Math.random() * songsList.length) + 0].split(':')[1];
     }
 
-    static art(body){
+    static art(body) {
         return HTMLParser.parse(body).querySelectorAll('img.thumbborder')[0].attributes.src
     }
 
-    static googleTranslate(body){
+    static googleTranslate(body) {
         return JSON.parse(body)[0].map(x => x[0]).join('')
     }
-    static yandexTranslate(body){
+    static yandexTranslate(body) {
         return JSON.parse(body).text[0]
+    }
+
+    static clues(body) {
+        let parsedItemBody = HTMLParser.parse(body);
+        let band, flag, styles, country, members, labels
+        try {
+            let temp = parsedItemBody.querySelectorAll('table.plainlinks tr td a.image')
+            if (temp.length > 1) {
+                band = temp[0].attributes.href
+                flag = temp[1].attributes.href
+            } else {
+                flag = temp[0].attributes.href
+            }
+        } catch (e) { }
+
+        try {
+            country = parsedItemBody.querySelectorAll('table.plainlinks tr td a b')[0].innerHTML
+        } catch (e) { }
+
+        try {
+            styles = parsedItemBody.querySelectorAll('div.artist-info div.css-table-cell')[1].querySelectorAll('div')[0].querySelectorAll('ul li').map(x => x.structuredText)
+        } catch (e) { }
+
+        try {
+            labels = parsedItemBody.querySelectorAll('div.artist-info div.css-table-cell')[1].querySelectorAll('div')[1].querySelectorAll('ul li').map(x => x.structuredText)
+        } catch (e) { }
+        
+        try {
+            let i = parsedItemBody.querySelectorAll('div.artist-info div.css-table-cell p.highlight b')[0].innerHTML.includes('Band members') ? 0 : 1
+            members = parsedItemBody.querySelectorAll('div.artist-info div.css-table-cell')[0].querySelectorAll('div')[i].querySelectorAll('ul li').map(x => x.structuredText.split(' – ')[0].split(' - ')[0])
+        } catch (e) { }
+
+        return { country, flag, band, styles, members, labels }
     }
 }
 

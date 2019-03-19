@@ -123,18 +123,18 @@ export default class SelectMode extends Component {
                                             this.settings.inputsSelect.title ?
                                                 <Columns.Column>
                                                     <Field>
-                                                        <Label className="required">Titre</Label>
+                                                        <Label className="required">Chanson</Label>
                                                         <Control iconLeft>
                                                             <Input
                                                                 type="text"
-                                                                placeholder="Titre"
+                                                                placeholder="Chanson"
                                                                 onChange={(e) => this.setState({ title: e.target.value })}
                                                                 value={this.state.title}
                                                                 onKeyPress={(e) => e.key == 'Enter' ? this.send() : ''}
                                                                 color={this.state.error.title ? "danger" : ''}
                                                             />
                                                             <Icon align="left">
-                                                                <FontAwesomeIcon icon="font" />
+                                                                <FontAwesomeIcon icon="compact-disc" />
                                                             </Icon>
                                                         </Control>
                                                         {this.state.error.title ? <Help color="danger">Veuillez remplir le champs</Help> : ''}
