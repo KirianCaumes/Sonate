@@ -5,7 +5,7 @@ import 'react-bulma-components/dist/react-bulma-components.min.css'
 import Navbar from 'react-bulma-components/lib/components/navbar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-class Header extends Component {
+export default class Header extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -50,5 +50,3 @@ class Header extends Component {
         );
     }
 }
-
-export default Header;

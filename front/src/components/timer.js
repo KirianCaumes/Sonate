@@ -1,6 +1,6 @@
 import React from 'react';
 
-class Timer extends React.Component {
+export default class Timer extends React.Component {
     constructor(props) {
         super(props)
         let a = this.props.time.split(':')
@@ -63,5 +63,3 @@ class Timer extends React.Component {
         )
     }
 }
-
-export default Timer

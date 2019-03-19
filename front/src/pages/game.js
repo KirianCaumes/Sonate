@@ -26,7 +26,7 @@ import DATAS from "../datas/modes.json"
 import Request from "../helpers/request"
 import Similarity from "../helpers/similarity"
 
-class Game extends Component {
+export default class Game extends Component {
     settings = DATAS.find(x => x.name == this.props.match.params.modeId)
     constructor(props) {
         super(props)
@@ -442,5 +442,3 @@ class Game extends Component {
         );
     }
 }
-
-export default Game;
