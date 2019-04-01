@@ -31,22 +31,22 @@ export default class Index extends Component {
                                     <h2 className="title is-4"><FontAwesomeIcon style={{ marginRight: '5px' }} icon="compact-disc" />Chanson</h2>
                                     <Columns>
                                         <Columns.Column>
-                                            <Link to={{ pathname: '/select/byname' }} >
+                                            <Link to={{ pathname: '/mode/nom' }} >
                                                 <Button color="primary" className="is-fullwidth">Une chanson</Button>
                                             </Link>
                                         </Columns.Column>
                                     </Columns>
 
-                                    <h2 className="title is-4"><FontAwesomeIcon style={{ marginRight: '5px' }} icon="users" /> Groupe</h2>
+                                    <h2 className="title is-4"><FontAwesomeIcon style={{ marginRight: '5px' }} icon="users" />Groupe ou artiste</h2>
                                     <Columns>
                                         <Columns.Column>
-                                            <Link to={{ pathname: '/select/byband' }} >
-                                                <Button color="primary" className="is-fullwidth">Un artiste</Button>
+                                            <Link to={{ pathname: '/mode/groupe' }} >
+                                                <Button color="primary" className="is-fullwidth">Un groupe</Button>
                                             </Link>
                                         </Columns.Column>
                                         <Columns.Column>
-                                            <Link to={{ pathname: '/select/byalbum' }} >
-                                                <Button color="primary" className="is-fullwidth">Un artiste & un album</Button>
+                                            <Link to={{ pathname: '/mode/album' }} >
+                                                <Button color="primary" className="is-fullwidth">Un groupe & un album</Button>
                                             </Link>
                                         </Columns.Column>
                                     </Columns>

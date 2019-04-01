@@ -18,20 +18,23 @@ import Icon from 'react-bulma-components/lib/components/icon'
 
 import DATAS from "../datas/modes.json"
 import LEVELS from "../datas/level.json"
+import Country from '../helpers/country';
 
 export default class SelectMode extends Component {
     constructor(props) {
         super(props)
         this.settings = DATAS.find(x => x.name === this.props.match.params.modeId)
         this.levels = LEVELS
+        this.langs = Country.getLang()
         this.state = {
             title: undefined,
             artist: undefined,
             album: undefined,
             yearAlbum: undefined,
-            time: this.levels.find(x=> x.name === "perso").time,
-            songs: this.levels.find(x=> x.name === "perso").songs,
+            time: this.levels.find(x => x.name === "perso").time,
+            songs: this.levels.find(x => x.name === "perso").songs,
             level: "perso",
+            lang: "fr",            
             error: {
                 title: false,
                 artist: false,
@@ -67,13 +70,14 @@ export default class SelectMode extends Component {
                 }
             })
             this.props.history.push({
-                pathname: "/game/" + this.props.match.params.modeId,
+                pathname: "/jeu/" + this.props.match.params.modeId,
                 title: this.state.title,
                 artist: this.state.artist,
                 album: this.state.album,
                 yearAlbum: this.state.yearAlbum,
                 time: this.state.time,
-                songs: this.state.songs
+                songs: this.state.songs,
+                lang: this.state.lang,
             })
         }
     }
@@ -92,14 +96,14 @@ export default class SelectMode extends Component {
                                     <h2 className="title is-4">Parametres</h2>
                                     <Columns>
                                         {
-                                            this.settings.inputsSelect.artist ?
+                                            this.settings && this.settings.inputsSelect.artist ?
                                                 <Columns.Column>
                                                     <Field>
-                                                        <Label className="required">Groupe</Label>
+                                                        <Label className="required">Groupe ou artiste</Label>
                                                         <Control iconLeft>
                                                             <Input
                                                                 type="text"
-                                                                placeholder="Groupe"
+                                                                placeholder="Groupe ou artiste"
                                                                 onChange={(e) => this.setState({ artist: e.target.value })}
                                                                 value={this.state.artist}
                                                                 onKeyPress={e => e.key === 'Enter' ? this.send() : ''}
@@ -115,7 +119,7 @@ export default class SelectMode extends Component {
                                                 : ''
                                         }
                                         {
-                                            this.settings.inputsSelect.title ?
+                                            this.settings && this.settings.inputsSelect.title ?
                                                 <Columns.Column>
                                                     <Field>
                                                         <Label className="required">Chanson</Label>
@@ -140,7 +144,7 @@ export default class SelectMode extends Component {
                                     </Columns>
                                     <Columns>
                                         {
-                                            this.settings.inputsSelect.album ?
+                                            this.settings && this.settings.inputsSelect.album ?
                                                 <Columns.Column>
                                                     <Field>
                                                         <Label>Album</Label>
@@ -163,7 +167,7 @@ export default class SelectMode extends Component {
                                                 : ''
                                         }
                                         {
-                                            this.settings.inputsSelect.yearAlbum ?
+                                            this.settings && this.settings.inputsSelect.yearAlbum ?
                                                 <Columns.Column>
                                                     <Field>
                                                         <Label>Année de se sortie de l'album</Label>
@@ -194,7 +198,7 @@ export default class SelectMode extends Component {
                                     <Columns>
                                         <Columns.Column>
                                             <Field>
-                                                <Label>Niveau</Label>
+                                                <Label className="required">Niveau</Label>
                                                 <Control iconLeft>
                                                     <div className="select">
                                                         <select defaultValue={this.state.level} onChange={(e) => this.setState({ level: e.target.value, time: this.levels.find(x => x.name === e.target.value).time, songs: this.levels.find(x => x.name === e.target.value).songs })}>
@@ -211,10 +215,10 @@ export default class SelectMode extends Component {
                                             </Field>
                                         </Columns.Column>
                                         {
-                                            this.settings.inputsOptions.time ?
+                                            this.settings && this.settings.inputsOptions.time ?
                                                 <Columns.Column>
                                                     <Field>
-                                                        <Label>Temps maximum</Label>
+                                                        <Label className="required">Temps maximum</Label>
                                                         <Control iconLeft>
                                                             <Input
                                                                 type="time"
@@ -235,10 +239,10 @@ export default class SelectMode extends Component {
                                                 : ''
                                         }
                                         {
-                                            this.settings.inputsOptions.songs ?
+                                            this.settings && this.settings.inputsOptions.songs ?
                                                 <Columns.Column>
                                                     <Field>
-                                                        <Label>Chansons maximum</Label>
+                                                        <Label className="required">Chansons maximum</Label>
                                                         <Control iconLeft>
                                                             <Input
                                                                 type="number"
@@ -258,6 +262,28 @@ export default class SelectMode extends Component {
                                                 </Columns.Column>
                                                 : ''
                                         }
+                                        <Columns.Column>
+                                            <Field>
+                                                <Label className="required">Langue</Label>
+                                                <Control iconLeft>
+                                                    <div className="select">
+                                                        <select
+                                                            defaultValue={this.state.lang}
+                                                            onChange={(e) => this.setState({ lang: e.target.value })}>
+                                                            {
+                                                                this.langs.map(e => (
+                                                                    <option key={e.short} value={e.short}>{e.long}</option>
+                                                                ))
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                    <Icon align="left">
+                                                        <FontAwesomeIcon icon="globe" />
+                                                    </Icon>
+                                                </Control>
+                                                {this.state.error.songs ? <Help color="danger">Veuillez remplir le champs</Help> : ''}
+                                            </Field>
+                                        </Columns.Column>
                                     </Columns>
                                     <Button
                                         color="primary"

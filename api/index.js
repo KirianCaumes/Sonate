@@ -7,12 +7,12 @@ const RequestTranslations = require('./requests/translations')
 
 app.use(cors())
 
-//ex: http://localhost:5000/api/song/byname?song=abnegation&band=in%20flames
+//ex: http://localhost:5000/api/song/byname?song=abnegation&band=in%20flames&lang=fr
 app.get('/api/song/byname', (req, res) => {
-    if (!req.query.band || !req.query.song) res.status(500).json({ error: "Arguments SONG and BAND are required" })
+    if (!req.query.band || !req.query.song || !req.query.lang) res.status(500).json({ error: "Arguments SONG, BAND and LANG are required" })
     RequestsSongs.getLyrics(req.query.band, req.query.song)
         .then((song) => {
-            RequestTranslations.getTranslate(song.lyrics)
+            RequestTranslations.getTranslate(song.lyrics, req.query.lang)
                 .then((lyricsTranslated) => {
                     res.json(
                         {
@@ -30,14 +30,14 @@ app.get('/api/song/byname', (req, res) => {
         .catch((e) => res.status(500).json({ error: e }))
 });
 
-//ex: http://localhost:5000/api/song/byband?band=in%20flames
+//ex: http://localhost:5000/api/song/byband?band=in%20flames&lang=fr
 app.get('/api/song/byband', (req, res) => {
-    if (!req.query.band) res.status(500).json({ error: "Argument BAND is required" })
+    if (!req.query.band || !req.query.lang) res.status(500).json({ error: "Argument BAND and LANG are required" })
     RequestsSongs.getRandomSongNameByBand(req.query.band)
         .then((songName) => {
             RequestsSongs.getLyrics(req.query.band, songName)
                 .then((song) => {
-                    RequestTranslations.getTranslate(song.lyrics)
+                    RequestTranslations.getTranslate(song.lyrics, req.query.lang)
                         .then((lyricsTranslated) => {
                             res.json(
                                 {
@@ -57,14 +57,14 @@ app.get('/api/song/byband', (req, res) => {
         .catch((e) => res.status(500).json({ error: e }))
 });
 
-//ex: http://localhost:5000/api/song/byalbum?band=in%20flames&album=come clarity&year=2006
+//ex: http://localhost:5000/api/song/byalbum?band=in%20flames&album=come%20clarity&year=2006&lang=fr
 app.get('/api/song/byalbum', (req, res) => {
-    if (!req.query.band || !req.query.album || !req.query.year) res.status(500).json({ error: "Arguments BAND, ALBUM and YEAR are required" })
+    if (!req.query.band || !req.query.album || !req.query.year || !req.query.lang) res.status(500).json({ error: "Arguments BAND, ALBUM, YEAR and LANG are required" })
     RequestsSongs.getRandomSongNameByAlbum(req.query.band, req.query.album, req.query.year)
         .then((songName) => {
             RequestsSongs.getLyrics(req.query.band, songName)
                 .then((song) => {
-                    RequestTranslations.getTranslate(song.lyrics)
+                    RequestTranslations.getTranslate(song.lyrics, req.query.lang)
                         .then((lyricsTranslated) => {
                             res.json(
                                 {
@@ -85,7 +85,7 @@ app.get('/api/song/byalbum', (req, res) => {
 });
 
 
-//ex: http://localhost:5000/api/art?band=in%20flames&album=come clarity&year=2006
+//ex: http://localhost:5000/api/art?band=in%20flames&album=come%20clarity&year=2006
 app.get('/api/art', (req, res) => {
     if (!req.query.band || !req.query.album || !req.query.year) res.status(500).json({ error: "Arguments BAND, ALBUM and YEAR are required" })
     RequestsSongs.getArt(req.query.band, req.query.album, req.query.year)
@@ -119,7 +119,7 @@ app.get('/api/clues', (req, res) => {
 });
 
 app.get('*', (req, res) => {
-    res.send("Sonate's Api");
+    res.status(500).send("Sonate's Api");
 });
 
 const port = process.env.PORT || 5000;

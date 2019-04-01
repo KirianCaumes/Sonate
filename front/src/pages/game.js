@@ -28,9 +28,9 @@ import Similarity from "../helpers/similarity"
 import Country from "../helpers/country"
 
 export default class Game extends Component {
-    settings = DATAS.find(x => x.name === this.props.match.params.modeId)
     constructor(props) {
         super(props)
+        this.settings = DATAS.find(x => x.name === this.props.match.params.modeId)
         // if (!this.props.location.title && !this.props.location.artist && !this.props.location.album && !this.props.location.yearAlbum) this.props.history.goBack()
         this.state = {
             song: {
@@ -76,7 +76,7 @@ export default class Game extends Component {
         }
     }
     componentDidMount() {
-        this.getSong()
+        if(this.settings) this.getSong()
         document.addEventListener('scroll', this.listenScroll(), false)
     }
 
@@ -117,7 +117,8 @@ export default class Game extends Component {
             song: this.props.location.title || "",
             band: this.props.location.artist || "in flames",
             album: this.props.location.album || "",
-            year: this.props.location.yearAlbum || ""
+            year: this.props.location.yearAlbum || "",
+            lang: this.props.location.lang || "fr",
         })
 
         Request.send('GET', ['song', this.settings.api, getParameters], undefined,
@@ -134,7 +135,8 @@ export default class Game extends Component {
                             artist: data.artist,
                             albums: data.albums
                         },
-                        loading: false
+                        loading: false,
+                        displayHints: [false, false]
                     })
                     if (this.state.song.lyricsTranslated && data.lyrics !== "♪") {
                         this.showText(this.state.song.lyricsTranslated, 0, 80)
@@ -164,7 +166,7 @@ export default class Game extends Component {
                         } else {
                             this.titleInput.focus()
                         }
-                    } else {                        
+                    } else {
                         this.setState({
                             lyricsDisplay: "<i>♪ Cette chanson ne contient pas de paroles ♪</i>"
                         })
@@ -257,7 +259,7 @@ export default class Game extends Component {
                     keys.splice(keys.indexOf('flag'), 1)
                     break
                 case "band":
-                    title = "Photo du groupe :"
+                    title = "Photo du groupe/artiste :"
                     content = <p><img src={this.state.hints.band || ""} alt="band" /></p>
                     keys.splice(keys.indexOf('band'), 1)
                     break
@@ -363,7 +365,7 @@ export default class Game extends Component {
                     <Columns.Column>
                         <Columns className="infos">
                             {
-                                this.settings.inputsOptions.time ?
+                                this.settings && this.settings.inputsOptions.time ?
                                     <Columns.Column>
                                         <Card style={{ marginBottom: '-12.5px' }}>
                                             <Card.Header>
@@ -389,7 +391,7 @@ export default class Game extends Component {
                                     : ''
                             }
                             {
-                                this.settings.inputsOptions.songs ?
+                                this.settings && this.settings.inputsOptions.songs ?
                                     <Columns.Column>
                                         <Card style={{ marginBottom: '-12.5px' }}>
                                             <Card.Header>
@@ -417,15 +419,15 @@ export default class Game extends Component {
                                 <Content style={{ marginBottom: '.75rem' }}>
                                     <Columns>
                                         {
-                                            this.settings.inputGame.artist ?
+                                            this.settings && this.settings.inputGame.artist ?
                                                 <Columns.Column>
                                                     <Field>
-                                                        <Label>Groupe</Label>
+                                                        <Label>Groupe ou artiste</Label>
                                                         <Control iconLeft iconRight>
                                                             <input
                                                                 className={`input ${this.state.answerValid.artist ? 'is-success' : ''}`}
                                                                 type="text"
-                                                                placeholder="Groupe"
+                                                                placeholder="Groupe ou artiste"
                                                                 onChange={(e) => {
                                                                     this.setState({ answer: { artist: e.target.value, title: this.state.answer.title } })
                                                                     clearInterval(this.state.timeOutAnswer.artist)
@@ -457,7 +459,7 @@ export default class Game extends Component {
                                                 ''
                                         }
                                         {
-                                            this.settings.inputGame.title ?
+                                            this.settings && this.settings.inputGame.title ?
                                                 <Columns.Column>
                                                     <Field>
                                                         <Label>Chanson</Label>
@@ -499,7 +501,7 @@ export default class Game extends Component {
                                 </Content>
                                 <Columns>
                                     {
-                                        this.settings.name !== "byname" ?
+                                        this.settings && this.settings.name !== "byname" ?
                                             <Columns.Column>
                                                 <Button
                                                     className={`is-fullwidth ${this.state.loading ? 'is-loading' : ''}`}
@@ -528,23 +530,23 @@ export default class Game extends Component {
                                 <Media>
 
                                     <Media.Item position="left">
-                                        <a href={this.settings.infosGame.album || this.state.showAnswer ? this.state.song.url : null} target="_blank" rel="noopener noreferrer">
+                                        <a href={(this.settings && this.settings.infosGame.album) || this.state.showAnswer ? this.state.song.url : null} target="_blank" rel="noopener noreferrer">
                                             <Image
                                                 size={128}
-                                                src={this.settings.infosGame.album || this.state.showAnswer ? this.state.art : null}
+                                                src={(this.settings && this.settings.infosGame.album) || this.state.showAnswer ? this.state.art : null}
                                                 style={{ background: 'rgba(0,0,0,0.15)', boxShadow: '0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)', overflow: 'hidden' }}
                                             />
                                         </a>
                                     </Media.Item>
                                     <Media.Item>
                                         <Heading size={4} style={{ textTransform: 'uppercase' }}>
-                                            {this.settings.infosGame.artist || this.state.showAnswer ? this.state.song.artist || this.props.location.artist || '?' : '?'}
+                                            {(this.settings && this.settings.infosGame.artist) || this.state.showAnswer ? this.state.song.artist || this.props.location.artist || '?' : '?'}
                                         </Heading>
                                         <Heading subtitle size={5} style={{ textTransform: 'capitalize' }}>
-                                            {this.settings.infosGame.title || this.state.showAnswer ? this.state.song.title : '?'}
+                                            {(this.settings && this.settings.infosGame.title) || this.state.showAnswer ? this.state.song.title : '?'}
                                         </Heading>
                                         <Heading subtitle size={6} style={{ textTransform: 'capitalize' }}>
-                                            {this.settings.infosGame.album ?
+                                            {this.settings && this.settings.infosGame.album ?
                                                 this.props.location.album + " - " + this.props.location.yearAlbum
                                                 :
                                                 this.state.showAnswer && this.state.song.albums.length ?

@@ -9,15 +9,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import logo from '../static/music_notes.png'
 
 export default class Error extends Component {
-    constructor() {
-        super()
-        this.state = {
-        }
-    }
-    componentDidMount() {
-
-    }
-
     render() {
         return (
             <Container>
@@ -27,12 +18,12 @@ export default class Error extends Component {
                             <Card.Content >
                                 <h1 className="title is-3 has-text-centered">Erreur 404</h1>
                                 <Button
-                                    onClick={() => { window.history.back() }}
+                                    onClick={() => this.props.history.push('/')}
                                     color="primary"
-                                    style={{ margin: '0 auto',  display: 'block' }}
+                                    style={{ margin: '0 auto', display: 'block' }}
                                 >
-                                    <FontAwesomeIcon icon="chevron-left" style={{ marginRight: '5px' }} />
-                                Retour
+                                    <FontAwesomeIcon icon="home" style={{ marginRight: '5px' }} />
+                                    Accueil
                                 </Button>
                             </Card.Content>
                         </Card>

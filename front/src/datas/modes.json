@@ -1,6 +1,6 @@
 [
     {
-        "name": "byname",
+        "name": "nom",
         "inputsSelect": {
             "title": true,
             "artist": true,
@@ -26,7 +26,7 @@
         }
     },
     {
-        "name": "byband",
+        "name": "groupe",
         "inputsSelect": {
             "title": false,
             "artist": true,
@@ -52,7 +52,7 @@
         }
     },
     {
-        "name": "byalbum",
+        "name": "album",
         "inputsSelect": {
             "title": false,
             "artist": true,
