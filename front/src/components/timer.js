@@ -16,7 +16,9 @@ export default class Timer extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.state.isOn = nextProps.play
+        this.setState({
+            isOn: nextProps.play
+        })
     }
 
     componentDidMount() {

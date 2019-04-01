@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import '../App.css';
-import { Link } from "react-router-dom"
 import 'react-bulma-components/dist/react-bulma-components.min.css'
 import { Columns, Button } from 'react-bulma-components'
 import Card from 'react-bulma-components/lib/components/card';
 import Container from 'react-bulma-components/lib/components/container';
-import Content from 'react-bulma-components/lib/components/content';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import Image from 'react-bulma-components/lib/components/image'
 // import logo from '../static/music_notes.png'

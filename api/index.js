@@ -99,8 +99,8 @@ app.get('/api/art', (req, res) => {
         .catch((e) => res.status(500).json({ error: e }))
 });
 
-//ex: http://localhost:5000/api/clues/byBand?band=in%20flames
-app.get('/api/clues/byBand', (req, res) => {
+//ex: http://localhost:5000/api/clues?band=in%20flames
+app.get('/api/clues', (req, res) => {
     if (!req.query.band) res.status(500).json({ error: "Arguments BAND is required" })
     RequestsSongs.getClues(req.query.band, req.query.song)
         .then((band) => {

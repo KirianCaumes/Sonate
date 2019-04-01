@@ -1,16 +1,12 @@
 import React, { Component } from 'react';
 import '../App.css';
 import 'react-bulma-components/dist/react-bulma-components.min.css'
-import { Columns, Loader, Button } from 'react-bulma-components'
+import { Columns, Button } from 'react-bulma-components'
 import {
     Field,
     Control,
     Label,
     Input,
-    Textarea,
-    Select,
-    Checkbox,
-    Radio,
     Help,
 } from 'react-bulma-components/lib/components/form';
 
@@ -26,16 +22,15 @@ import LEVELS from "../datas/level.json"
 export default class SelectMode extends Component {
     constructor(props) {
         super(props)
-        this.settings = DATAS.find(x => x.name == this.props.match.params.modeId)
+        this.settings = DATAS.find(x => x.name === this.props.match.params.modeId)
         this.levels = LEVELS
-        console.log(this.levels.find(x=> x.name == "perso").songs)
         this.state = {
             title: undefined,
             artist: undefined,
             album: undefined,
             yearAlbum: undefined,
-            time: this.levels.find(x=> x.name == "perso").time,
-            songs: this.levels.find(x=> x.name == "perso").songs,
+            time: this.levels.find(x=> x.name === "perso").time,
+            songs: this.levels.find(x=> x.name === "perso").songs,
             level: "perso",
             error: {
                 title: false,
@@ -107,7 +102,7 @@ export default class SelectMode extends Component {
                                                                 placeholder="Groupe"
                                                                 onChange={(e) => this.setState({ artist: e.target.value })}
                                                                 value={this.state.artist}
-                                                                onKeyPress={e => e.key == 'Enter' ? this.send() : ''}
+                                                                onKeyPress={e => e.key === 'Enter' ? this.send() : ''}
                                                                 color={this.state.error.artist ? "danger" : ''}
                                                             />
                                                             <Icon align="left">
@@ -130,7 +125,7 @@ export default class SelectMode extends Component {
                                                                 placeholder="Chanson"
                                                                 onChange={(e) => this.setState({ title: e.target.value })}
                                                                 value={this.state.title}
-                                                                onKeyPress={(e) => e.key == 'Enter' ? this.send() : ''}
+                                                                onKeyPress={(e) => e.key === 'Enter' ? this.send() : ''}
                                                                 color={this.state.error.title ? "danger" : ''}
                                                             />
                                                             <Icon align="left">
@@ -155,7 +150,7 @@ export default class SelectMode extends Component {
                                                                 placeholder="Album"
                                                                 onChange={(e) => this.setState({ album: e.target.value })}
                                                                 value={this.state.album}
-                                                                onKeyPress={(e) => e.key == 'Enter' ? this.send() : ''}
+                                                                onKeyPress={(e) => e.key === 'Enter' ? this.send() : ''}
                                                                 color={this.state.error.album ? "danger" : ''}
                                                             />
                                                             <Icon align="left">
@@ -178,7 +173,7 @@ export default class SelectMode extends Component {
                                                                 placeholder="Année de l'album"
                                                                 onChange={(e) => this.setState({ yearAlbum: e.target.value })}
                                                                 value={this.state.yearAlbum}
-                                                                onKeyPress={(e) => e.key == 'Enter' ? this.send() : ''}
+                                                                onKeyPress={(e) => e.key === 'Enter' ? this.send() : ''}
                                                                 color={this.state.error.yearAlbum ? "danger" : ''}
                                                             />
                                                             <Icon align="left">
@@ -202,7 +197,7 @@ export default class SelectMode extends Component {
                                                 <Label>Niveau</Label>
                                                 <Control iconLeft>
                                                     <div className="select">
-                                                        <select defaultValue={this.state.level} onChange={(e) => this.setState({ level: e.target.value, time: this.levels.find(x => x.name == e.target.value).time, songs: this.levels.find(x => x.name == e.target.value).songs })}>
+                                                        <select defaultValue={this.state.level} onChange={(e) => this.setState({ level: e.target.value, time: this.levels.find(x => x.name === e.target.value).time, songs: this.levels.find(x => x.name === e.target.value).songs })}>
                                                             <option value="short">Court</option>
                                                             <option value="medium">Moyen</option>
                                                             <option value="long">Long</option>
@@ -226,9 +221,9 @@ export default class SelectMode extends Component {
                                                                 placeholder="Temps"
                                                                 onChange={(e) => this.setState({ time: e.target.value })}
                                                                 value={this.state.time}
-                                                                onKeyPress={e => e.key == 'Enter' ? this.send() : ''}
+                                                                onKeyPress={e => e.key === 'Enter' ? this.send() : ''}
                                                                 color={this.state.error.time ? "danger" : ''}
-                                                                disabled={this.state.level != "perso"}
+                                                                disabled={this.state.level !== "perso"}
                                                             />
                                                             <Icon align="left">
                                                                 <FontAwesomeIcon icon="clock" />
@@ -250,9 +245,9 @@ export default class SelectMode extends Component {
                                                                 placeholder="Chansons"
                                                                 onChange={(e) => this.setState({ songs: e.target.value })}
                                                                 value={this.state.songs}
-                                                                onKeyPress={e => e.key == 'Enter' ? this.send() : ''}
+                                                                onKeyPress={e => e.key === 'Enter' ? this.send() : ''}
                                                                 color={this.state.error.songs ? "danger" : ''}
-                                                                disabled={this.state.level != "perso"}
+                                                                disabled={this.state.level !== "perso"}
                                                             />
                                                             <Icon align="left">
                                                                 <FontAwesomeIcon icon="hand-paper" />

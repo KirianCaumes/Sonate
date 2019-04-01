@@ -3,6 +3,18 @@
 *****************/
 
 body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+body {
     min-height: 100vh;
     background: #F8F8F8 !important;
 }
@@ -113,7 +125,7 @@ button:active, a:active, button, a {
     .inputs .columns:last-child svg {
         margin-right: 0!important;
     }
-    .inputs .columns:last-child span {
+    .inputs .columns:last-child span:not(.icon) {
         display: none;
     }
     /* answer */

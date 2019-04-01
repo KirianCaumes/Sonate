@@ -28,7 +28,7 @@ export default class Index extends Component {
                         <Card>
                             <Card.Content >
                                 {/* <Image src={logo} style={{ maxWidth: '350px', margin: '0 auto' }} /> */}
-                                    <h1 className="title is-3 has-text-centered">~ Sonate ~</h1>
+                                <h1 className="title is-3 has-text-centered">♪ Sonate ♪</h1>
                             </Card.Content>
                         </Card>
                         <Card>

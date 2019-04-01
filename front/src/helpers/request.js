@@ -8,16 +8,15 @@ export default class Request {
             error = (data) => {
                 switch (data.status) {
                     case 401:
-                        console.log("something bad happend :'(")
+                        console.error("something bad happend :'(")
                         break;
                     default:
-                        console.log("something bad happend :'(")
+                        console.error("something bad happend :'(")
                 }
             };
 
-        if (success === undefined)
-            success = (data) => { console.log(data) };
-        console.log(url.join("/"))
+        if (success === undefined) success = (data) => console.log(data)
+
         return $.ajax({
             crossDomain: true,
             url: url.join("/"),
@@ -32,7 +31,7 @@ export default class Request {
     static toQueryData(data) {
         let res = [];
         for (let i in data) {
-            res.push(encodeURI(i) + '=' + encodeURI(data[i]).replace(/\&/g, "%26").replace(/\?/g, "%3F"));
+            res.push(encodeURI(i) + '=' + encodeURI(data[i]).replace(/&/g, "%26").replace(/\?/g, "%3F"));
         }
         return '?' + res.join('&');
     }

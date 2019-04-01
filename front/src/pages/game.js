@@ -19,18 +19,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Icon from 'react-bulma-components/lib/components/icon'
 import Modal from 'react-bulma-components/lib/components/modal';
 
-// import ReactStopwatch from 'react-stopwatch';
 import Timer from '../components/timer'
+import Popover from '../components/popover'
 
 import DATAS from "../datas/modes.json"
 import Request from "../helpers/request"
 import Similarity from "../helpers/similarity"
+import Country from "../helpers/country"
 
 export default class Game extends Component {
-    settings = DATAS.find(x => x.name == this.props.match.params.modeId)
+    settings = DATAS.find(x => x.name === this.props.match.params.modeId)
     constructor(props) {
         super(props)
-        console.log(this.props.location.songs)
         // if (!this.props.location.title && !this.props.location.artist && !this.props.location.album && !this.props.location.yearAlbum) this.props.history.goBack()
         this.state = {
             song: {
@@ -62,12 +62,32 @@ export default class Game extends Component {
             error: false,
             errorMessage: "",
             time: this.props.location.time || "00:59:59",
-            songs: this.props.location.songs || 999
+            songs: this.props.location.songs || 999,
+            hints: {
+                country: null,
+                flag: null,
+                band: null,
+                styles: [],
+                members: [],
+                labels: []
+            },
+            hintsContent: [],
+            displayHints: [false, false]
         }
-        this.refInfos = React.createRef();
     }
     componentDidMount() {
         this.getSong()
+        document.addEventListener('scroll', this.listenScroll(), false)
+    }
+
+    componentWillUnmount() {
+        clearTimeout(this.state.timeOut)
+        clearTimeout(this.state.timeOutAnswer.title)
+        clearTimeout(this.state.timeOutAnswer.artist)
+        document.removeEventListener('scroll', this.listenScroll(), false)
+    }
+
+    listenScroll() {
         window.onscroll = () => {
             if (parseInt($('.infos').css('top'), 10) >= 1 || window.pageYOffset < 52) {
                 $('.infos').css('top', 53 - window.pageYOffset)
@@ -75,12 +95,6 @@ export default class Game extends Component {
                 $('.infos').css('top', 0)
             }
         }
-    }
-
-    componentWillUnmount() {
-        clearTimeout(this.state.timeOut)
-        clearTimeout(this.state.timeOutAnswer.title)
-        clearTimeout(this.state.timeOutAnswer.artist)
     }
 
     getSong() {
@@ -94,7 +108,8 @@ export default class Game extends Component {
             answer: { title: "", artist: "" },
             answerValid: { title: false, artist: false },
             showAnswer: false,
-            disableAnswer: false
+            disableAnswer: false,
+            hintsContent: []
         })
         if (!this.settings.infosGame.album) this.setState({ art: null })
 
@@ -107,7 +122,6 @@ export default class Game extends Component {
 
         Request.send('GET', ['song', this.settings.api, getParameters], undefined,
             (data) => {
-                console.log(data)
                 this.setState({
                     song: {
                         url: data.url,
@@ -121,14 +135,27 @@ export default class Game extends Component {
                 })
                 if (this.state.song.lyricsTranslated) {
                     this.showText(this.state.song.lyricsTranslated, 0, 80)
+                    let getParametersOther = Request.toQueryData({
+                        band: this.props.location.artist || this.state.song.artist,
+                        album: this.props.location.album || this.state.song.albums.length ? this.state.song.albums[0].name : null,
+                        year: this.props.location.yearAlbum || this.state.song.albums.length ? this.state.song.albums[0].year : null
+                    })
                     if (this.state.song.albums.length) {
-                        let getParametersArt = Request.toQueryData({
-                            band: this.props.location.artist || this.state.song.artist,
-                            album: this.props.location.album || this.state.song.albums[0].name,
-                            year: this.props.location.yearAlbum || this.state.song.albums[0].year
-                        })
-                        Request.send('GET', ['art', getParametersArt], undefined, (data) => { this.setState({ art: data.artUrl }) })
+                        Request.send('GET', ['art', getParametersOther], undefined, (data) => { this.setState({ art: data.artUrl }) })
                     }
+                    Request.send('GET', ['clues', getParametersOther], undefined, (data) => {
+                        this.setState({
+                            hints: {
+                                country: data.country ? Country.getTrad(data.country) : null,
+                                flag: data.flag || null,
+                                band: data.band || null,
+                                styles: data.styles || [],
+                                members: data.members || [],
+                                labels: data.labels || []
+                            }
+                        })
+                        this.generateHints()
+                    })
                     if (this.bandInput) {
                         this.bandInput.focus()
                     } else {
@@ -151,17 +178,26 @@ export default class Game extends Component {
             } else {
                 this.setState({ lyricsDisplay: this.state.lyricsDisplay + message[index++] })
             }
+            if (index >= message.length * 0.66) {
+                this.setState({ displayHints: [true, true] })
+            } else if (index >= message.length * 0.33) {
+                this.setState({ displayHints: [true, false] })
+            }
             this.setState({ timeOut: setTimeout(() => { this.showText(message, index, interval); }, interval) })
         }
     }
 
     check() {
-        this.state.answerValid.artist = !this.settings.inputGame.artist || Similarity.isOk(this.state.answer.artist, this.state.song.artist)
-        this.state.answerValid.title = !this.settings.inputGame.title || Similarity.isOk(this.state.answer.title, this.state.song.title)
+        this.setState({
+            answerValid: {
+                artist: !this.settings.inputGame.artist || Similarity.isOk(this.state.answer.artist, this.state.song.artist),
+                title: !this.settings.inputGame.title || Similarity.isOk(this.state.answer.title, this.state.song.title)
+            }
+        })
         if (this.state.answerValid.artist && this.bandInput) this.bandInput.blur(); if (this.titleInput) this.titleInput.focus()
         if (this.state.answerValid.title && this.titleInput) this.titleInput.blur()
         if (this.state.answerValid.artist && this.state.answerValid.title) {
-            if($(window).width() < '768') $("html, body").animate({ scrollTop: $(document).height() }, 1000);
+            if ($(window).width() < '768') $("html, body").animate({ scrollTop: $(document).height() }, 1000);
             clearTimeout(this.state.timeOut)
             this.setState(
                 {
@@ -179,7 +215,7 @@ export default class Game extends Component {
 
     showAnswer() {
         if (!this.state.showAnswer) {
-            if($(window).width() < '768') $("html, body").animate({ scrollTop: $(document).height() }, 1000);
+            if ($(window).width() < '768') $("html, body").animate({ scrollTop: $(document).height() }, 1000);
             clearTimeout(this.state.timeOut)
             this.setState(
                 {
@@ -191,12 +227,64 @@ export default class Game extends Component {
         }
     }
 
+    generateHints() {
+        let hints = this.state.hints
+        Object.keys(hints).forEach(key => (!hints[key] || !hints[key].length) && delete hints[key])
+        let keys = Object.keys(hints)
+        console.log(hints)
+        console.log(keys)
+        let hintsContent = []
+        for (let i = 0; i < 2; i++) {
+            let key = keys[Math.floor(Math.random() * keys.length)]
+            let content, title
+            switch (key) {
+                case "country":
+                    title = "Pays d'origine :"
+                    content = <p style={{ display: 'flex', justifyContent: 'center' }}><img style={{ width: '30px' }} src={this.state.hints.flag || require('../static/flag.png')} alt="flag" />&nbsp;&nbsp;{this.state.hints.country}</p>
+                    keys.splice(keys.indexOf('country'), 1)
+                    keys.splice(keys.indexOf('flag'), 1)
+                    break
+                case "flag":
+                    title = "Pays d'origine :"
+                    content = <p style={{ display: 'flex', justifyContent: 'center' }}><img style={{ width: '30px' }} src={this.state.hints.flag || require('../static/flag.png')} alt="flag" />&nbsp;&nbsp;{this.state.hints.country}</p>
+                    keys.splice(keys.indexOf('country'), 1)
+                    keys.splice(keys.indexOf('flag'), 1)
+                    break
+                case "band":
+                    title = "Photo du groupe :"
+                    content = <p><img src={this.state.hints.band || ""} alt="band" /></p>
+                    keys.splice(keys.indexOf('band'), 1)
+                    break
+                case "styles":
+                    title = "Styles musicaux :"
+                    content = <p>{this.state.hints.styles.join(' / ')}</p>
+                    keys.splice(keys.indexOf('styles'), 1)
+                    break
+                case "members":
+                    title = "Membres actifs :"
+                    content = <p>{this.state.hints.members.join(' / ')}</p>
+                    keys.splice(keys.indexOf('members'), 1)
+                    break
+                case "labels":
+                    title = "Labels discographique :"
+                    content = <p>{this.state.hints.labels.join(' / ')}</p>
+                    keys.splice(keys.indexOf('labels'), 1)
+                    break
+                default:
+                    title = "Aucun indice disponible 🤷"
+                    content = ""
+                    break
+            }
+            hintsContent[i] = <div><h6 className="title is-6" style={{ marginBottom: content ? '.5em' : '0' }}>{title}</h6>{content}</div>
+        }
+        this.setState({ hintsContent: hintsContent })
+    }
+
     render() {
         return (
             <Container>
 
-
-                <Modal show={this.state.error}>
+                <Modal show={this.state.error} onClose={() => null}>
                     <Modal.Card>
                         <Modal.Card.Head showClose={false}>
                             <Modal.Card.Title>
@@ -226,6 +314,26 @@ export default class Game extends Component {
                     </Modal.Card>
                 </Modal>
 
+                <div style={{ position: 'relative' }}>
+                    <Popover
+                        title={<FontAwesomeIcon icon="lightbulb" />}
+                        pos="left"
+                        show={this.state.hintsContent.length && this.state.displayHints[0]}
+                        style={{ top: 'calc(50% - 20px)' }}
+                    >
+                        {this.state.hintsContent[0]}
+                    </Popover>
+
+                    <Popover
+                        title={<FontAwesomeIcon icon="lightbulb" />}
+                        pos="left"
+                        show={this.state.hintsContent.length && this.state.displayHints[1]}
+                        style={{ top: 'calc(50% + 20px)' }}
+                    >
+                        {this.state.hintsContent[1]}
+                    </Popover>
+                </div>
+
 
                 <Columns>
                     <Columns.Column>
@@ -247,7 +355,7 @@ export default class Game extends Component {
                         </Card>
                     </Columns.Column>
                     <Columns.Column>
-                        <Columns className="infos" ref={this.refInfos}>
+                        <Columns className="infos">
                             {
                                 this.settings.inputsOptions.time ?
                                     <Columns.Column>
@@ -309,27 +417,32 @@ export default class Game extends Component {
                                                         <Label>Groupe</Label>
                                                         <Control iconLeft iconRight>
                                                             <input
-                                                                className="input"
+                                                                className={`input ${this.state.answerValid.artist ? 'is-success' : ''}`}
                                                                 type="text"
                                                                 placeholder="Groupe"
                                                                 onChange={(e) => {
                                                                     this.setState({ answer: { artist: e.target.value, title: this.state.answer.title } })
                                                                     clearInterval(this.state.timeOutAnswer.artist)
-                                                                    this.state.timeOutAnswer.artist = setTimeout(() => { this.check() }, 500)
+                                                                    let temp = this.state.timeOutAnswer
+                                                                    temp.artist = setTimeout(() => { this.check() }, 500)
+                                                                    this.setState({ timeOutAnswer: temp })
                                                                 }}
-                                                                onKeyPress={e => { if (e.key == 'Enter') this.check(); clearInterval(this.state.timeOutAnswer.artist); }}
+                                                                onKeyPress={e => { if (e.key === 'Enter') this.check(); clearInterval(this.state.timeOutAnswer.artist); }}
                                                                 value={this.state.answer.artist}
                                                                 disabled={this.state.loading || this.state.answerValid.artist || this.state.disableAnswer}
-                                                                color={this.state.answerValid.artist ? "success" : ''}
                                                                 ref={(input) => { this.bandInput = input }}
                                                             />
                                                             <Icon align="left">
                                                                 <FontAwesomeIcon icon="users" />
                                                             </Icon>
 
-                                                            <Icon align="right">
-                                                                {this.state.answerValid.artist ? <FontAwesomeIcon icon="check" /> : ''}
-                                                            </Icon>
+                                                            {
+                                                                this.state.answerValid.artist ?
+                                                                    <Icon align="right">
+                                                                        <FontAwesomeIcon icon="check" />
+                                                                    </Icon>
+                                                                    : ''
+                                                            }
                                                         </Control>
                                                         <Help color="danger"></Help>
                                                     </Field>
@@ -344,26 +457,31 @@ export default class Game extends Component {
                                                         <Label>Chanson</Label>
                                                         <Control iconLeft iconRight>
                                                             <input
-                                                                className="input"
+                                                                className={`input ${this.state.answerValid.title ? 'is-success' : ''}`}
                                                                 type="text"
                                                                 placeholder="Chanson"
                                                                 onChange={(e) => {
                                                                     this.setState({ answer: { title: e.target.value, artist: this.state.answer.artist } })
                                                                     clearInterval(this.state.timeOutAnswer.title)
-                                                                    this.state.timeOutAnswer.title = setTimeout(() => { this.check() }, 500)
+                                                                    let temp = this.state.timeOutAnswer
+                                                                    temp.title = setTimeout(() => { this.check() }, 500)
+                                                                    this.setState({ timeOutAnswer: temp })
                                                                 }}
-                                                                onKeyPress={e => { if (e.key == 'Enter') this.check(); clearInterval(this.state.timeOutAnswer.title); }}
+                                                                onKeyPress={e => { if (e.key === 'Enter') this.check(); clearInterval(this.state.timeOutAnswer.title); }}
                                                                 value={this.state.answer.title}
                                                                 disabled={this.state.loading || this.state.answerValid.title || this.state.disableAnswer}
-                                                                color={this.state.answerValid.title ? "success" : ''}
                                                                 ref={(input) => { this.titleInput = input }}
                                                             />
                                                             <Icon align="left">
                                                                 <FontAwesomeIcon icon="compact-disc" />
                                                             </Icon>
-                                                            <Icon align="right">
-                                                                {this.state.answerValid.title ? <FontAwesomeIcon icon="check" /> : ''}
-                                                            </Icon>
+                                                            {
+                                                                this.state.answerValid.title ?
+                                                                    <Icon align="right">
+                                                                        <FontAwesomeIcon icon="check" />
+                                                                    </Icon>
+                                                                    : ''
+                                                            }
                                                         </Control>
                                                         <Help color="danger"></Help>
                                                     </Field>
@@ -375,7 +493,7 @@ export default class Game extends Component {
                                 </Content>
                                 <Columns>
                                     {
-                                        this.settings.name != "byname" ?
+                                        this.settings.name !== "byname" ?
                                             <Columns.Column>
                                                 <Button
                                                     className="is-fullwidth"
@@ -404,7 +522,7 @@ export default class Game extends Component {
                                 <Media>
 
                                     <Media.Item position="left">
-                                        <a href={this.settings.infosGame.album || this.state.showAnswer ? this.state.song.url : null} target="_blank">
+                                        <a href={this.settings.infosGame.album || this.state.showAnswer ? this.state.song.url : null} target="_blank" rel="noopener noreferrer">
                                             <Image
                                                 size={128}
                                                 src={this.settings.infosGame.album || this.state.showAnswer ? this.state.art : null}
@@ -435,9 +553,6 @@ export default class Game extends Component {
                         </Card>
                     </Columns.Column>
                 </Columns>
-
-
-
             </Container >
         );
     }

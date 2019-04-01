@@ -29,7 +29,7 @@ export default class Header extends Component {
                             />
                         </Navbar.Item> */}
                     <Navbar.Burger
-                        active={this.state.open}
+                        active={this.state.open.toString()}
                         onClick={() =>
                             this.setState({
                                 open: !this.state.open
@@ -37,7 +37,7 @@ export default class Header extends Component {
                         }
                     />
                 </Navbar.Brand>
-                <Navbar.Menu active={this.state.open}>
+                <Navbar.Menu active={this.state.open.toString()}>
                     <Navbar.Container>
                         <Link to="/" className="navbar-item" onClick={() => this.setState({ open: !this.state.open })}>
                             <FontAwesomeIcon icon="home" style={{ marginRight: '5px' }} />
