@@ -103,7 +103,7 @@ export default class SelectMode extends Component {
                                                                 onChange={(e) => this.setState({ artist: e.target.value })}
                                                                 value={this.state.artist}
                                                                 onKeyPress={e => e.key === 'Enter' ? this.send() : ''}
-                                                                color={this.state.error.artist ? "danger" : ''}
+                                                                color={this.state.error.artist ? "danger" : null}
                                                             />
                                                             <Icon align="left">
                                                                 <FontAwesomeIcon icon="users" />
@@ -126,7 +126,7 @@ export default class SelectMode extends Component {
                                                                 onChange={(e) => this.setState({ title: e.target.value })}
                                                                 value={this.state.title}
                                                                 onKeyPress={(e) => e.key === 'Enter' ? this.send() : ''}
-                                                                color={this.state.error.title ? "danger" : ''}
+                                                                color={this.state.error.title ? "danger" : null}
                                                             />
                                                             <Icon align="left">
                                                                 <FontAwesomeIcon icon="compact-disc" />
@@ -151,7 +151,7 @@ export default class SelectMode extends Component {
                                                                 onChange={(e) => this.setState({ album: e.target.value })}
                                                                 value={this.state.album}
                                                                 onKeyPress={(e) => e.key === 'Enter' ? this.send() : ''}
-                                                                color={this.state.error.album ? "danger" : ''}
+                                                                color={this.state.error.album ? "danger" : null}
                                                             />
                                                             <Icon align="left">
                                                                 <FontAwesomeIcon icon="music" />
@@ -174,7 +174,7 @@ export default class SelectMode extends Component {
                                                                 onChange={(e) => this.setState({ yearAlbum: e.target.value })}
                                                                 value={this.state.yearAlbum}
                                                                 onKeyPress={(e) => e.key === 'Enter' ? this.send() : ''}
-                                                                color={this.state.error.yearAlbum ? "danger" : ''}
+                                                                color={this.state.error.yearAlbum ? "danger" : null}
                                                             />
                                                             <Icon align="left">
                                                                 <FontAwesomeIcon icon="calendar-day" />
@@ -222,7 +222,7 @@ export default class SelectMode extends Component {
                                                                 onChange={(e) => this.setState({ time: e.target.value })}
                                                                 value={this.state.time}
                                                                 onKeyPress={e => e.key === 'Enter' ? this.send() : ''}
-                                                                color={this.state.error.time ? "danger" : ''}
+                                                                color={this.state.error.time ? "danger" : null}
                                                                 disabled={this.state.level !== "perso"}
                                                             />
                                                             <Icon align="left">
@@ -246,7 +246,7 @@ export default class SelectMode extends Component {
                                                                 onChange={(e) => this.setState({ songs: e.target.value })}
                                                                 value={this.state.songs}
                                                                 onKeyPress={e => e.key === 'Enter' ? this.send() : ''}
-                                                                color={this.state.error.songs ? "danger" : ''}
+                                                                color={this.state.error.songs ? "danger" : null}
                                                                 disabled={this.state.level !== "perso"}
                                                             />
                                                             <Icon align="left">

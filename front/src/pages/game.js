@@ -122,44 +122,52 @@ export default class Game extends Component {
 
         Request.send('GET', ['song', this.settings.api, getParameters], undefined,
             (data) => {
-                this.setState({
-                    song: {
-                        url: data.url,
-                        lyricsTranslated: data.lyricsTranslated ? data.lyricsTranslated.replace(/\n/g, "<br>") : data.lyricsTranslated,
-                        lyrics: data.lyricsTranslated ? data.lyrics.replace(/\n/g, "<br>") : data.lyricsTranslated,
-                        title: data.title,
-                        artist: data.artist,
-                        albums: data.albums
-                    },
-                    loading: false
-                })
-                if (this.state.song.lyricsTranslated) {
-                    this.showText(this.state.song.lyricsTranslated, 0, 80)
-                    let getParametersOther = Request.toQueryData({
-                        band: this.props.location.artist || this.state.song.artist,
-                        album: this.props.location.album || this.state.song.albums.length ? this.state.song.albums[0].name : null,
-                        year: this.props.location.yearAlbum || this.state.song.albums.length ? this.state.song.albums[0].year : null
+                if (data.lyrics === "♪" && this.settings.name !== "byname") {
+                    this.getSong()
+                } else {
+                    this.setState({
+                        song: {
+                            url: data.url,
+                            lyricsTranslated: data.lyricsTranslated ? data.lyricsTranslated.replace(/\n/g, "<br>") : data.lyricsTranslated,
+                            lyrics: data.lyrics ? data.lyrics.replace(/\n/g, "<br>") : data.lyrics,
+                            title: data.title,
+                            artist: data.artist,
+                            albums: data.albums
+                        },
+                        loading: false
                     })
-                    if (this.state.song.albums.length) {
-                        Request.send('GET', ['art', getParametersOther], undefined, (data) => { this.setState({ art: data.artUrl }) })
-                    }
-                    Request.send('GET', ['clues', getParametersOther], undefined, (data) => {
-                        this.setState({
-                            hints: {
-                                country: data.country ? Country.getTrad(data.country) : null,
-                                flag: data.flag || null,
-                                band: data.band || null,
-                                styles: data.styles || [],
-                                members: data.members || [],
-                                labels: data.labels || []
-                            }
+                    if (this.state.song.lyricsTranslated && data.lyrics !== "♪") {
+                        this.showText(this.state.song.lyricsTranslated, 0, 80)
+                        let getParametersOther = Request.toQueryData({
+                            band: this.props.location.artist || this.state.song.artist,
+                            album: this.props.location.album || this.state.song.albums.length ? this.state.song.albums[0].name : null,
+                            year: this.props.location.yearAlbum || this.state.song.albums.length ? this.state.song.albums[0].year : null
                         })
-                        this.generateHints()
-                    })
-                    if (this.bandInput) {
-                        this.bandInput.focus()
-                    } else {
-                        this.titleInput.focus()
+                        if (this.state.song.albums.length) {
+                            Request.send('GET', ['art', getParametersOther], undefined, (data) => { this.setState({ art: data.artUrl }) })
+                        }
+                        Request.send('GET', ['clues', getParametersOther], undefined, (data) => {
+                            this.setState({
+                                hints: {
+                                    country: data.country ? Country.getTrad(data.country) : null,
+                                    flag: data.flag || null,
+                                    band: data.band || null,
+                                    styles: data.styles || [],
+                                    members: data.members || [],
+                                    labels: data.labels || []
+                                }
+                            })
+                            this.generateHints()
+                        })
+                        if (this.bandInput) {
+                            this.bandInput.focus()
+                        } else {
+                            this.titleInput.focus()
+                        }
+                    } else {                        
+                        this.setState({
+                            lyricsDisplay: "<i>♪ Cette chanson ne contient pas de paroles ♪</i>"
+                        })
                     }
                 }
             },
@@ -231,8 +239,6 @@ export default class Game extends Component {
         let hints = this.state.hints
         Object.keys(hints).forEach(key => (!hints[key] || !hints[key].length) && delete hints[key])
         let keys = Object.keys(hints)
-        console.log(hints)
-        console.log(keys)
         let hintsContent = []
         for (let i = 0; i < 2; i++) {
             let key = keys[Math.floor(Math.random() * keys.length)]
@@ -496,9 +502,9 @@ export default class Game extends Component {
                                         this.settings.name !== "byname" ?
                                             <Columns.Column>
                                                 <Button
-                                                    className="is-fullwidth"
+                                                    className={`is-fullwidth ${this.state.loading ? 'is-loading' : ''}`}
                                                     onClick={this.getSong.bind(this)}
-                                                    color={`primary ${this.state.loading ? 'is-loading' : ''}`}
+                                                    color="primary"
                                                     disabled={this.state.gameOver}
                                                 >
                                                     <FontAwesomeIcon icon="redo-alt" style={{ marginRight: '5px' }} />

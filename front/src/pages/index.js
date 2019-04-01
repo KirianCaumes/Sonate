@@ -11,15 +11,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import logo from '../static/music_notes.png'
 
 export default class Index extends Component {
-    constructor() {
-        super()
-        this.state = {
-        }
-    }
-    componentDidMount() {
-
-    }
-
     render() {
         return (
             <Container>

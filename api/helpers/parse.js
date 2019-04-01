@@ -6,19 +6,27 @@ class Parse {
         let parsedItemBody = HTMLParser.parse(body);
         let titleComponent = titleRegexp.exec(parsedItemBody.querySelector('title').text);
         let lyrics = parsedItemBody.querySelectorAll('div.lyricbox')[0].innerHTML.replace("<div class='lyricsbreak'></div>", '').replace(/<br\s*[\/]?>/gi, "\n").replace(/<\s*[\/]?i>/gi, "")
-        lyrics = lyrics.includes("<b>Instrumental</b>") ? "*Instrumental Only*" : lyrics
+        lyrics = lyrics.includes("<b>Instrumental</b>") ? "♪" : lyrics
         let albums = []
         parsedItemBody
             .querySelectorAll('#song-header-container i')
             .map(i => i.text)
-            .map(i => i.substr(0, i.length - 1)
-                .split(' ('))
+            .map(i => i.substr(0, i.length - 1).split(' ('))
             .forEach(e => albums.push({ "name": e[0], "year": e[1] }))
         return { lyrics, title: titleComponent[2].trim(), artist: titleComponent[1].trim(), albums }
     }
 
     static randomSong(body, band) {
-        let songsList = HTMLParser.parse(body)
+        let songsList = []
+        let parsedHtml = HTMLParser.parse(body).querySelectorAll('#mw-content-text *')
+        
+        // Prevent from adding "Others songs"
+        for (let i = 0; i < parsedHtml.length; i++) {
+            if (parsedHtml[i].toString().toLowerCase().includes("Other Songs".toLowerCase())) break
+            songsList.push(parsedHtml[i])
+        }
+
+        songsList = HTMLParser.parse(songsList.toString())
             .querySelectorAll('ol li b a')
             .map(item => item.attributes.title)
             .filter(x => x.toLowerCase().includes(band.toLowerCase()))
@@ -66,7 +74,7 @@ class Parse {
         try {
             labels = parsedItemBody.querySelectorAll('div.artist-info div.css-table-cell')[1].querySelectorAll('div')[1].querySelectorAll('ul li').map(x => x.structuredText)
         } catch (e) { }
-        
+
         try {
             let i = parsedItemBody.querySelectorAll('div.artist-info div.css-table-cell p.highlight b')[0].innerHTML.includes('Band members') ? 0 : 1
             members = parsedItemBody.querySelectorAll('div.artist-info div.css-table-cell')[0].querySelectorAll('div')[i].querySelectorAll('ul li').map(x => x.structuredText.split(' – ')[0].split(' - ')[0])
