@@ -54,6 +54,10 @@ export default class Game extends Component {
                 title: false,
                 artist: false
             },
+            answerWrong: {
+                title: false,
+                artist: false
+            },
             showAnswer: false,
             disableAnswer: false,
             timeOutAnswer: {
@@ -73,7 +77,8 @@ export default class Game extends Component {
                 labels: []
             },
             hintsContent: [],
-            displayHints: [false, false]
+            displayHints: [false, false],
+            hasCheck: false
         }
     }
     componentDidMount() {
@@ -137,7 +142,7 @@ export default class Game extends Component {
                             albums: data.albums
                         },
                         loading: false,
-                        displayHints: [true, true]
+                        displayHints: [false, false]
                     })
                     if (this.state.song.lyricsTranslated && data.lyrics !== "♪") {
 
@@ -197,15 +202,12 @@ export default class Game extends Component {
     }
 
     check() {
-        this.setState({
-            answerValid: {
-                artist: !this.settings.inputGame.artist || Similarity.isOk(this.state.answer.artist, this.state.song.artist),
-                title: !this.settings.inputGame.title || Similarity.isOk(this.state.answer.title, this.state.song.title)
-            }
-        })
-        if (this.state.answerValid.artist && this.bandInput) this.bandInput.blur(); if (this.titleInput) this.titleInput.focus()
-        if (this.state.answerValid.title && this.titleInput) this.titleInput.blur()
-        if (this.state.answerValid.artist && this.state.answerValid.title) {
+        let artist = !this.settings.inputGame.artist || Similarity.isOk(this.state.answer.artist, this.state.song.artist)
+        let title = !this.settings.inputGame.title || Similarity.isOk(this.state.answer.title, this.state.song.title)
+        this.setState({ answerValid: { artist: artist, title: title } })
+        if (artist && this.bandInput) this.bandInput.blur(); if (this.titleInput) this.titleInput.focus()
+        if (title && this.titleInput) this.titleInput.blur()
+        if (artist && title) {
             if ($(window).width() < '768') $("html, body").animate({ scrollTop: $(document).height() }, 1000);
             clearTimeout(this.state.timeOut)
             this.setState(
@@ -218,7 +220,7 @@ export default class Game extends Component {
                 }
             )
         } else {
-
+            this.setState({ answerWrong: { artist: !artist, title: !title } })
         }
     }
 
@@ -238,16 +240,15 @@ export default class Game extends Component {
 
     generateHints(hints) {
         Object.keys(hints).forEach(key => (!hints[key] || !hints[key].length) && delete hints[key])
-        let keys = Object.keys(hints)         
+        let keys = Object.keys(hints)
         keys.push("letters", "art") // add clues not return by api
-        keys.splice(keys.indexOf("flag"),1) // delete useless clue (same as 'country')
-        keys = keys.filter(key => this.settings.hint[key])  
-        if (!this.state.art) keys.splice(keys.indexOf("art"),1)     
+        keys.splice(keys.indexOf("flag"), 1) // delete useless clue (same as 'country')
+        keys = keys.filter(key => this.settings.hint[key])
+        if (!this.state.art) keys.splice(keys.indexOf("art"), 1)
         let hintsContent = []
         for (let i = 0; i < 2; i++) {
             let key = keys[Math.floor(Math.random() * keys.length)]
             let content, title
-            // key = "art"
             switch (key) {
                 case "country":
                     title = "Pays d'origine :"
@@ -435,7 +436,7 @@ export default class Game extends Component {
                                                         <Label>Groupe ou artiste</Label>
                                                         <Control iconLeft iconRight>
                                                             <input
-                                                                className={`input ${this.state.answerValid.artist ? 'is-success' : ''}`}
+                                                                className={`input ${this.state.answerValid.artist ? 'is-success' : this.state.answerWrong.artist ? 'is-danger' : ''}`}
                                                                 type="text"
                                                                 placeholder="Groupe ou artiste"
                                                                 onChange={(e) => {
@@ -443,7 +444,9 @@ export default class Game extends Component {
                                                                     clearInterval(this.state.timeOutAnswer.artist)
                                                                     let temp = this.state.timeOutAnswer
                                                                     temp.artist = setTimeout(() => { this.check() }, 500)
-                                                                    this.setState({ timeOutAnswer: temp })
+                                                                    let temp2 = this.state.answerWrong
+                                                                    temp2.artist = false
+                                                                    this.setState({ timeOutAnswer: temp, answerWrong: temp2 })
                                                                 }}
                                                                 onKeyPress={e => { if (e.key === 'Enter') this.check(); clearInterval(this.state.timeOutAnswer.artist); }}
                                                                 value={this.state.answer.artist}
@@ -475,7 +478,7 @@ export default class Game extends Component {
                                                         <Label>Chanson</Label>
                                                         <Control iconLeft iconRight>
                                                             <input
-                                                                className={`input ${this.state.answerValid.title ? 'is-success' : ''}`}
+                                                                className={`input ${this.state.answerValid.title ? 'is-success' : this.state.answerWrong.title ? 'is-danger' : ''}`}
                                                                 type="text"
                                                                 placeholder="Chanson"
                                                                 onChange={(e) => {
@@ -483,7 +486,9 @@ export default class Game extends Component {
                                                                     clearInterval(this.state.timeOutAnswer.title)
                                                                     let temp = this.state.timeOutAnswer
                                                                     temp.title = setTimeout(() => { this.check() }, 500)
-                                                                    this.setState({ timeOutAnswer: temp })
+                                                                    let temp2 = this.state.answerWrong
+                                                                    temp2.title = false
+                                                                    this.setState({ timeOutAnswer: temp, answerWrong: temp2 })
                                                                 }}
                                                                 onKeyPress={e => { if (e.key === 'Enter') this.check(); clearInterval(this.state.timeOutAnswer.title); }}
                                                                 value={this.state.answer.title}
@@ -493,13 +498,8 @@ export default class Game extends Component {
                                                             <Icon align="left">
                                                                 <FontAwesomeIcon icon="compact-disc" />
                                                             </Icon>
-                                                            {
-                                                                this.state.answerValid.title ?
-                                                                    <Icon align="right">
-                                                                        <FontAwesomeIcon icon="check" />
-                                                                    </Icon>
-                                                                    : ''
-                                                            }
+                                                            {this.state.answerValid.title ? <Icon align="right"> <FontAwesomeIcon icon="check" /> </Icon> : ''}
+                                                            {this.state.answerWrong.title ? <Icon align="right"> <FontAwesomeIcon icon="times" /> </Icon> : ''}
                                                         </Control>
                                                         <Help color="danger"></Help>
                                                     </Field>
