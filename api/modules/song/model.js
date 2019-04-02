@@ -1,8 +1,8 @@
 const rp = require('request-promise');
-const Parse = require('../helpers/parse')
-const Help = require('../helpers/help')
+const Parse = require('./parse')
+const Help = require('../../helpers/help')
 
-class RequestsSongs {
+module.exports = class SongModel {
     /**
     * Get lyrics from a song and a band
     * @param {String} bandName
@@ -123,6 +123,11 @@ class RequestsSongs {
             })
     }
 
+    /**
+    * Find clues
+    * @param {String} band
+    * @returns {String}
+    */
     static async getClues(band) {
         let urls = [
             `http://lyrics.wikia.com/wiki/${Help.toFirstUpper(band)}`,
@@ -138,42 +143,22 @@ class RequestsSongs {
                     })
             })
     }
+
+    /**
+    * Translate lyrics
+    * @param {String} lyrics
+    * @returns {String}
+    */
+    static async getTranslate(data, lang) {
+        return await rp("https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" + lang + "&dt=t&q=" + encodeURI(data) + "&ie=UTF-8&oe=UTF-8")
+            .then((body) => { return Parse.googleTranslate(body) })
+            .catch((e) => {
+                return rp("https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20190216T145755Z.dc5fb0f5660239ab.55fcbf8f0c27f29829bef16686b424a83848e025&text=" + encodeURI(data) + "&lang=" + lang)
+                    .then((body) => { return Parse.yandexTranslate(body) })
+                    .catch((e) => {
+                        throw "Translation failed"
+                    })
+            })
+
+    }
 }
-
-module.exports = RequestsSongs
-
-//TEST :
-// let catches = [];
-// let resolved = false
-// console.time("test")
-// return new Promise(
-//     (resolve, reject) => {
-//         rp(urls[0])
-//             .then((body) => { resolved ? resolve(Help.pushUrl(Parse.lyrics(body), urls[0])) : ''; resolved = true; })
-//             .catch(e => catches.length < 4 ? catches.push(true) : '')
-//         rp(urls[1])
-//             .then((body) => { resolved ? resolve(Help.pushUrl(Parse.lyrics(body), urls[1])) : ''; resolved = true; })
-//             .catch(e => catches.length < 4 ? catches.push(true) : '')
-//         rp(urls[2])
-//             .then((body) => { resolved ? resolve(Help.pushUrl(Parse.lyrics(body), urls[2])) : ''; resolved = true; })
-//             .catch(e => catches.length < 4 ? catches.push(true) : '')
-//         rp(urls[3])
-//             .then((body) => { resolved ? resolve(Help.pushUrl(Parse.lyrics(body), urls[3])) : ''; resolved = true; })
-//             .catch(e => catches.length < 4 ? catches.push(true) : '')
-//     }
-// )
-//     .then(res => {
-//         console.timeEnd("test")
-//         return res
-//     })
-
-
-// return Promise.all(urls.map(x => RequestsSongs.test(x))).then(bodies => bodies.find(x => x))
-// static test(url) {
-//     return rp(url)
-//         .then((body) => { return Help.pushUrl(Parse.lyrics(body), url) })
-//         .catch((e) => {
-//             console.error(e)
-//             return Promise.resolve(false)
-//         })
-// }

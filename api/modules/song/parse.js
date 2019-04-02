@@ -1,10 +1,9 @@
 const HTMLParser = require('node-html-parser');
-const titleRegexp = /(.+):(.+) Lyrics.+/;
 
-class Parse {
+module.exports = class Parse {
     static lyrics(body) {
         let parsedItemBody = HTMLParser.parse(body);
-        let titleComponent = titleRegexp.exec(parsedItemBody.querySelector('title').text);
+        let titleComponent = /(.+):(.+) Lyrics.+/.exec(parsedItemBody.querySelector('title').text);
         let lyrics = parsedItemBody.querySelectorAll('div.lyricbox')[0].innerHTML.replace("<div class='lyricsbreak'></div>", '').replace(/<br\s*[\/]?>/gi, "\n").replace(/<\s*[\/]?i>/gi, "")
         lyrics = lyrics.includes("<b>Instrumental</b>") ? "♪" : lyrics
         let albums = []
@@ -43,13 +42,6 @@ class Parse {
         return HTMLParser.parse(body).querySelectorAll('img.thumbborder')[0].attributes.src
     }
 
-    static googleTranslate(body) {
-        return JSON.parse(body)[0].map(x => x[0]).join('')
-    }
-    static yandexTranslate(body) {
-        return JSON.parse(body).text[0]
-    }
-
     static clues(body) {
         let parsedItemBody = HTMLParser.parse(body);
         let band, flag, styles, country, members, labels
@@ -81,7 +73,12 @@ class Parse {
         } catch (e) { }
 
         return { country, flag, band, styles, members, labels }
+    }    
+
+    static googleTranslate(body) {
+        return JSON.parse(body)[0].map(x => x[0]).join('')
+    }
+    static yandexTranslate(body) {
+        return JSON.parse(body).text[0]
     }
 }
-
-module.exports = Parse

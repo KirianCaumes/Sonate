@@ -23,17 +23,8 @@ export default class Popover extends React.Component {
                 show: prevProps.show
             })
             if (prevProps.show && !this.state.show) {
-                this.hintDiv.animate(
-                    [
-                        { transform: 'scale3d(0.8,0.8,1)' },
-                        { transform: 'scale3d(1.1,1.1,1)' },
-                        { transform: 'scale3d(1,1,1)' }
-                    ],
-                    {
-                        duration: 200,
-                        iterations: 1
-                    }
-                )
+                this.hintDiv.animate([{ opacity: '0' }, { opacity: '1' },], { duration: 100, iterations: 1 })
+                this.hintDiv.animate([{ transform: 'scale3d(0.8,0.8,1)' }, { transform: 'scale3d(1.1,1.1,1)' }, { transform: 'scale3d(1,1,1)' }], { duration: 200, iterations: 1 })
             }
         }
     }

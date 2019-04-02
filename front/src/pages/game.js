@@ -155,9 +155,9 @@ export default class Game extends Component {
                             year: this.props.location.yearAlbum || this.state.song.albums.length ? this.state.song.albums[0].year : null
                         })
 
-                        Request.send('GET', ['art', getParametersOther], undefined, (data) => this.setState({ art: data.artUrl }))
+                        Request.send('GET', ['song', 'art', getParametersOther], undefined, (data) => this.setState({ art: data.artUrl }))
                             .always(data => {
-                                Request.send('GET', ['clues', getParametersOther], undefined,
+                                Request.send('GET', ['song', 'clues', getParametersOther], undefined,
                                     (data) => {
                                         this.generateHints({
                                             country: data.country ? Country.getTrad(data.country) : null,
@@ -286,7 +286,7 @@ export default class Game extends Component {
                     let transform = ["scaleX(-1)", "rotate(90deg)", "rotate(180deg)", "rotate(-90deg)"]
                     transform = transform[Math.floor(Math.random() * transform.length)]
                     title = "Pochette de l'album :"
-                    content = <div style={{ overflow: 'hidden', width: '128px', margin: '0 auto', transform: transform }}>{this.state.test}<Image size={128} src={this.state.art} style={{ background: 'rgba(0,0,0,0.15)', boxShadow: '0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)', overflow: 'hidden', margin: '0 auto', filter: 'blur(10px)' }} /></div>
+                    content = <div style={{ overflow: 'hidden', width: '128px', margin: '0 auto', boxShadow: '0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)', transform: transform }}>{this.state.test}<Image size={128} src={this.state.art} style={{ background: 'rgba(0,0,0,0.15)', overflow: 'hidden', margin: '0 auto', filter: 'blur(10px)' }} /></div>
                     keys.splice(keys.indexOf('art'), 1)
                     break
                 default:
@@ -434,7 +434,7 @@ export default class Game extends Component {
                                                 <Columns.Column>
                                                     <Field>
                                                         <Label>Groupe ou artiste</Label>
-                                                        <Control iconLeft iconRight>
+                                                        <Control iconLeft>
                                                             <input
                                                                 className={`input ${this.state.answerValid.artist ? 'is-success' : this.state.answerWrong.artist ? 'is-danger' : ''}`}
                                                                 type="text"
@@ -453,17 +453,7 @@ export default class Game extends Component {
                                                                 disabled={this.state.loading || this.state.answerValid.artist || this.state.disableAnswer}
                                                                 ref={(input) => { this.bandInput = input }}
                                                             />
-                                                            <Icon align="left">
-                                                                <FontAwesomeIcon icon="users" />
-                                                            </Icon>
-
-                                                            {
-                                                                this.state.answerValid.artist ?
-                                                                    <Icon align="right">
-                                                                        <FontAwesomeIcon icon="check" />
-                                                                    </Icon>
-                                                                    : ''
-                                                            }
+                                                            <Icon align="left"><FontAwesomeIcon icon="users" /></Icon>
                                                         </Control>
                                                         <Help color="danger"></Help>
                                                     </Field>
@@ -476,7 +466,7 @@ export default class Game extends Component {
                                                 <Columns.Column>
                                                     <Field>
                                                         <Label>Chanson</Label>
-                                                        <Control iconLeft iconRight>
+                                                        <Control iconLeft>
                                                             <input
                                                                 className={`input ${this.state.answerValid.title ? 'is-success' : this.state.answerWrong.title ? 'is-danger' : ''}`}
                                                                 type="text"
@@ -495,11 +485,7 @@ export default class Game extends Component {
                                                                 disabled={this.state.loading || this.state.answerValid.title || this.state.disableAnswer}
                                                                 ref={(input) => { this.titleInput = input }}
                                                             />
-                                                            <Icon align="left">
-                                                                <FontAwesomeIcon icon="compact-disc" />
-                                                            </Icon>
-                                                            {this.state.answerValid.title ? <Icon align="right"> <FontAwesomeIcon icon="check" /> </Icon> : ''}
-                                                            {this.state.answerWrong.title ? <Icon align="right"> <FontAwesomeIcon icon="times" /> </Icon> : ''}
+                                                            <Icon align="left"><FontAwesomeIcon icon="compact-disc" /></Icon>
                                                         </Control>
                                                         <Help color="danger"></Help>
                                                     </Field>
