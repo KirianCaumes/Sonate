@@ -23,6 +23,7 @@ import Country from '../helpers/country';
 export default class SelectMode extends Component {
     constructor(props) {
         super(props)
+        document.title = "Sonate ♪ Mode"
         this.settings = DATAS.find(x => x.name === this.props.match.params.modeId)
         this.levels = LEVELS
         this.langs = Country.getLang()

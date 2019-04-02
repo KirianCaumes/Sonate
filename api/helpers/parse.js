@@ -19,13 +19,13 @@ class Parse {
     static randomSong(body, band) {
         let songsList = []
         let parsedHtml = HTMLParser.parse(body).querySelectorAll('#mw-content-text *')
-        
-        // Prevent from adding "Others songs"
+
+        // Prevent from adding "Others songs" and "Singles"
         for (let i = 0; i < parsedHtml.length; i++) {
-            if (parsedHtml[i].toString().toLowerCase().includes("Other Songs".toLowerCase())) break
+            if (parsedHtml[i].toString().toLowerCase().includes("<span class=\"mw-headline\" id=\"Other_Songs\">Other Songs</span>".toLowerCase())) break
+            if (parsedHtml[i].toString().toLowerCase().includes("<span class=\"mw-headline\" id=\"Singles\">Singles</span>".toLowerCase())) break
             songsList.push(parsedHtml[i])
         }
-
         songsList = HTMLParser.parse(songsList.toString())
             .querySelectorAll('ol li b a')
             .map(item => item.attributes.title)

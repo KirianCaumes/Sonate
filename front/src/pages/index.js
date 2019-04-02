@@ -11,6 +11,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 // import logo from '../static/music_notes.png'
 
 export default class Index extends Component {
+    constructor(props){
+        super(props)        
+        document.title = "Sonate ♪ Accueil"
+    }
     render() {
         return (
             <Container>

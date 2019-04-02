@@ -1,8 +1,10 @@
 import $ from 'jquery'
 
 export default class Request {
-    static send(method, url, data, success, error) {
+    static send(method, url, data, success, error, always) {
         url.unshift("http://localhost:5000/api");
+
+        if (!data) data = {}
 
         if (error === undefined)
             error = (data) => {
@@ -15,7 +17,7 @@ export default class Request {
                 }
             };
 
-        if (success === undefined) success = (data) => console.log(data)
+        if (success === undefined) success = (data) => { console.log(data) }
 
         return $.ajax({
             crossDomain: true,

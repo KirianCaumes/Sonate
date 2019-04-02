@@ -30,6 +30,7 @@ import Country from "../helpers/country"
 export default class Game extends Component {
     constructor(props) {
         super(props)
+        document.title = "Sonate ♪ Jeu"
         this.settings = DATAS.find(x => x.name === this.props.match.params.modeId)
         // if (!this.props.location.title && !this.props.location.artist && !this.props.location.album && !this.props.location.yearAlbum) this.props.history.goBack()
         this.state = {
@@ -76,7 +77,7 @@ export default class Game extends Component {
         }
     }
     componentDidMount() {
-        if(this.settings) this.getSong()
+        if (this.settings) this.getSong()
         document.addEventListener('scroll', this.listenScroll(), false)
     }
 
@@ -123,7 +124,7 @@ export default class Game extends Component {
 
         Request.send('GET', ['song', this.settings.api, getParameters], undefined,
             (data) => {
-                if (data.lyrics === "♪" && this.settings.name !== "byname") {
+                if (data.lyrics === "♪" && this.settings.name !== "nom") {
                     this.getSong()
                 } else {
                     this.setState({
@@ -136,36 +137,34 @@ export default class Game extends Component {
                             albums: data.albums
                         },
                         loading: false,
-                        displayHints: [false, false]
+                        displayHints: [true, true]
                     })
                     if (this.state.song.lyricsTranslated && data.lyrics !== "♪") {
+
                         this.showText(this.state.song.lyricsTranslated, 0, 80)
+                        this.bandInput ? this.bandInput.focus() : this.titleInput.focus()
+
                         let getParametersOther = Request.toQueryData({
                             band: this.props.location.artist || this.state.song.artist,
                             album: this.props.location.album || this.state.song.albums.length ? this.state.song.albums[0].name : null,
                             year: this.props.location.yearAlbum || this.state.song.albums.length ? this.state.song.albums[0].year : null
                         })
-                        if (this.state.song.albums.length) {
-                            Request.send('GET', ['art', getParametersOther], undefined, (data) => { this.setState({ art: data.artUrl }) })
-                        }
-                        Request.send('GET', ['clues', getParametersOther], undefined, (data) => {
-                            this.setState({
-                                hints: {
-                                    country: data.country ? Country.getTrad(data.country) : null,
-                                    flag: data.flag || null,
-                                    band: data.band || null,
-                                    styles: data.styles || [],
-                                    members: data.members || [],
-                                    labels: data.labels || []
-                                }
+
+                        Request.send('GET', ['art', getParametersOther], undefined, (data) => this.setState({ art: data.artUrl }))
+                            .always(data => {
+                                Request.send('GET', ['clues', getParametersOther], undefined,
+                                    (data) => {
+                                        this.generateHints({
+                                            country: data.country ? Country.getTrad(data.country) : null,
+                                            flag: data.flag || null,
+                                            band: data.band || null,
+                                            styles: data.styles || [],
+                                            members: data.members || [],
+                                            labels: data.labels || []
+                                        })
+                                    }
+                                )
                             })
-                            this.generateHints()
-                        })
-                        if (this.bandInput) {
-                            this.bandInput.focus()
-                        } else {
-                            this.titleInput.focus()
-                        }
                     } else {
                         this.setState({
                             lyricsDisplay: "<i>♪ Cette chanson ne contient pas de paroles ♪</i>"
@@ -237,49 +236,60 @@ export default class Game extends Component {
         }
     }
 
-    generateHints() {
-        let hints = this.state.hints
+    generateHints(hints) {
         Object.keys(hints).forEach(key => (!hints[key] || !hints[key].length) && delete hints[key])
-        let keys = Object.keys(hints)
+        let keys = Object.keys(hints)         
+        keys.push("letters", "art") // add clues not return by api
+        keys.splice(keys.indexOf("flag"),1) // delete useless clue (same as 'country')
+        keys = keys.filter(key => this.settings.hint[key])  
+        if (!this.state.art) keys.splice(keys.indexOf("art"),1)     
         let hintsContent = []
         for (let i = 0; i < 2; i++) {
             let key = keys[Math.floor(Math.random() * keys.length)]
             let content, title
+            // key = "art"
             switch (key) {
                 case "country":
                     title = "Pays d'origine :"
-                    content = <p style={{ display: 'flex', justifyContent: 'center' }}><img style={{ width: '30px' }} src={this.state.hints.flag || require('../static/flag.png')} alt="flag" />&nbsp;&nbsp;{this.state.hints.country}</p>
-                    keys.splice(keys.indexOf('country'), 1)
-                    keys.splice(keys.indexOf('flag'), 1)
-                    break
-                case "flag":
-                    title = "Pays d'origine :"
-                    content = <p style={{ display: 'flex', justifyContent: 'center' }}><img style={{ width: '30px' }} src={this.state.hints.flag || require('../static/flag.png')} alt="flag" />&nbsp;&nbsp;{this.state.hints.country}</p>
+                    content = <p style={{ display: 'flex', justifyContent: 'center' }}><img style={{ width: '30px' }} src={hints.flag || require('../static/flag.png')} alt="flag" />&nbsp;&nbsp;{hints.country}</p>
                     keys.splice(keys.indexOf('country'), 1)
                     keys.splice(keys.indexOf('flag'), 1)
                     break
                 case "band":
                     title = "Photo du groupe/artiste :"
-                    content = <p><img src={this.state.hints.band || ""} alt="band" /></p>
+                    content = <p><img src={hints.band || ""} alt="band" /></p>
                     keys.splice(keys.indexOf('band'), 1)
                     break
                 case "styles":
                     title = "Styles musicaux :"
-                    content = <p>{this.state.hints.styles.join(' / ')}</p>
+                    content = <p>{hints.styles.join(' / ')}</p>
                     keys.splice(keys.indexOf('styles'), 1)
                     break
                 case "members":
                     title = "Membres actifs :"
-                    content = <p>{this.state.hints.members.join(' / ')}</p>
+                    content = <p>{hints.members.join(' / ')}</p>
                     keys.splice(keys.indexOf('members'), 1)
                     break
                 case "labels":
                     title = "Labels discographique :"
-                    content = <p>{this.state.hints.labels.join(' / ')}</p>
+                    content = <p>{hints.labels.join(' / ')}</p>
                     keys.splice(keys.indexOf('labels'), 1)
                     break
+                case "letters":
+                    title = "Titre de la chanson :"
+                    let temp = this.state.song.title
+                    content = <p>{temp.split(' ').map(x => x.substring(0, 1) + x.replace(/[a-zA-Z]/g, '_').substring(1).substring(0, x.length - 1)).join(' ')}</p>
+                    keys.splice(keys.indexOf('letters'), 1)
+                    break
+                case "art":
+                    let transform = ["scaleX(-1)", "rotate(90deg)", "rotate(180deg)", "rotate(-90deg)"]
+                    transform = transform[Math.floor(Math.random() * transform.length)]
+                    title = "Pochette de l'album :"
+                    content = <div style={{ overflow: 'hidden', width: '128px', margin: '0 auto', transform: transform }}>{this.state.test}<Image size={128} src={this.state.art} style={{ background: 'rgba(0,0,0,0.15)', boxShadow: '0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)', overflow: 'hidden', margin: '0 auto', filter: 'blur(10px)' }} /></div>
+                    keys.splice(keys.indexOf('art'), 1)
+                    break
                 default:
-                    title = "Aucun indice disponible 🤷"
+                    title = "Aucun autre indice disponible 🤷"
                     content = ""
                     break
             }

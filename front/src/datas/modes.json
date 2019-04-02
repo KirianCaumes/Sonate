@@ -12,17 +12,27 @@
             "songs": false
         },
         "api": "byname",
-        "inputGame":{
+        "inputGame": {
             "title": true,
             "artist": true,
             "album": false,
             "yearAlbum": false
         },
-        "infosGame":{
+        "infosGame": {
             "title": false,
             "artist": false,
             "album": false,
             "yearAlbum": false
+        },
+        "hint": {
+            "country": true,
+            "flag": true,
+            "band": true,
+            "styles": true,
+            "members": true,
+            "labels": true,
+            "letters": true,
+            "art": true
         }
     },
     {
@@ -38,17 +48,27 @@
             "songs": true
         },
         "api": "byband",
-        "inputGame":{
+        "inputGame": {
             "title": true,
             "artist": false,
             "album": false,
             "yearAlbum": false
         },
-        "infosGame":{
+        "infosGame": {
             "title": false,
             "artist": true,
             "album": false,
             "yearAlbum": false
+        },
+        "hint": {
+            "country": false,
+            "flag": false,
+            "band": false,
+            "styles": false,
+            "members": false,
+            "labels": false,
+            "letters": true,
+            "art": true
         }
     },
     {
@@ -64,17 +84,27 @@
             "songs": true
         },
         "api": "byalbum",
-        "inputGame":{
+        "inputGame": {
             "title": true,
             "artist": false,
             "album": false,
             "yearAlbum": false
         },
-        "infosGame":{
+        "infosGame": {
             "title": false,
             "artist": true,
             "album": true,
             "yearAlbum": true
+        },
+        "hint": {
+            "country": false,
+            "flag": false,
+            "band": false,
+            "styles": false,
+            "members": false,
+            "labels": false,
+            "letters": true,
+            "art": false
         }
     }
 ]

@@ -1,0 +1,22 @@
+{
+  "name": "sonate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install-back": "cd ./api && npm install",
+    "install-front": "cd ./front && npm install",
+    "install": "npm run install-back && npm run install-front"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KirianCaumes/Sonate.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KirianCaumes/Sonate/issues"
+  },
+  "homepage": "https://github.com/KirianCaumes/Sonate#readme"
+}
