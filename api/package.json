@@ -1,7 +1,7 @@
 {
-  "name": "api",
-  "version": "1.0.0",
-  "description": "",
+  "name": "sonate-api",
+  "version": "0.0.1",
+  "description": "A game where you have to find a song thanks to its translated lyrics!",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

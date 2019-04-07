@@ -1,6 +1,7 @@
 {
-  "name": "sonate",
-  "version": "0.1.0",
+  "name": "sonate-front",
+  "version": "0.0.1",
+  "description": "A game where you have to find a song thanks to its translated lyrics!",
   "private": true,
   "dependencies": {
     "@babel/core": "7.2.2",
