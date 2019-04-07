@@ -1,7 +1,7 @@
 import $ from 'jquery'
 
 export default class Request {
-    static send(method, url, data, success, error, always) {
+    static send(method, url, data, success, error) {
         url.unshift("http://localhost:5000/api");
 
         if (!data) data = {}
@@ -24,17 +24,18 @@ export default class Request {
             url: url.join("/"),
             method: method,
             contentType: "application/json",
-            data: typeof data === "string" ? data : JSON.stringify(data),
+            data: typeof data === "string" ? data : Request.toQueryData(data),
             success: success,
             error: error
         });
     }
 
     static toQueryData(data) {
+        Object.keys(data).forEach((key) => !data[key] && delete data[key]);
         let res = [];
         for (let i in data) {
             res.push(encodeURI(i) + '=' + encodeURI(data[i]).replace(/&/g, "%26").replace(/\?/g, "%3F"));
         }
-        return '?' + res.join('&');
+        return res.join('&');
     }
 }

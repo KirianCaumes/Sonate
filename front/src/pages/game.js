@@ -119,15 +119,15 @@ export default class Game extends Component {
         })
         if (!this.settings.infosGame.album) this.setState({ art: null })
 
-        let getParameters = Request.toQueryData({
+        let getParameters = {
             song: this.props.location.title || "",
             band: this.props.location.artist || "in flames",
             album: this.props.location.album || "",
             year: this.props.location.yearAlbum || "",
             lang: this.props.location.lang || "fr",
-        })
+        }
 
-        Request.send('GET', ['song', this.settings.api, getParameters], undefined,
+        Request.send('GET', ['song', this.settings.api], getParameters,
             (data) => {
                 if (data.lyrics === "♪" && this.settings.name !== "nom") {
                     this.getSong()
@@ -149,15 +149,16 @@ export default class Game extends Component {
                         this.showText(this.state.song.lyricsTranslated, 0, 80)
                         this.bandInput ? this.bandInput.focus() : this.titleInput.focus()
 
-                        let getParametersOther = Request.toQueryData({
+                        let getParametersArt = {
                             band: this.props.location.artist || this.state.song.artist,
                             album: this.props.location.album || this.state.song.albums.length ? this.state.song.albums[0].name : null,
                             year: this.props.location.yearAlbum || this.state.song.albums.length ? this.state.song.albums[0].year : null
-                        })
+                        }
 
-                        Request.send('GET', ['song', 'art', getParametersOther], undefined, (data) => this.setState({ art: data.artUrl }))
+                        Request.send('GET', ['song', 'art'], getParametersArt, (data) => this.setState({ art: data.artUrl }))
                             .always(data => {
-                                Request.send('GET', ['song', 'clues', getParametersOther], undefined,
+                                let getParameterClues = { band: this.props.location.artist || this.state.song.artist }
+                                Request.send('GET', ['song', 'clues'], getParameterClues,
                                     (data) => {
                                         this.generateHints({
                                             country: data.country ? Country.getTrad(data.country) : null,
@@ -178,7 +179,7 @@ export default class Game extends Component {
                 }
             },
             (e) => {
-                this.setState({ loading: false, error: true, errorMessage: e.responseJSON.error })
+                this.setState({ loading: false, error: true, errorMessage: e.responseJSON ? e.responseJSON.error : "La connexion à l'API à été perdue"})
             }
         );
 
@@ -497,7 +498,7 @@ export default class Game extends Component {
                                 </Content>
                                 <Columns>
                                     {
-                                        this.settings && this.settings.name !== "byname" ?
+                                        this.settings && this.settings.name !== "nom" ?
                                             <Columns.Column>
                                                 <Button
                                                     className={`is-fullwidth ${this.state.loading ? 'is-loading' : ''}`}
