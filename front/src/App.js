@@ -10,6 +10,7 @@ import Error from './pages/error';
 
 library.add(faIgloo, faRedoAlt, faEye, faUsers, faCheck, faFont, faPlus, faMusic, faCalendarDay, faPlay, faClock, faHandPaper, faHandPointer, faChild, faHome, faStopwatch, faChevronLeft, faExclamationTriangle, faCompactDisc, faLightbulb, faGlobe )
 
+require('dotenv').config()
 
 class App extends Component {
     render() {

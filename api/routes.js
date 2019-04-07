@@ -1,9 +1,13 @@
-var songController = require('./modules/song/controller')
+const songController = require('./modules/song/controller')
+const path = require('path')
+const express = require('express')
+const fs = require('fs')
 
 exports.setRequestUrl = (app) => {
     const baseUrl = "/api"
     const songUrl = "/song"
 
+    // API
     //ex: http://localhost:5000/api/song/byname?song=abnegation&band=in%20flames&lang=fr
     app.get(baseUrl + songUrl + '/byname', songController.getByName)
     //ex: http://localhost:5000/api/song/byband?band=in%20flames&lang=fr
@@ -16,6 +20,12 @@ exports.setRequestUrl = (app) => {
     //ex: http://localhost:5000/api/song/clues?band=in%20flames
     app.get(baseUrl + songUrl + '/clues', songController.getClues)
 
+    // Render React App Build 
+    if (fs.existsSync('../front/build/')) {
+        app.use(express.static(path.join(__dirname, '../front/build/')))
+        app.get('/', (req, res) => res.sendFile('index.html', { root: '../front/build/' }))
+    }
 
-    app.get('*', (req, res) => res.status(500).send("Sonate's Api"));
+    // Other
+    app.get('*', (req, res) => res.status(404).send("Sonate"));
 }

@@ -2,7 +2,8 @@ import $ from 'jquery'
 
 export default class Request {
     static send(method, url, data, success, error) {
-        url.unshift("http://localhost:5000/api");
+        
+        url.unshift(Request.getApiUrl())
 
         if (!data) data = {}
 
@@ -37,5 +38,15 @@ export default class Request {
             res.push(encodeURI(i) + '=' + encodeURI(data[i]).replace(/&/g, "%26").replace(/\?/g, "%3F"));
         }
         return res.join('&');
+    }
+
+    static getApiUrl() {
+        if (process.env.NODE_ENV === "development") {
+            return process.env.REACT_APP_API_URL_DEV
+        } else if (process.env.NODE_ENV === "production") {
+            return process.env.REACT_APP_API_URL_PROD
+        } else {
+            return "http://localhost:5000/api"
+        }
     }
 }
