@@ -4,7 +4,7 @@ const routes = require('./routes.js')
 
 require('dotenv').config()
 
-let PORT = 123
+let PORT = 5000
 let HOST = '127.0.0.1'
 if (process.env.NODE_ENV === "development") {
     PORT = process.env.PORT_DEV
@@ -14,11 +14,7 @@ if (process.env.NODE_ENV === "development") {
     HOST = process.env.HOST_PROD
 }
 
-console.log(process.env)
-
 app.use(cors())
-
-
 
 routes.setRequestUrl(app)
 app.listen(PORT, HOST)
