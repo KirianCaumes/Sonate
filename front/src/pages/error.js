@@ -1,12 +1,6 @@
-import React, { Component } from 'react';
-import '../App.css';
-import 'react-bulma-components/dist/react-bulma-components.min.css'
-import { Columns, Button } from 'react-bulma-components'
-import Card from 'react-bulma-components/lib/components/card';
-import Container from 'react-bulma-components/lib/components/container';
+import React, { Component } from 'react'
+import { Columns, Button, Container, Card } from 'react-bulma-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-// import Image from 'react-bulma-components/lib/components/image'
-// import logo from '../static/music_notes.png'
 
 export default class Error extends Component {
     render() {

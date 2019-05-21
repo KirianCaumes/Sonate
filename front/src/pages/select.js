@@ -1,41 +1,25 @@
-import React, { Component } from 'react';
-import '../App.css';
-import 'react-bulma-components/dist/react-bulma-components.min.css'
-import { Columns, Button } from 'react-bulma-components'
-import {
-    Field,
-    Control,
-    Label,
-    Input,
-    Help,
-} from 'react-bulma-components/lib/components/form';
-
-import Card from 'react-bulma-components/lib/components/card';
-import Container from 'react-bulma-components/lib/components/container';
-import Content from 'react-bulma-components/lib/components/content';
+import React, { Component } from 'react'
+import { Columns, Button, Card, Container, Content, Icon } from 'react-bulma-components'
+import { Field, Control, Label, Input, Help } from 'react-bulma-components/lib/components/form'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import Icon from 'react-bulma-components/lib/components/icon'
 
-import DATAS from "../datas/modes.json"
-import LEVELS from "../datas/level.json"
-import Country from '../helpers/country';
 
 export default class SelectMode extends Component {
     constructor(props) {
         super(props)
         document.title = "Sonate ♪ Mode"
-        this.settings = DATAS.find(x => x.name === this.props.match.params.modeId)
-        this.levels = LEVELS
-        this.langs = Country.getLang()
+        this.settings = window.constants.settings.find(x => x.name === this.props.match.params.modeId)
+        this.langs = window.constants.googleTradLang
+        this.levels = window.constants.levels
         this.state = {
             title: undefined,
             artist: undefined,
             album: undefined,
             yearAlbum: undefined,
-            time: this.levels.find(x => x.name === "perso").time,
-            songs: this.levels.find(x => x.name === "perso").songs,
+            time: this.levels.find(x => x.name === "perso") ? this.levels.find(x => x.name === "perso").time : "00:59:59",
+            songs: this.levels.find(x => x.name === "perso") ? this.levels.find(x => x.name === "perso").songs : 999,
             level: "perso",
-            lang: "fr",            
+            lang: "fr",
             error: {
                 title: false,
                 artist: false,
@@ -45,6 +29,10 @@ export default class SelectMode extends Component {
                 songs: false
             }
         }
+    }
+
+    componentDidMount(){        
+        this.langs = window.constants ? window.constants.googleTradLang : []
     }
 
     send() {
@@ -300,6 +288,6 @@ export default class SelectMode extends Component {
                     </Columns.Column>
                 </Columns>
             </Container>
-        );
+        )
     }
 }

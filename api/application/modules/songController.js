@@ -1,4 +1,4 @@
-const SongModel = require('./model')
+const SongModel = require('../models/songModel')
 
 module.exports = class SongController {
     static getByName(req, res, next) {

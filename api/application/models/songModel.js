@@ -1,6 +1,6 @@
 const rp = require('request-promise');
-const Parse = require('./parse')
-const Help = require('../../helpers/help')
+const Parse = require('./calc/parse')
+const Help = require('../helpers/help')
 
 module.exports = class SongModel {
     /**

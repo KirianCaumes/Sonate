@@ -1,37 +1,21 @@
-import React, { Component } from 'react';
-import '../App.css';
+import React, { Component } from 'react'
 import $ from 'jquery'
-import 'react-bulma-components/dist/react-bulma-components.min.css'
-import { Columns, Loader, Button } from 'react-bulma-components'
-import {
-    Field,
-    Control,
-    Label,
-    Help,
-} from 'react-bulma-components/lib/components/form';
-import Content from 'react-bulma-components/lib/components/content';
-import Card from 'react-bulma-components/lib/components/card';
-import Container from 'react-bulma-components/lib/components/container';
-import Image from 'react-bulma-components/lib/components/image';
-import Media from 'react-bulma-components/lib/components/media';
-import Heading from 'react-bulma-components/lib/components/heading';
+import { Columns, Loader, Button, Content, Card, Container, Image, Media, Heading, Icon, Modal } from 'react-bulma-components'
+import { Field, Control, Label, Help } from 'react-bulma-components/lib/components/form'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import Icon from 'react-bulma-components/lib/components/icon'
-import Modal from 'react-bulma-components/lib/components/modal';
 
 import Timer from '../components/timer'
 import Popover from '../components/popover'
 
-import DATAS from "../datas/modes.json"
 import Request from "../helpers/request"
 import Similarity from "../helpers/similarity"
-import Country from "../helpers/country"
 
 export default class Game extends Component {
     constructor(props) {
         super(props)
         document.title = "Sonate ♪ Jeu"
-        this.settings = DATAS.find(x => x.name === this.props.match.params.modeId)
+        this.settings = window.constants.settings.find(x => x.name === this.props.match.params.modeId)
+        this.country = window.constants.country
         // if (!this.props.location.title && !this.props.location.artist && !this.props.location.album && !this.props.location.yearAlbum) this.props.history.goBack()
         this.state = {
             song: {
@@ -83,24 +67,12 @@ export default class Game extends Component {
     }
     componentDidMount() {
         if (this.settings) this.getSong()
-        document.addEventListener('scroll', this.listenScroll(), false)
     }
 
     componentWillUnmount() {
         clearTimeout(this.state.timeOut)
         clearTimeout(this.state.timeOutAnswer.title)
         clearTimeout(this.state.timeOutAnswer.artist)
-        document.removeEventListener('scroll', this.listenScroll(), false)
-    }
-
-    listenScroll() {
-        window.onscroll = () => {
-            if (parseInt($('.infos').css('top'), 10) >= 1 || window.pageYOffset < 52) {
-                $('.infos').css('top', 53 - window.pageYOffset)
-            } else {
-                $('.infos').css('top', 0)
-            }
-        }
     }
 
     getSong() {
@@ -161,7 +133,12 @@ export default class Game extends Component {
                                 Request.send('GET', ['song', 'clues'], getParameterClues,
                                     (data) => {
                                         this.generateHints({
-                                            country: data.country ? Country.getTrad(data.country) : null,
+                                            country:
+                                                data.country && this.country.find(x => x.en === data.country.toLowerCase())
+                                                    ?
+                                                    this.country.find(x => x.en === data.country.toLowerCase()).fr
+                                                    :
+                                                    null,
                                             flag: data.flag || null,
                                             band: data.band || null,
                                             styles: data.styles || [],
@@ -179,7 +156,7 @@ export default class Game extends Component {
                 }
             },
             (e) => {
-                this.setState({ loading: false, error: true, errorMessage: e.responseJSON ? e.responseJSON.error : "La connexion à l'API à été perdue"})
+                this.setState({ loading: false, error: true, errorMessage: e.responseJSON ? e.responseJSON.error : "La connexion à l'API à été perdue" })
             }
         );
 

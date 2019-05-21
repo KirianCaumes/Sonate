@@ -1,9 +1,8 @@
-import React, { Component } from 'react';
-import '../App.css';
+import React, { Component } from 'react'
 import { Link } from "react-router-dom"
-import 'react-bulma-components/dist/react-bulma-components.min.css'
 import Navbar from 'react-bulma-components/lib/components/navbar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import $ from 'jquery'
 
 export default class Header extends Component {
     constructor(props) {
@@ -12,6 +11,25 @@ export default class Header extends Component {
             open: false
         }
     }
+
+    componentDidMount() {
+        document.addEventListener('scroll', this.listenScroll(), false)
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('scroll', this.listenScroll(), false)
+    }
+
+    listenScroll() {
+        window.onscroll = () => {
+            if (parseInt($('.infos').css('top'), 10) >= 1 || window.pageYOffset < 52) {
+                $('.infos').css('top', 53 - window.pageYOffset)
+            } else {
+                $('.infos').css('top', 0)
+            }
+        }
+    }
+
     render() {
         return (
             <Navbar

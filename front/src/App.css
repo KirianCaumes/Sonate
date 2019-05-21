@@ -38,6 +38,16 @@ button:active, a:active, button, a {
     color: #C41817;
 }
 
+/* animation init */
+#content {
+    animation: fadein 0.5s;
+}
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
 /****************
 **** HEADER *****
 *****************/
@@ -141,3 +151,6 @@ button:active, a:active, button, a {
 .select, .select select {
     width: 100%;
 }
+
+
+
