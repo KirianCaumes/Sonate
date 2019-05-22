@@ -6,6 +6,7 @@ require('dotenv').config()
 
 let PORT = 5000
 let HOST = '127.0.0.1'
+
 if (process.env.NODE_ENV === "development") {
     PORT = process.env.PORT_DEV
     HOST = process.env.HOST_DEV

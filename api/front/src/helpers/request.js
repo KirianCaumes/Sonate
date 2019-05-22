@@ -41,7 +41,6 @@ export default class Request {
     }
 
     static getApiUrl() {
-        console.log(process)
         if (process.env.NODE_ENV === "development") {
             return process.env.REACT_APP_API_URL_DEV
         } else if (process.env.NODE_ENV === "production") {
