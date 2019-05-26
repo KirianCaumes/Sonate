@@ -25,6 +25,8 @@ exports.setRequestUrl = (app) => {
     //ex: http://localhost:5000/api/song/clues?band=in%20flames
     app.get(baseUrl + songUrl + '/clues', songController.getClues)
 
+    app.get(baseUrl + constUrl + '/test', constController.test)
+
     // Render React App Build 
     if (fs.existsSync('../front/build/')) {
         app.use(express.static(path.join(__dirname, '../../front/build/')))

@@ -1,23 +1,83 @@
 version: "3"
 services:
-    api:
-      build: ./api
-      container_name: api-sonate
+    # api:
+    #   build: ./api
+    #   container_name: api-sonate
+    #   ports:
+    #    - "5001:5000"  
+    #   restart: always
+    #   networks:
+    #     - sonate_net
+    #   environment: 
+    #     - NODE_ENV=production
+
+    # app:
+    #   build:         
+    #     context: ./front
+    #     dockerfile: Dockerfile-prod
+    #   container_name: front-sonate
+    #   restart: always
+    #   depends_on:
+    #     - api
+    #   ports:
+    #    - "8085:80"
+    #   networks:
+    #     - sonate_net
+
+    api-dev:
+
+      build: 
+        context: ./api
+        dockerfile: Dockerfile-dev
+      container_name: api-sonate-dev
       ports:
-       - "5001:5000"  
+       - "5000:5000"  
       restart: always
       networks:
         - sonate_net
       environment: 
-        - NODE_ENV=production
-    app:
-      build: ./front
-      container_name: front-sonate
+        - NODE_ENV=development
+      volumes:
+        - ./api:/app/api
+        - '/app/api/node_modules' 
+
+    app-dev:
+      build: 
+        context: ./front
+        dockerfile: Dockerfile-dev
+      container_name: front-sonate-dev
       restart: always
       depends_on:
-        - api
+        - api-dev
       ports:
-       - "8085:80"
+       - '3000:3000'
+      networks:
+        - sonate_net      
+      volumes:
+        - ./front:/app/front
+        - '/app/front/node_modules'      
+      environment:
+        - NODE_ENV=development
+
+    mongo:
+      image: mongo
+      container_name: mongo-sonate-dev
+      restart: always
+      environment:
+        MONGO_INITDB_ROOT_USERNAME: root
+        MONGO_INITDB_ROOT_PASSWORD: root
+      networks:
+        - sonate_net
+
+    mongo-express:
+      image: mongo-express
+      container_name: mongo-express-sonate-dev
+      restart: always
+      ports:
+        - 8081:8081
+      environment:
+        ME_CONFIG_MONGODB_ADMINUSERNAME: root
+        ME_CONFIG_MONGODB_ADMINPASSWORD: root
       networks:
         - sonate_net
 networks:
