@@ -3,6 +3,8 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
+const SettingsModel = require('../models/settingsModel')
+
 module.exports = class ConstantsController {
     static getConstants(req, res, next) {
         res.json(
@@ -16,21 +18,20 @@ module.exports = class ConstantsController {
     }
 
     static test(req, res, next) {
-        mongoose.connect('mongodb://mongo-sonate-dev/settings', { useNewUrlParser: true })
-        let db = mongoose.connection;
-        db.on('error', console.error.bind(console, 'connection error:'))
-        db.once('open', function () {
-            // we're connected!
-        })
+        let settings = new SettingsModel()
 
-        let Test = mongoose.model('Test', new Schema({
-            _id: ObjectId,
-            value: String
-        }))
+        let array = []
+        array.push(settings.find())
+        array.push(settings.save())
 
-        var coucou = new Test({ value: 'bleu' });
-        console.log(coucou.name);
+        Promise.all(array)
+            .then(datas => {
+                res.json(datas)
+            })
+            .catch(e => {
+                res.send(e)
+            })
 
-        res.json({ coucou: "oui" })
+
     }
 }
