@@ -1,531 +1,538 @@
-{
-    "settings": [
-        {
-            "name": "nom",
-            "inputsSelect": {
-                "title": true,
-                "artist": true,
-                "album": false,
-                "yearAlbum": false
-            },
-            "inputsOptions": {
-                "time": true,
-                "songs": false
-            },
-            "api": "byname",
-            "inputGame": {
-                "title": true,
-                "artist": true,
-                "album": false,
-                "yearAlbum": false
-            },
-            "infosGame": {
-                "title": false,
-                "artist": false,
-                "album": false,
-                "yearAlbum": false
-            },
-            "hint": {
-                "country": true,
-                "flag": true,
-                "band": true,
-                "styles": true,
-                "members": true,
-                "labels": true,
-                "letters": true,
-                "art": true
-            }
+// SETTINGS
+db.settings.insert([
+    {
+        "name": "nom",
+        "inputsSelect": {
+            "title": true,
+            "artist": true,
+            "album": false,
+            "yearAlbum": false
         },
-        {
-            "name": "groupe",
-            "inputsSelect": {
-                "title": false,
-                "artist": true,
-                "album": false,
-                "yearAlbum": false
-            },
-            "inputsOptions": {
-                "time": true,
-                "songs": true
-            },
-            "api": "byband",
-            "inputGame": {
-                "title": true,
-                "artist": false,
-                "album": false,
-                "yearAlbum": false
-            },
-            "infosGame": {
-                "title": false,
-                "artist": true,
-                "album": false,
-                "yearAlbum": false
-            },
-            "hint": {
-                "country": false,
-                "flag": false,
-                "band": false,
-                "styles": false,
-                "members": false,
-                "labels": false,
-                "letters": true,
-                "art": true
-            }
+        "inputsOptions": {
+            "time": true,
+            "songs": false
         },
-        {
-            "name": "album",
-            "inputsSelect": {
-                "title": false,
-                "artist": true,
-                "album": true,
-                "yearAlbum": true
-            },
-            "inputsOptions": {
-                "time": true,
-                "songs": true
-            },
-            "api": "byalbum",
-            "inputGame": {
-                "title": true,
-                "artist": false,
-                "album": false,
-                "yearAlbum": false
-            },
-            "infosGame": {
-                "title": false,
-                "artist": true,
-                "album": true,
-                "yearAlbum": true
-            },
-            "hint": {
-                "country": false,
-                "flag": false,
-                "band": false,
-                "styles": false,
-                "members": false,
-                "labels": false,
-                "letters": true,
-                "art": false
-            }
+        "api": "byname",
+        "inputGame": {
+            "title": true,
+            "artist": true,
+            "album": false,
+            "yearAlbum": false
+        },
+        "infosGame": {
+            "title": false,
+            "artist": false,
+            "album": false,
+            "yearAlbum": false
+        },
+        "hint": {
+            "country": true,
+            "flag": true,
+            "band": true,
+            "styles": true,
+            "members": true,
+            "labels": true,
+            "letters": true,
+            "art": true
         }
-    ],
-    "levels": [
-        {
-            "name": "short",
-            "time": "00:01:00",
-            "songs": "2"
+    },
+    {
+        "name": "groupe",
+        "inputsSelect": {
+            "title": false,
+            "artist": true,
+            "album": false,
+            "yearAlbum": false
         },
-        {
-            "name": "medium",
-            "time": "00:03:00",
-            "songs": "5"
+        "inputsOptions": {
+            "time": true,
+            "songs": true
         },
-        {
-            "name": "long",
-            "time": "00:07:00",
-            "songs": "12"
+        "api": "byband",
+        "inputGame": {
+            "title": true,
+            "artist": false,
+            "album": false,
+            "yearAlbum": false
         },
-        {
-            "name": "perso",
-            "time": "00:59:59",
-            "songs": "99"
+        "infosGame": {
+            "title": false,
+            "artist": true,
+            "album": false,
+            "yearAlbum": false
+        },
+        "hint": {
+            "country": false,
+            "flag": false,
+            "band": false,
+            "styles": false,
+            "members": false,
+            "labels": false,
+            "letters": true,
+            "art": true
         }
-    ],
-    "googleTradLang": [
-        {
-            "long": "Afrikaans",
-            "short": "af"
-        },
-        {
-            "long": "Albanais",
-            "short": "sq"
-        },
-        {
-            "long": "Allemand",
-            "short": "de"
-        },
-        {
-            "long": "Amharique",
-            "short": "am"
-        },
-        {
-            "long": "Anglais",
-            "short": "en"
-        },
-        {
-            "long": "Arabe",
-            "short": "ar"
-        },
-        {
-            "long": "Arménien",
-            "short": "hy"
-        },
-        {
-            "long": "Azéri",
-            "short": "az"
-        },
-        {
-            "long": "Basque",
-            "short": "eu"
-        },
-        {
-            "long": "Bengali",
-            "short": "bn"
-        },
-        {
-            "long": "Birman",
-            "short": "my"
-        },
-        {
-            "long": "Biélorusse",
-            "short": "be"
-        },
-        {
-            "long": "Bosniaque",
-            "short": "bs"
-        },
-        {
-            "long": "Bulgare",
-            "short": "bg"
-        },
-        {
-            "long": "Catalan",
-            "short": "ca"
-        },
-        {
-            "long": "Chichewa",
-            "short": "ny"
-        },
-        {
-            "long": "Chinois",
-            "short": "zh"
-        },
-        {
-            "long": "Corse",
-            "short": "co"
-        },
-        {
-            "long": "Coréen",
-            "short": "ko"
-        },
-        {
-            "long": "Croate",
-            "short": "hr"
-        },
-        {
-            "long": "Danois",
-            "short": "da"
-        },
-        {
-            "long": "Espagnol",
-            "short": "es"
-        },
-        {
-            "long": "Espéranto",
-            "short": "eo"
-        },
-        {
-            "long": "Estonien",
-            "short": "et"
-        },
-        {
-            "long": "Finnois",
-            "short": "fi"
-        },
-        {
-            "long": "Français",
-            "short": "fr"
-        },
-        {
-            "long": "Frison occidental",
-            "short": "fy"
-        },
-        {
-            "long": "Galicien",
-            "short": "gl"
-        },
-        {
-            "long": "Gallois",
-            "short": "cy"
-        },
-        {
-            "long": "Gaélique",
-            "short": "gd"
-        },
-        {
-            "long": "Goudjrati",
-            "short": "gu"
-        },
-        {
-            "long": "Grec moderne ",
-            "short": "el"
-        },
-        {
-            "long": "Géorgien",
-            "short": "ka"
-        },
-        {
-            "long": "Haoussa",
-            "short": "ha"
-        },
-        {
-            "long": "Haïtien",
-            "short": "ht"
-        },
-        {
-            "long": "Hindi",
-            "short": "hi"
-        },
-        {
-            "long": "Hongrois",
-            "short": "hu"
-        },
-        {
-            "long": "Igbo",
-            "short": "ig"
-        },
-        {
-            "long": "Indonésien",
-            "short": "id"
-        },
-        {
-            "long": "Irlandais",
-            "short": "ga"
-        },
-        {
-            "long": "Islandais",
-            "short": "is"
-        },
-        {
-            "long": "Italien",
-            "short": "it"
-        },
-        {
-            "long": "Japonais",
-            "short": "ja"
-        },
-        {
-            "long": "Kannada",
-            "short": "kn"
-        },
-        {
-            "long": "Kazakh",
-            "short": "kk"
-        },
-        {
-            "long": "Khmer central",
-            "short": "km"
-        },
-        {
-            "long": "Kirghiz",
-            "short": "ky"
-        },
-        {
-            "long": "Kurde",
-            "short": "ku"
-        },
-        {
-            "long": "Lao",
-            "short": "lo"
-        },
-        {
-            "long": "Latin",
-            "short": "la"
-        },
-        {
-            "long": "Letton",
-            "short": "lv"
-        },
-        {
-            "long": "Lituanien",
-            "short": "lt"
-        },
-        {
-            "long": "Luxembourgeois",
-            "short": "lb"
-        },
-        {
-            "long": "Macédonien",
-            "short": "mk"
-        },
-        {
-            "long": "Malais",
-            "short": "ms"
-        },
-        {
-            "long": "Malayalam",
-            "short": "ml"
-        },
-        {
-            "long": "Malgache",
-            "short": "mg"
-        },
-        {
-            "long": "Maltais",
-            "short": "mt"
-        },
-        {
-            "long": "Maori",
-            "short": "mi"
-        },
-        {
-            "long": "Marathe",
-            "short": "mr"
-        },
-        {
-            "long": "Mongol",
-            "short": "mn"
-        },
-        {
-            "long": "Norvégien",
-            "short": "no"
-        },
-        {
-            "long": "Néerlandais",
-            "short": "nl"
-        },
-        {
-            "long": "Népalais",
-            "short": "ne"
-        },
-        {
-            "long": "Ourdou",
-            "short": "ur"
-        },
-        {
-            "long": "Ouszbek",
-            "short": "uz"
-        },
-        {
-            "long": "Pachto",
-            "short": "ps"
-        },
-        {
-            "long": "Pendjabi",
-            "short": "pa"
-        },
-        {
-            "long": "Persan",
-            "short": "fa"
-        },
-        {
-            "long": "Polonais",
-            "short": "pl"
-        },
-        {
-            "long": "Portugais",
-            "short": "pt"
-        },
-        {
-            "long": "Roumain",
-            "short": "ro"
-        },
-        {
-            "long": "Russe",
-            "short": "ru"
-        },
-        {
-            "long": "Samoan",
-            "short": "sm"
-        },
-        {
-            "long": "Serbe",
-            "short": "sr"
-        },
-        {
-            "long": "Shona",
-            "short": "sn"
-        },
-        {
-            "long": "Sindhi",
-            "short": "sd"
-        },
-        {
-            "long": "Singhalais",
-            "short": "si"
-        },
-        {
-            "long": "Slovaque",
-            "short": "sk"
-        },
-        {
-            "long": "Slovène",
-            "short": "sl"
-        },
-        {
-            "long": "Somali",
-            "short": "so"
-        },
-        {
-            "long": "Sotho du Sud",
-            "short": "st"
-        },
-        {
-            "long": "Soundanais",
-            "short": "su"
-        },
-        {
-            "long": "Suédois",
-            "short": "sv"
-        },
-        {
-            "long": "Swahili",
-            "short": "sw"
-        },
-        {
-            "long": "Tadjik",
-            "short": "tg"
-        },
-        {
-            "long": "Tagalog",
-            "short": "tl"
-        },
-        {
-            "long": "Tamoul",
-            "short": "ta"
-        },
-        {
-            "long": "Tchèque",
-            "short": "cs"
-        },
-        {
-            "long": "Thaï",
-            "short": "th"
-        },
-        {
-            "long": "Turc",
-            "short": "tr"
-        },
-        {
-            "long": "Télougou",
-            "short": "te"
-        },
-        {
-            "long": "Ukrainien",
-            "short": "uk"
-        },
-        {
-            "long": "Vietnamien",
-            "short": "vi"
-        },
-        {
-            "long": "Xhosa",
-            "short": "xh"
-        },
-        {
-            "long": "Yiddish",
-            "short": "yi"
-        },
-        {
-            "long": "Yoruba",
-            "short": "yo"
-        },
-        {
-            "long": "Zoulou",
-            "short": "zu"
+    },
+    {
+        "name": "album",
+        "inputsSelect": {
+            "title": false,
+            "artist": true,
+            "album": true,
+            "yearAlbum": true
+        },
+        "inputsOptions": {
+            "time": true,
+            "songs": true
+        },
+        "api": "byalbum",
+        "inputGame": {
+            "title": true,
+            "artist": false,
+            "album": false,
+            "yearAlbum": false
+        },
+        "infosGame": {
+            "title": false,
+            "artist": true,
+            "album": true,
+            "yearAlbum": true
+        },
+        "hint": {
+            "country": false,
+            "flag": false,
+            "band": false,
+            "styles": false,
+            "members": false,
+            "labels": false,
+            "letters": true,
+            "art": false
         }
-    ],
-    "country": [
+    }
+])
+
+// GOOGLE TRAD LANGS
+db.levels.insert([
+    {
+        "name": "short",
+        "time": "00:01:00",
+        "songs": "2"
+    },
+    {
+        "name": "medium",
+        "time": "00:03:00",
+        "songs": "5"
+    },
+    {
+        "name": "long",
+        "time": "00:07:00",
+        "songs": "12"
+    },
+    {
+        "name": "perso",
+        "time": "00:59:59",
+        "songs": "99"
+    }
+])
+
+// LEVELS
+db.googleTradLangs.insert([
+    {
+        "long": "Afrikaans",
+        "short": "af"
+    },
+    {
+        "long": "Albanais",
+        "short": "sq"
+    },
+    {
+        "long": "Allemand",
+        "short": "de"
+    },
+    {
+        "long": "Amharique",
+        "short": "am"
+    },
+    {
+        "long": "Anglais",
+        "short": "en"
+    },
+    {
+        "long": "Arabe",
+        "short": "ar"
+    },
+    {
+        "long": "Arménien",
+        "short": "hy"
+    },
+    {
+        "long": "Azéri",
+        "short": "az"
+    },
+    {
+        "long": "Basque",
+        "short": "eu"
+    },
+    {
+        "long": "Bengali",
+        "short": "bn"
+    },
+    {
+        "long": "Birman",
+        "short": "my"
+    },
+    {
+        "long": "Biélorusse",
+        "short": "be"
+    },
+    {
+        "long": "Bosniaque",
+        "short": "bs"
+    },
+    {
+        "long": "Bulgare",
+        "short": "bg"
+    },
+    {
+        "long": "Catalan",
+        "short": "ca"
+    },
+    {
+        "long": "Chichewa",
+        "short": "ny"
+    },
+    {
+        "long": "Chinois",
+        "short": "zh"
+    },
+    {
+        "long": "Corse",
+        "short": "co"
+    },
+    {
+        "long": "Coréen",
+        "short": "ko"
+    },
+    {
+        "long": "Croate",
+        "short": "hr"
+    },
+    {
+        "long": "Danois",
+        "short": "da"
+    },
+    {
+        "long": "Espagnol",
+        "short": "es"
+    },
+    {
+        "long": "Espéranto",
+        "short": "eo"
+    },
+    {
+        "long": "Estonien",
+        "short": "et"
+    },
+    {
+        "long": "Finnois",
+        "short": "fi"
+    },
+    {
+        "long": "Français",
+        "short": "fr"
+    },
+    {
+        "long": "Frison occidental",
+        "short": "fy"
+    },
+    {
+        "long": "Galicien",
+        "short": "gl"
+    },
+    {
+        "long": "Gallois",
+        "short": "cy"
+    },
+    {
+        "long": "Gaélique",
+        "short": "gd"
+    },
+    {
+        "long": "Goudjrati",
+        "short": "gu"
+    },
+    {
+        "long": "Grec moderne ",
+        "short": "el"
+    },
+    {
+        "long": "Géorgien",
+        "short": "ka"
+    },
+    {
+        "long": "Haoussa",
+        "short": "ha"
+    },
+    {
+        "long": "Haïtien",
+        "short": "ht"
+    },
+    {
+        "long": "Hindi",
+        "short": "hi"
+    },
+    {
+        "long": "Hongrois",
+        "short": "hu"
+    },
+    {
+        "long": "Igbo",
+        "short": "ig"
+    },
+    {
+        "long": "Indonésien",
+        "short": "id"
+    },
+    {
+        "long": "Irlandais",
+        "short": "ga"
+    },
+    {
+        "long": "Islandais",
+        "short": "is"
+    },
+    {
+        "long": "Italien",
+        "short": "it"
+    },
+    {
+        "long": "Japonais",
+        "short": "ja"
+    },
+    {
+        "long": "Kannada",
+        "short": "kn"
+    },
+    {
+        "long": "Kazakh",
+        "short": "kk"
+    },
+    {
+        "long": "Khmer central",
+        "short": "km"
+    },
+    {
+        "long": "Kirghiz",
+        "short": "ky"
+    },
+    {
+        "long": "Kurde",
+        "short": "ku"
+    },
+    {
+        "long": "Lao",
+        "short": "lo"
+    },
+    {
+        "long": "Latin",
+        "short": "la"
+    },
+    {
+        "long": "Letton",
+        "short": "lv"
+    },
+    {
+        "long": "Lituanien",
+        "short": "lt"
+    },
+    {
+        "long": "Luxembourgeois",
+        "short": "lb"
+    },
+    {
+        "long": "Macédonien",
+        "short": "mk"
+    },
+    {
+        "long": "Malais",
+        "short": "ms"
+    },
+    {
+        "long": "Malayalam",
+        "short": "ml"
+    },
+    {
+        "long": "Malgache",
+        "short": "mg"
+    },
+    {
+        "long": "Maltais",
+        "short": "mt"
+    },
+    {
+        "long": "Maori",
+        "short": "mi"
+    },
+    {
+        "long": "Marathe",
+        "short": "mr"
+    },
+    {
+        "long": "Mongol",
+        "short": "mn"
+    },
+    {
+        "long": "Norvégien",
+        "short": "no"
+    },
+    {
+        "long": "Néerlandais",
+        "short": "nl"
+    },
+    {
+        "long": "Népalais",
+        "short": "ne"
+    },
+    {
+        "long": "Ourdou",
+        "short": "ur"
+    },
+    {
+        "long": "Ouszbek",
+        "short": "uz"
+    },
+    {
+        "long": "Pachto",
+        "short": "ps"
+    },
+    {
+        "long": "Pendjabi",
+        "short": "pa"
+    },
+    {
+        "long": "Persan",
+        "short": "fa"
+    },
+    {
+        "long": "Polonais",
+        "short": "pl"
+    },
+    {
+        "long": "Portugais",
+        "short": "pt"
+    },
+    {
+        "long": "Roumain",
+        "short": "ro"
+    },
+    {
+        "long": "Russe",
+        "short": "ru"
+    },
+    {
+        "long": "Samoan",
+        "short": "sm"
+    },
+    {
+        "long": "Serbe",
+        "short": "sr"
+    },
+    {
+        "long": "Shona",
+        "short": "sn"
+    },
+    {
+        "long": "Sindhi",
+        "short": "sd"
+    },
+    {
+        "long": "Singhalais",
+        "short": "si"
+    },
+    {
+        "long": "Slovaque",
+        "short": "sk"
+    },
+    {
+        "long": "Slovène",
+        "short": "sl"
+    },
+    {
+        "long": "Somali",
+        "short": "so"
+    },
+    {
+        "long": "Sotho du Sud",
+        "short": "st"
+    },
+    {
+        "long": "Soundanais",
+        "short": "su"
+    },
+    {
+        "long": "Suédois",
+        "short": "sv"
+    },
+    {
+        "long": "Swahili",
+        "short": "sw"
+    },
+    {
+        "long": "Tadjik",
+        "short": "tg"
+    },
+    {
+        "long": "Tagalog",
+        "short": "tl"
+    },
+    {
+        "long": "Tamoul",
+        "short": "ta"
+    },
+    {
+        "long": "Tchèque",
+        "short": "cs"
+    },
+    {
+        "long": "Thaï",
+        "short": "th"
+    },
+    {
+        "long": "Turc",
+        "short": "tr"
+    },
+    {
+        "long": "Télougou",
+        "short": "te"
+    },
+    {
+        "long": "Ukrainien",
+        "short": "uk"
+    },
+    {
+        "long": "Vietnamien",
+        "short": "vi"
+    },
+    {
+        "long": "Xhosa",
+        "short": "xh"
+    },
+    {
+        "long": "Yiddish",
+        "short": "yi"
+    },
+    {
+        "long": "Yoruba",
+        "short": "yo"
+    },
+    {
+        "long": "Zoulou",
+        "short": "zu"
+    }
+])
+
+// COUNTRIES
+db.countries.insert(
+    [
         {
             "en": "aruba",
             "fr": "aruba"
@@ -1531,4 +1538,4 @@
             "fr": "angleterre"
         }
     ]
-}
+)

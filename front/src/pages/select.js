@@ -9,7 +9,7 @@ export default class SelectMode extends Component {
         super(props)
         document.title = "Sonate ♪ Mode"
         this.settings = window.constants.settings.find(x => x.name === this.props.match.params.modeId)
-        this.langs = window.constants.googleTradLang
+        this.langs = window.constants.googleTradLangs
         this.levels = window.constants.levels
         this.state = {
             title: undefined,
@@ -32,7 +32,7 @@ export default class SelectMode extends Component {
     }
 
     componentDidMount(){        
-        this.langs = window.constants ? window.constants.googleTradLang : []
+        this.langs = window.constants ? window.constants.googleTradLangs : []
     }
 
     send() {
@@ -237,7 +237,7 @@ export default class SelectMode extends Component {
                                                                 type="number"
                                                                 placeholder="Chansons"
                                                                 onChange={(e) => this.setState({ songs: e.target.value })}
-                                                                value={this.state.songs}
+                                                                value={this.state.songs.toString()}
                                                                 onKeyPress={e => e.key === 'Enter' ? this.send() : ''}
                                                                 color={this.state.error.songs ? "danger" : null}
                                                                 disabled={this.state.level !== "perso"}

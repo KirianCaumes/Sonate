@@ -1,13 +1,13 @@
 const AbstractModel = require('./_abstractModel')
 
-module.exports = class SettingsModel extends AbstractModel {
+module.exports = class LevelsModel extends AbstractModel {
     constructor() {
         super()
     }
 
     find(params) {
         return super.find(
-            require('./schemas/settingsSchema'),
+            require('./schemas/levelsSchema'),
             params
         )
     }

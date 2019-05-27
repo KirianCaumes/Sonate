@@ -36,7 +36,6 @@ export default class App extends Component {
         }
         Request.send('GET', ['constants'], {},
             (data) => {
-                console.log(data)
                 localStorage.setItem('constants', JSON.stringify(data))
                 window.constants = data
                 this.setState({ isInit: true })

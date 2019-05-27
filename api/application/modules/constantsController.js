@@ -1,37 +1,27 @@
-const ConstantsModel = require('../models/constantsModel')
-const mongoose = require('mongoose')
-const Schema = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
-
 const SettingsModel = require('../models/settingsModel')
+const LevelsModel = require('../models/levelsModel')
+const GoogleTradLangsModel = require('../models/googleTradLangsModel')
+const CountriesModel = require('../models/countriesModel')
 
 module.exports = class ConstantsController {
     static getConstants(req, res, next) {
-        res.json(
-            {
-                settings: ConstantsModel.getSettings(),
-                levels: ConstantsModel.getLevels(),
-                googleTradLang: ConstantsModel.getLang(),
-                country: ConstantsModel.getCountries()
-            }
-        )
-    }
-
-    static test(req, res, next) {
-        let settings = new SettingsModel()
-
         let array = []
-        array.push(settings.find())
-        array.push(settings.save())
+        array.push(new SettingsModel().find())
+        array.push(new LevelsModel().find())
+        array.push(new GoogleTradLangsModel().find())
+        array.push(new CountriesModel().find())
 
         Promise.all(array)
             .then(datas => {
-                res.json(datas)
+                res.json({
+                    settings: datas[0],
+                    levels: datas[1],
+                    googleTradLangs: datas[2],
+                    countries: datas[3],
+                })
             })
             .catch(e => {
-                res.send(e)
+                res.json({ error: e })
             })
-
-
     }
 }

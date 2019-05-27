@@ -15,7 +15,7 @@ export default class Game extends Component {
         super(props)
         document.title = "Sonate ♪ Jeu"
         this.settings = window.constants.settings.find(x => x.name === this.props.match.params.modeId)
-        this.country = window.constants.country
+        this.countries = window.constants.countries
         // if (!this.props.location.title && !this.props.location.artist && !this.props.location.album && !this.props.location.yearAlbum) this.props.history.goBack()
         this.state = {
             song: {
@@ -134,9 +134,9 @@ export default class Game extends Component {
                                     (data) => {
                                         this.generateHints({
                                             country:
-                                                data.country && this.country.find(x => x.en === data.country.toLowerCase())
+                                                data.country && this.countries.find(x => x.en === data.country.toLowerCase())
                                                     ?
-                                                    this.country.find(x => x.en === data.country.toLowerCase()).fr
+                                                    this.countries.find(x => x.en === data.country.toLowerCase()).fr
                                                     :
                                                     null,
                                             flag: data.flag || null,
