@@ -5,4 +5,4 @@ let schema = new mongoose.Schema({
     fr: String
 })
 
-module.exports = mongoose.model('Countries', schema, 'countries')
+module.exports = mongoose.model('Countries', schema, 'param_countries')

@@ -14,7 +14,7 @@ code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
-body {
+body, html {
     min-height: 100vh;
     background: #F8F8F8 !important;
 }

@@ -6,4 +6,4 @@ let schema = new mongoose.Schema({
     songs: Number
 })
 
-module.exports = mongoose.model('Levels', schema, 'levels')
+module.exports = mongoose.model('Levels', schema, 'param_levels')

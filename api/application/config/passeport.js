@@ -14,6 +14,7 @@ module.exports = function (passport) {
     }
     passport.use(new JwtStrategy(opts, function (jwt_payload, done) {
         UserModel.findOne({ _id: jwt_payload.id }, function (err, user) {
+            console.log(user)
             // conn.close()
             if (err) {
                 return done(err, false)

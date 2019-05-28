@@ -9,6 +9,7 @@ import Popover from '../components/popover'
 
 import Request from "../helpers/request"
 import Similarity from "../helpers/similarity"
+import Layout from '../components/layout';
 
 export default class Game extends Component {
     constructor(props) {
@@ -279,263 +280,265 @@ export default class Game extends Component {
 
     render() {
         return (
-            <Container>
+            <Layout>
+                <Container>
 
-                <Modal show={this.state.error} onClose={() => null}>
-                    <Modal.Card>
-                        <Modal.Card.Head showClose={false}>
-                            <Modal.Card.Title>
-                                <FontAwesomeIcon icon="exclamation-triangle" style={{ marginRight: '5px' }} />
-                                Erreur
+                    <Modal show={this.state.error} onClose={() => null}>
+                        <Modal.Card>
+                            <Modal.Card.Head showClose={false}>
+                                <Modal.Card.Title>
+                                    <FontAwesomeIcon icon="exclamation-triangle" style={{ marginRight: '5px' }} />
+                                    Erreur
                             </Modal.Card.Title>
-                        </Modal.Card.Head>
-                        <Modal.Card.Body>
-                            <p>Un problème est survenu : <br /><b>{this.state.errorMessage}</b></p>
-                        </Modal.Card.Body>
-                        <Modal.Card.Foot>
-                            <Button
-                                onClick={() => { window.history.back() }}
-                                color="primary"
-                            >
-                                <FontAwesomeIcon icon="chevron-left" style={{ marginRight: '5px' }} />
-                                Retour
+                            </Modal.Card.Head>
+                            <Modal.Card.Body>
+                                <p>Un problème est survenu : <br /><b>{this.state.errorMessage}</b></p>
+                            </Modal.Card.Body>
+                            <Modal.Card.Foot>
+                                <Button
+                                    onClick={() => { window.history.back() }}
+                                    color="primary"
+                                >
+                                    <FontAwesomeIcon icon="chevron-left" style={{ marginRight: '5px' }} />
+                                    Retour
                             </Button>
-                            <Button
-                                onClick={() => { this.setState({ error: false }); this.getSong() }}
-                                color="primary"
-                            >
-                                <FontAwesomeIcon icon="redo-alt" style={{ marginRight: '5px' }} />
-                                Réessayer
+                                <Button
+                                    onClick={() => { this.setState({ error: false }); this.getSong() }}
+                                    color="primary"
+                                >
+                                    <FontAwesomeIcon icon="redo-alt" style={{ marginRight: '5px' }} />
+                                    Réessayer
                             </Button>
-                        </Modal.Card.Foot>
-                    </Modal.Card>
-                </Modal>
+                            </Modal.Card.Foot>
+                        </Modal.Card>
+                    </Modal>
 
-                <div style={{ position: 'relative' }}>
-                    <Popover
-                        title={<FontAwesomeIcon icon="lightbulb" />}
-                        pos="left"
-                        show={this.state.hintsContent.length && this.state.displayHints[0]}
-                        style={{ top: 'calc(50% - 20px)' }}
-                    >
-                        {this.state.hintsContent[0]}
-                    </Popover>
+                    <div style={{ position: 'relative' }}>
+                        <Popover
+                            title={<FontAwesomeIcon icon="lightbulb" />}
+                            pos="left"
+                            show={this.state.hintsContent.length && this.state.displayHints[0]}
+                            style={{ top: 'calc(50% - 20px)' }}
+                        >
+                            {this.state.hintsContent[0]}
+                        </Popover>
 
-                    <Popover
-                        title={<FontAwesomeIcon icon="lightbulb" />}
-                        pos="left"
-                        show={this.state.hintsContent.length && this.state.displayHints[1]}
-                        style={{ top: 'calc(50% + 20px)' }}
-                    >
-                        {this.state.hintsContent[1]}
-                    </Popover>
-                </div>
+                        <Popover
+                            title={<FontAwesomeIcon icon="lightbulb" />}
+                            pos="left"
+                            show={this.state.hintsContent.length && this.state.displayHints[1]}
+                            style={{ top: 'calc(50% + 20px)' }}
+                        >
+                            {this.state.hintsContent[1]}
+                        </Popover>
+                    </div>
 
 
-                <Columns>
-                    <Columns.Column>
-                        <Card className="lyrics">
-                            <Card.Header>
-                                <Card.Header.Title>Paroles de la chanson</Card.Header.Title>
-                            </Card.Header>
-                            <Card.Content>
-                                <Content>
-                                    {
-                                        this.state.loading
-                                            ?
-                                            <Loader style={{ width: 50, height: 50, margin: '0 auto' }} />
-                                            :
-                                            <p dangerouslySetInnerHTML={{ __html: this.state.lyricsDisplay }} />
-                                    }
-                                </Content>
-                            </Card.Content>
-                        </Card>
-                    </Columns.Column>
-                    <Columns.Column>
-                        <Columns className="infos">
-                            {
-                                this.settings && this.settings.inputsOptions.time ?
-                                    <Columns.Column>
-                                        <Card style={{ marginBottom: '-12.5px' }}>
-                                            <Card.Header>
-                                                <Card.Header.Title>Temps restant</Card.Header.Title>
-                                            </Card.Header>
-                                            <Card.Content>
-                                                <Content>
-                                                    <p>
-                                                        <FontAwesomeIcon icon="stopwatch" style={{ marginRight: '5px' }} />
-                                                        <Timer
-                                                            time={this.state.time}
-                                                            play={!this.state.loading && !this.state.showAnswer}
-                                                            onDone={() => {
-                                                                clearTimeout(this.state.timeOut)
-                                                                this.setState({ showAnswer: true, gameOver: true, disableAnswer: true, lyricsDisplay: this.state.song.lyricsTranslated })
-                                                            }}
-                                                        />
-                                                    </p>
-                                                </Content>
-                                            </Card.Content>
-                                        </Card>
-                                    </Columns.Column>
-                                    : ''
-                            }
-                            {
-                                this.settings && this.settings.inputsOptions.songs ?
-                                    <Columns.Column>
-                                        <Card style={{ marginBottom: '-12.5px' }}>
-                                            <Card.Header>
-                                                <Card.Header.Title>Chansons restantes</Card.Header.Title>
-                                            </Card.Header>
-                                            <Card.Content>
-                                                <Content>
-                                                    <p>
-                                                        <FontAwesomeIcon icon="hand-paper" style={{ marginRight: '5px' }} />
-                                                        {this.state.songs} / {this.props.location.songs || '∞'}
-                                                    </p>
-                                                </Content>
-                                            </Card.Content>
-                                        </Card>
-                                    </Columns.Column>
-                                    : ''
-                            }
+                    <Columns>
+                        <Columns.Column>
+                            <Card className="lyrics">
+                                <Card.Header>
+                                    <Card.Header.Title>Paroles de la chanson</Card.Header.Title>
+                                </Card.Header>
+                                <Card.Content>
+                                    <Content>
+                                        {
+                                            this.state.loading
+                                                ?
+                                                <Loader style={{ width: 50, height: 50, margin: '0 auto' }} />
+                                                :
+                                                <p dangerouslySetInnerHTML={{ __html: this.state.lyricsDisplay }} />
+                                        }
+                                    </Content>
+                                </Card.Content>
+                            </Card>
+                        </Columns.Column>
+                        <Columns.Column>
+                            <Columns className="infos">
+                                {
+                                    this.settings && this.settings.inputsOptions.time ?
+                                        <Columns.Column>
+                                            <Card style={{ marginBottom: '-12.5px' }}>
+                                                <Card.Header>
+                                                    <Card.Header.Title>Temps restant</Card.Header.Title>
+                                                </Card.Header>
+                                                <Card.Content>
+                                                    <Content>
+                                                        <p>
+                                                            <FontAwesomeIcon icon="stopwatch" style={{ marginRight: '5px' }} />
+                                                            <Timer
+                                                                time={this.state.time}
+                                                                play={!this.state.loading && !this.state.showAnswer}
+                                                                onDone={() => {
+                                                                    clearTimeout(this.state.timeOut)
+                                                                    this.setState({ showAnswer: true, gameOver: true, disableAnswer: true, lyricsDisplay: this.state.song.lyricsTranslated })
+                                                                }}
+                                                            />
+                                                        </p>
+                                                    </Content>
+                                                </Card.Content>
+                                            </Card>
+                                        </Columns.Column>
+                                        : ''
+                                }
+                                {
+                                    this.settings && this.settings.inputsOptions.songs ?
+                                        <Columns.Column>
+                                            <Card style={{ marginBottom: '-12.5px' }}>
+                                                <Card.Header>
+                                                    <Card.Header.Title>Chansons restantes</Card.Header.Title>
+                                                </Card.Header>
+                                                <Card.Content>
+                                                    <Content>
+                                                        <p>
+                                                            <FontAwesomeIcon icon="hand-paper" style={{ marginRight: '5px' }} />
+                                                            {this.state.songs} / {this.props.location.songs || '∞'}
+                                                        </p>
+                                                    </Content>
+                                                </Card.Content>
+                                            </Card>
+                                        </Columns.Column>
+                                        : ''
+                                }
 
-                        </Columns>
-                        <Card className="inputs">
-                            <Card.Header>
-                                <Card.Header.Title>Votre réponse</Card.Header.Title>
-                            </Card.Header>
-                            <Card.Content>
-                                <Content style={{ marginBottom: '.75rem' }}>
+                            </Columns>
+                            <Card className="inputs">
+                                <Card.Header>
+                                    <Card.Header.Title>Votre réponse</Card.Header.Title>
+                                </Card.Header>
+                                <Card.Content>
+                                    <Content style={{ marginBottom: '.75rem' }}>
+                                        <Columns>
+                                            {
+                                                this.settings && this.settings.inputGame.artist ?
+                                                    <Columns.Column>
+                                                        <Field>
+                                                            <Label>Groupe ou artiste</Label>
+                                                            <Control iconLeft>
+                                                                <input
+                                                                    className={`input ${this.state.answerValid.artist ? 'is-success' : this.state.answerWrong.artist ? 'is-danger' : ''}`}
+                                                                    type="text"
+                                                                    placeholder="Groupe ou artiste"
+                                                                    onChange={(e) => {
+                                                                        this.setState({ answer: { artist: e.target.value, title: this.state.answer.title } })
+                                                                        clearInterval(this.state.timeOutAnswer.artist)
+                                                                        let temp = this.state.timeOutAnswer
+                                                                        temp.artist = setTimeout(() => { this.check() }, 500)
+                                                                        let temp2 = this.state.answerWrong
+                                                                        temp2.artist = false
+                                                                        this.setState({ timeOutAnswer: temp, answerWrong: temp2 })
+                                                                    }}
+                                                                    onKeyPress={e => { if (e.key === 'Enter') this.check(); clearInterval(this.state.timeOutAnswer.artist); }}
+                                                                    value={this.state.answer.artist}
+                                                                    disabled={this.state.loading || this.state.answerValid.artist || this.state.disableAnswer}
+                                                                    ref={(input) => { this.bandInput = input }}
+                                                                />
+                                                                <Icon align="left"><FontAwesomeIcon icon="users" /></Icon>
+                                                            </Control>
+                                                            <Help color="danger"></Help>
+                                                        </Field>
+                                                    </Columns.Column>
+                                                    :
+                                                    ''
+                                            }
+                                            {
+                                                this.settings && this.settings.inputGame.title ?
+                                                    <Columns.Column>
+                                                        <Field>
+                                                            <Label>Chanson</Label>
+                                                            <Control iconLeft>
+                                                                <input
+                                                                    className={`input ${this.state.answerValid.title ? 'is-success' : this.state.answerWrong.title ? 'is-danger' : ''}`}
+                                                                    type="text"
+                                                                    placeholder="Chanson"
+                                                                    onChange={(e) => {
+                                                                        this.setState({ answer: { title: e.target.value, artist: this.state.answer.artist } })
+                                                                        clearInterval(this.state.timeOutAnswer.title)
+                                                                        let temp = this.state.timeOutAnswer
+                                                                        temp.title = setTimeout(() => { this.check() }, 500)
+                                                                        let temp2 = this.state.answerWrong
+                                                                        temp2.title = false
+                                                                        this.setState({ timeOutAnswer: temp, answerWrong: temp2 })
+                                                                    }}
+                                                                    onKeyPress={e => { if (e.key === 'Enter') this.check(); clearInterval(this.state.timeOutAnswer.title); }}
+                                                                    value={this.state.answer.title}
+                                                                    disabled={this.state.loading || this.state.answerValid.title || this.state.disableAnswer}
+                                                                    ref={(input) => { this.titleInput = input }}
+                                                                />
+                                                                <Icon align="left"><FontAwesomeIcon icon="compact-disc" /></Icon>
+                                                            </Control>
+                                                            <Help color="danger"></Help>
+                                                        </Field>
+                                                    </Columns.Column>
+                                                    :
+                                                    ''
+                                            }
+                                        </Columns>
+                                    </Content>
                                     <Columns>
                                         {
-                                            this.settings && this.settings.inputGame.artist ?
+                                            this.settings && this.settings.name !== "nom" ?
                                                 <Columns.Column>
-                                                    <Field>
-                                                        <Label>Groupe ou artiste</Label>
-                                                        <Control iconLeft>
-                                                            <input
-                                                                className={`input ${this.state.answerValid.artist ? 'is-success' : this.state.answerWrong.artist ? 'is-danger' : ''}`}
-                                                                type="text"
-                                                                placeholder="Groupe ou artiste"
-                                                                onChange={(e) => {
-                                                                    this.setState({ answer: { artist: e.target.value, title: this.state.answer.title } })
-                                                                    clearInterval(this.state.timeOutAnswer.artist)
-                                                                    let temp = this.state.timeOutAnswer
-                                                                    temp.artist = setTimeout(() => { this.check() }, 500)
-                                                                    let temp2 = this.state.answerWrong
-                                                                    temp2.artist = false
-                                                                    this.setState({ timeOutAnswer: temp, answerWrong: temp2 })
-                                                                }}
-                                                                onKeyPress={e => { if (e.key === 'Enter') this.check(); clearInterval(this.state.timeOutAnswer.artist); }}
-                                                                value={this.state.answer.artist}
-                                                                disabled={this.state.loading || this.state.answerValid.artist || this.state.disableAnswer}
-                                                                ref={(input) => { this.bandInput = input }}
-                                                            />
-                                                            <Icon align="left"><FontAwesomeIcon icon="users" /></Icon>
-                                                        </Control>
-                                                        <Help color="danger"></Help>
-                                                    </Field>
+                                                    <Button
+                                                        className={`is-fullwidth ${this.state.loading ? 'is-loading' : ''}`}
+                                                        onClick={this.getSong.bind(this)}
+                                                        color="primary"
+                                                        disabled={this.state.gameOver}
+                                                    >
+                                                        <FontAwesomeIcon icon="redo-alt" style={{ marginRight: '5px' }} />
+                                                        <span>Suivante</span>
+                                                    </Button>
                                                 </Columns.Column>
                                                 :
                                                 ''
                                         }
-                                        {
-                                            this.settings && this.settings.inputGame.title ?
-                                                <Columns.Column>
-                                                    <Field>
-                                                        <Label>Chanson</Label>
-                                                        <Control iconLeft>
-                                                            <input
-                                                                className={`input ${this.state.answerValid.title ? 'is-success' : this.state.answerWrong.title ? 'is-danger' : ''}`}
-                                                                type="text"
-                                                                placeholder="Chanson"
-                                                                onChange={(e) => {
-                                                                    this.setState({ answer: { title: e.target.value, artist: this.state.answer.artist } })
-                                                                    clearInterval(this.state.timeOutAnswer.title)
-                                                                    let temp = this.state.timeOutAnswer
-                                                                    temp.title = setTimeout(() => { this.check() }, 500)
-                                                                    let temp2 = this.state.answerWrong
-                                                                    temp2.title = false
-                                                                    this.setState({ timeOutAnswer: temp, answerWrong: temp2 })
-                                                                }}
-                                                                onKeyPress={e => { if (e.key === 'Enter') this.check(); clearInterval(this.state.timeOutAnswer.title); }}
-                                                                value={this.state.answer.title}
-                                                                disabled={this.state.loading || this.state.answerValid.title || this.state.disableAnswer}
-                                                                ref={(input) => { this.titleInput = input }}
-                                                            />
-                                                            <Icon align="left"><FontAwesomeIcon icon="compact-disc" /></Icon>
-                                                        </Control>
-                                                        <Help color="danger"></Help>
-                                                    </Field>
-                                                </Columns.Column>
-                                                :
-                                                ''
-                                        }
+                                        <Columns.Column>
+                                            <Button className="is-fullwidth" onClick={this.showAnswer.bind(this)} color="primary" disabled={this.state.loading || this.state.disableAnswer}>
+                                                <FontAwesomeIcon icon="eye" style={{ marginRight: '5px' }} />
+                                                <span>Réponse</span>
+                                            </Button>
+                                        </Columns.Column>
                                     </Columns>
-                                </Content>
-                                <Columns>
-                                    {
-                                        this.settings && this.settings.name !== "nom" ?
-                                            <Columns.Column>
-                                                <Button
-                                                    className={`is-fullwidth ${this.state.loading ? 'is-loading' : ''}`}
-                                                    onClick={this.getSong.bind(this)}
-                                                    color="primary"
-                                                    disabled={this.state.gameOver}
-                                                >
-                                                    <FontAwesomeIcon icon="redo-alt" style={{ marginRight: '5px' }} />
-                                                    <span>Suivante</span>
-                                                </Button>
-                                            </Columns.Column>
-                                            :
-                                            ''
-                                    }
-                                    <Columns.Column>
-                                        <Button className="is-fullwidth" onClick={this.showAnswer.bind(this)} color="primary" disabled={this.state.loading || this.state.disableAnswer}>
-                                            <FontAwesomeIcon icon="eye" style={{ marginRight: '5px' }} />
-                                            <span>Réponse</span>
-                                        </Button>
-                                    </Columns.Column>
-                                </Columns>
-                            </Card.Content>
-                        </Card>
-                        <Card className="answer">
-                            <Card.Content>
-                                <Media>
+                                </Card.Content>
+                            </Card>
+                            <Card className="answer">
+                                <Card.Content>
+                                    <Media>
 
-                                    <Media.Item position="left">
-                                        <a href={(this.settings && this.settings.infosGame.album) || this.state.showAnswer ? this.state.song.url : null} target="_blank" rel="noopener noreferrer">
-                                            <Image
-                                                size={128}
-                                                src={(this.settings && this.settings.infosGame.album) || this.state.showAnswer ? this.state.art : null}
-                                                style={{ background: 'rgba(0,0,0,0.15)', boxShadow: '0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)', overflow: 'hidden' }}
-                                            />
-                                        </a>
-                                    </Media.Item>
-                                    <Media.Item>
-                                        <Heading size={4} style={{ textTransform: 'uppercase' }}>
-                                            {(this.settings && this.settings.infosGame.artist) || this.state.showAnswer ? this.state.song.artist || this.props.location.artist || '?' : '?'}
-                                        </Heading>
-                                        <Heading subtitle size={5} style={{ textTransform: 'capitalize' }}>
-                                            {(this.settings && this.settings.infosGame.title) || this.state.showAnswer ? this.state.song.title : '?'}
-                                        </Heading>
-                                        <Heading subtitle size={6} style={{ textTransform: 'capitalize' }}>
-                                            {this.settings && this.settings.infosGame.album ?
-                                                this.props.location.album + " - " + this.props.location.yearAlbum
-                                                :
-                                                this.state.showAnswer && this.state.song.albums.length ?
-                                                    this.state.song.albums.map((album) => <span key={album.name}>{album.name} - {album.year}<br /></span>)
+                                        <Media.Item position="left">
+                                            <a href={(this.settings && this.settings.infosGame.album) || this.state.showAnswer ? this.state.song.url : null} target="_blank" rel="noopener noreferrer">
+                                                <Image
+                                                    size={128}
+                                                    src={(this.settings && this.settings.infosGame.album) || this.state.showAnswer ? this.state.art : null}
+                                                    style={{ background: 'rgba(0,0,0,0.15)', boxShadow: '0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)', overflow: 'hidden' }}
+                                                />
+                                            </a>
+                                        </Media.Item>
+                                        <Media.Item>
+                                            <Heading size={4} style={{ textTransform: 'uppercase' }}>
+                                                {(this.settings && this.settings.infosGame.artist) || this.state.showAnswer ? this.state.song.artist || this.props.location.artist || '?' : '?'}
+                                            </Heading>
+                                            <Heading subtitle size={5} style={{ textTransform: 'capitalize' }}>
+                                                {(this.settings && this.settings.infosGame.title) || this.state.showAnswer ? this.state.song.title : '?'}
+                                            </Heading>
+                                            <Heading subtitle size={6} style={{ textTransform: 'capitalize' }}>
+                                                {this.settings && this.settings.infosGame.album ?
+                                                    this.props.location.album + " - " + this.props.location.yearAlbum
                                                     :
-                                                    '?'
-                                            }
-                                        </Heading>
-                                    </Media.Item>
-                                </Media>
-                            </Card.Content>
-                        </Card>
-                    </Columns.Column>
-                </Columns>
-            </Container >
-        );
+                                                    this.state.showAnswer && this.state.song.albums.length ?
+                                                        this.state.song.albums.map((album) => <span key={album.name}>{album.name} - {album.year}<br /></span>)
+                                                        :
+                                                        '?'
+                                                }
+                                            </Heading>
+                                        </Media.Item>
+                                    </Media>
+                                </Card.Content>
+                            </Card>
+                        </Columns.Column>
+                    </Columns>
+                </Container >
+            </Layout>
+        )
     }
 }

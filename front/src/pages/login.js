@@ -1,37 +1,56 @@
 import React, { Component } from 'react'
-import { Link } from "react-router-dom"
-import { Columns, Loader, Button, Content, Card, Container, Image, Media, Heading, Icon, Modal } from 'react-bulma-components'
-import { Field, Control, Label, Help } from 'react-bulma-components/lib/components/form'
+import { Columns, Button, Content, Card, Container, Icon } from 'react-bulma-components'
+import { Field, Control, Help } from 'react-bulma-components/lib/components/form'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-// import Image from 'react-bulma-components/lib/components/image'
-// import logo from '../static/music_notes.png'
+import Request from '../helpers/request'
 
 export default class Login extends Component {
     constructor(props) {
         super(props)
         this.state = {
             loginValid: {
-                username: null,
-                password: null
+                username: true,
+                password: true
             },
             data: {
-                username: null,
-                password: null
-            }
+                username: '',
+                password: ''
+            },
+            errorMessage: ''
         }
-        document.title = "Sonate ♪ Accueil"
+        document.title = "Sonate ♪ Connexion"
+    }
+
+    componentDidMount(){        
+        localStorage.setItem('sonateToken', '')
     }
 
     login() {
-
+        Request.send('POST', ['user', 'login'], { username: this.state.data.username, password: this.state.data.password},
+            data => {
+                localStorage.setItem('sonateToken', data.token)
+                this.props.history.push('/')
+            },
+            err => {
+                localStorage.setItem('sonateToken', '')
+                this.setState({
+                    loginValid: {
+                        username: false,
+                        password: false
+                    },
+                    errorMessage: err.responseJSON ? err.responseJSON.error : err
+                })
+                console.error(err)
+            })
+        
     }
 
     render() {
         return (
             <Container>
-                <Columns>
-                    <Columns.Column>
-                        <Card>
+                <Columns className="is-vcentered" style={{ height: '100vh' }}>
+                    <Columns.Column >
+                        <Card style={{ maxWidth: '450px', margin: '0 auto' }}>
                             <Card.Header>
                                 <Card.Header.Title>Connectez vous à Sonate !</Card.Header.Title>
                             </Card.Header>
@@ -40,7 +59,7 @@ export default class Login extends Component {
                                     <Field>
                                         <Control iconLeft>
                                             <input
-                                                className={`input ${this.state.loginValid.username ? 'is-success' : this.state.loginValid.username ? 'is-danger' : ''}`}
+                                                className={`input ${!this.state.loginValid.username ? 'is-danger' : ''}`}
                                                 type="text"
                                                 placeholder="Pseudo"
                                                 onChange={(e) => this.setState({ data: { ...this.state.data, username: e.target.value } })}
@@ -49,15 +68,15 @@ export default class Login extends Component {
                                                 disabled={false}
                                                 ref={(input) => { this.usernameInput = input }}
                                             />
-                                            <Icon align="left"><FontAwesomeIcon icon="users" /></Icon>
+                                            <Icon align="left"><FontAwesomeIcon icon="user" /></Icon>
                                         </Control>
                                         <Help color="danger"></Help>
                                     </Field>
-                                    
+
                                     <Field>
                                         <Control iconLeft>
                                             <input
-                                                className={`input ${this.state.loginValid.password ? 'is-success' : this.state.loginValid.password ? 'is-danger' : ''}`}
+                                                className={`input ${!this.state.loginValid.password ? 'is-danger' : ''}`}
                                                 type="password"
                                                 placeholder="Mot de passe"
                                                 onChange={(e) => this.setState({ data: { ...this.state.data, password: e.target.value } })}
@@ -66,20 +85,18 @@ export default class Login extends Component {
                                                 disabled={false}
                                                 ref={(input) => { this.passwordInput = input }}
                                             />
-                                            <Icon align="left"><FontAwesomeIcon icon="users" /></Icon>
+                                            <Icon align="left"><FontAwesomeIcon icon="key" /></Icon>
                                         </Control>
-                                        <Help color="danger"></Help>
+                                        <Help color="danger">{this.state.errorMessage}</Help>
                                     </Field>
                                     <Button
                                         color="primary"
                                         className="is-fullwidth"
                                         onClick={this.login.bind(this)}
                                     >
-                                        <FontAwesomeIcon icon="play" style={{ marginRight: '5px' }} />
+                                        {/* <FontAwesomeIcon icon="sign-in-alt" style={{ marginRight: '5px' }} /> */}
                                         Se connecter
                                     </Button>
-                                    {/* <h2 className="title is-4"><FontAwesomeIcon style={{ marginRight: '5px' }} icon="compact-disc" />Chanson</h2> */}
-
                                 </Content>
                             </Card.Content>
                         </Card>

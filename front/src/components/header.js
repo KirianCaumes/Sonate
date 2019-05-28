@@ -61,6 +61,10 @@ export default class Header extends Component {
                             <FontAwesomeIcon icon="home" style={{ marginRight: '5px' }} />
                             Accueil
                         </Link>
+                        <Link to="/login" className="navbar-item" onClick={() => this.setState({ open: !this.state.open })}>
+                            <FontAwesomeIcon icon="sign-out-alt" style={{ marginRight: '5px' }} />
+                            Logout
+                        </Link>
                         {/* <Link to="/mode" className="navbar-item">Mode</Link> */}
                     </Navbar.Container>
                 </Navbar.Menu>

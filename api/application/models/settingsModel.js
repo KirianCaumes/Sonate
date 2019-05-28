@@ -37,4 +37,4 @@ let schema = new mongoose.Schema({
     }
 })
 
-module.exports = mongoose.model('Settings', schema, 'settings')
+module.exports = mongoose.model('Settings', schema, 'param_settings')

@@ -22,13 +22,14 @@ export default class Request {
 
         return $.ajax({
             crossDomain: true,
-            url: url.join("/"),
+            url: url.join("/"),            
             headers: {
-                Authorization: localStorage.getItem('sonateToken')
+                Authorization: localStorage.getItem('sonateToken') || null,
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
             method: method,
             contentType: "application/json",
-            data: typeof data === "string" ? data : Request.toQueryData(data),
+            data: data,
             success: success,
             error: error,
             timeout: 10000

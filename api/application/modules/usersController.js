@@ -26,18 +26,18 @@ module.exports = class UsersController {
         const { username, password } = req.body
         UserModel.findOne({ username })
             .then(user => {
-                if (!user) return res.status(404).json({ error: "No Account Found" })
+                if (!user) return res.status(404).json({ error: "L'utilisateur n'a pas été trouvé" })
                 new UserModel().comparePassword(password, user.password, (err, isMatch) => {
                     if (err) return res.status(400).json({ error: err })
                     if (isMatch) {
-                        jwt.sign({ id: user._id, name: user.userName }, secret, { expiresIn: 36000 },
+                        jwt.sign({ id: user._id, name: user.userName }, secret, //expiresIn: 36000
                             (err, token) => {
                                 if (err) res.status(500).json({ error: "Error signing token", raw: err })
                                 res.json({ success: true, token: `Bearer ${token}` })
                             }
                         )
                     } else {
-                        res.status(400).json({ error: "Password is incorrect" })
+                        res.status(400).json({ error: "Le mot de passe est incorrect" })
                     }
                     // conn.close()
                 })

@@ -5,4 +5,4 @@ let schema = new mongoose.Schema({
     short: String
 })
 
-module.exports = mongoose.model('GoogleTradLangs', schema, 'googleTradLangs')
+module.exports = mongoose.model('GoogleTradLangs', schema, 'param_googleTradLangs')

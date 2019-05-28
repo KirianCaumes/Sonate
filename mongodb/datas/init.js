@@ -1,5 +1,5 @@
 // SETTINGS
-db.settings.insert([
+db.param_settings.insert([
     {
         "name": "nom",
         "inputsSelect": {
@@ -111,7 +111,7 @@ db.settings.insert([
 ])
 
 // GOOGLE TRAD LANGS
-db.levels.insert([
+db.param_levels.insert([
     {
         "name": "short",
         "time": "00:01:00",
@@ -135,7 +135,7 @@ db.levels.insert([
 ])
 
 // LEVELS
-db.googleTradLangs.insert([
+db.param_googleTradLangs.insert([
     {
         "long": "Afrikaans",
         "short": "af"
@@ -531,7 +531,7 @@ db.googleTradLangs.insert([
 ])
 
 // COUNTRIES
-db.countries.insert(
+db.param_countries.insert(
     [
         {
             "en": "aruba",
