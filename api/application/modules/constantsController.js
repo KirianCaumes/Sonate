@@ -6,7 +6,7 @@ const Connector = require('../models/_connector')
 
 module.exports = class ConstantsController {
     static getConstants(req, res, next) {
-        let conn = new Connector()
+        // let conn = new Connector()
 
         let array = []
         array.push(SettingsModel.find().then(data => { return data }))
@@ -26,6 +26,6 @@ module.exports = class ConstantsController {
             .catch(e => {
                 res.json({ error: e })
             })
-            .finally(() => conn.close())
+            // .finally(() => conn.close())
     }
 }

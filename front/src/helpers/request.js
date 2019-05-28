@@ -2,7 +2,7 @@ import $ from 'jquery'
 
 export default class Request {
     static send(method, url, data, success, error) {
-        
+
         url.unshift(Request.getApiUrl())
 
         if (!data) data = {}
@@ -23,11 +23,15 @@ export default class Request {
         return $.ajax({
             crossDomain: true,
             url: url.join("/"),
+            headers: {
+                Authorization: localStorage.getItem('sonateToken')
+            },
             method: method,
             contentType: "application/json",
             data: typeof data === "string" ? data : Request.toQueryData(data),
             success: success,
-            error: error
+            error: error,
+            timeout: 10000
         });
     }
 

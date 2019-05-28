@@ -10,6 +10,7 @@ import Index from './pages/index'
 import SelectMode from './pages/select'
 import Header from './components/header'
 import Error from './pages/error'
+import Login from './pages/login'
 import Request from "./helpers/request"
 
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -46,20 +47,24 @@ export default class App extends Component {
         return (
             <Router>
                 <div>
-                    <Header />
                     {
                         this.state.isInit
                             ?
-                            <div id='content'>
-                                <Switch>
-                                    <Route exact path="/" component={Index} />
-                                    <Route path="/mode/:modeId(nom|groupe|album)" component={SelectMode} />
-                                    <Route path="/jeu/:modeId(nom|groupe|album)" component={Game} />
-                                    <Route path="/erreur" component={Error} />
-                                    <Route component={Error} />
-                                </Switch>
-                            </div>
-                            :                            
+                            localStorage.getItem('sonateToken')
+                                ?
+                                <div id='content'>
+                                    <Header />
+                                    <Switch>
+                                        <Route exact path="/" component={Index} />
+                                        <Route path="/mode/:modeId(nom|groupe|album)" component={SelectMode} />
+                                        <Route path="/jeu/:modeId(nom|groupe|album)" component={Game} />
+                                        <Route path="/erreur" component={Error} />
+                                        <Route component={Error} />
+                                    </Switch>
+                                </div>
+                                :
+                                <Login/>
+                            :
                             <Loader style={{ width: '150px', height: '150px', margin: '33vh auto' }} />
                     }
 
