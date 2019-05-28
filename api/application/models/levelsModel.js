@@ -1,14 +1,9 @@
-const AbstractModel = require('./_abstractModel')
+const mongoose = require('mongoose')
 
-module.exports = class LevelsModel extends AbstractModel {
-    constructor() {
-        super()
-    }
+let schema = new mongoose.Schema({
+    name: String,
+    time: String,
+    songs: Number
+})
 
-    find(params) {
-        return super.find(
-            require('./schemas/levelsSchema'),
-            params
-        )
-    }
-}
+module.exports = mongoose.model('Levels', schema, 'levels')

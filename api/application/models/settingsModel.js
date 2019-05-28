@@ -1,14 +1,40 @@
-const AbstractModel = require('./_abstractModel')
+const mongoose = require('mongoose')
 
-module.exports = class SettingsModel extends AbstractModel {
-    constructor() {
-        super()
+let schema = new mongoose.Schema({
+    name: String,
+    inputsSelect: {
+        title: Boolean,
+        artist: Boolean,
+        album: Boolean,
+        yearAlbum: Boolean
+    },
+    inputsOptions: {
+        time: Boolean,
+        songs: Boolean
+    },
+    api: String,
+    inputGame: {
+        title: Boolean,
+        artist: Boolean,
+        album: Boolean,
+        yearAlbum: Boolean
+    },
+    infosGame: {
+        title: Boolean,
+        artist: Boolean,
+        album: Boolean,
+        yearAlbum: Boolean
+    },
+    hint: {
+        country: Boolean,
+        flag: Boolean,
+        band: Boolean,
+        styles: Boolean,
+        members: Boolean,
+        labels: Boolean,
+        letters: Boolean,
+        art: Boolean
     }
+})
 
-    find(params) {
-        return super.find(
-            require('./schemas/settingsSchema'),
-            params
-        )
-    }
-}
+module.exports = mongoose.model('Settings', schema, 'settings')

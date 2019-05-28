@@ -1,14 +1,8 @@
-const AbstractModel = require('./_abstractModel')
+const mongoose = require('mongoose')
 
-module.exports = class GoogleTradLangsModel extends AbstractModel {
-    constructor() {
-        super()
-    }
+let schema = new mongoose.Schema({
+    long: String,
+    short: String
+})
 
-    find(params) {
-        return super.find(
-            require('./schemas/googleTradLangsSchema'),
-            params
-        )
-    }
-}
+module.exports = mongoose.model('GoogleTradLangs', schema, 'googleTradLangs')
