@@ -5,41 +5,52 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { history } from '../components/history'
 import Request from '../helpers/request'
 
-export default class Login extends Component {
+export default class Register extends Component {
     constructor(props) {
         super(props)
         this.state = {
             loginValid: {
                 username: true,
-                password: true
+                password: true,
+                password2: true,
             },
             data: {
                 username: '',
-                password: ''
+                password: '',
+                password2: ''
             },
-            errorMessage: this.props.location && this.props.location.error ? this.props.location.error : ''
+            errorMessage: '',
+            successMessage: ''
         }
-        document.title = "Sonate ♪ Connexion"
+        document.title = "Sonate ♪ Enregistrement"
     }
 
     componentDidMount() {
         localStorage.setItem('sonateToken', '')
     }
 
-    login() {
-        Request.send('POST', ['user', 'login'], { username: this.state.data.username, password: this.state.data.password },
+    register() {
+        Request.send('POST', ['user', 'register'], { username: this.state.data.username, password: this.state.data.password, password2: this.state.data.password2 },
             data => {
-                localStorage.setItem('sonateToken', data.token)
-                history.push('/')
+                this.setState({
+                    loginValid: {
+                        username: true,
+                        password: true,
+                        password2: true
+                    },
+                    successMessage: data.message,
+                    errorMessage: ''
+                })
             },
             err => {
-                localStorage.setItem('sonateToken', '')
                 this.setState({
                     loginValid: {
                         username: false,
-                        password: false
+                        password: false,
+                        password2: false
                     },
-                    errorMessage: err.responseJSON ? err.responseJSON.error : err
+                    errorMessage: err.responseJSON ? err.responseJSON.error : err,
+                    successMessage: ''
                 })
                 console.error(err)
             })
@@ -50,10 +61,10 @@ export default class Login extends Component {
         return (
             <Container>
                 <Columns className="is-vcentered" style={{ height: '100vh', display: 'flex' }}>
-                    <Columns.Column>
+                    <Columns.Column >
                         <Card style={{ maxWidth: '450px', margin: '0 auto' }}>
                             <Card.Header>
-                                <Card.Header.Title>Connectez vous à Sonate !</Card.Header.Title>
+                                <Card.Header.Title>Inscrivez vous à Sonate !</Card.Header.Title>
                             </Card.Header>
                             <Card.Content>
                                 <Content>
@@ -65,13 +76,12 @@ export default class Login extends Component {
                                                 placeholder="Pseudo"
                                                 onChange={(e) => this.setState({ data: { ...this.state.data, username: e.target.value } })}
                                                 value={this.state.data.username}
-                                                onKeyPress={e => { if (e.key === 'Enter') this.login(); }}
+                                                onKeyPress={e => { if (e.key === 'Enter') this.register(); }}
                                                 disabled={false}
                                                 ref={(input) => { this.usernameInput = input }}
                                             />
                                             <Icon align="left"><FontAwesomeIcon icon="user" /></Icon>
                                         </Control>
-                                        <Help color="danger"></Help>
                                     </Field>
 
                                     <Field>
@@ -82,33 +92,50 @@ export default class Login extends Component {
                                                 placeholder="Mot de passe"
                                                 onChange={(e) => this.setState({ data: { ...this.state.data, password: e.target.value } })}
                                                 value={this.state.data.password}
-                                                onKeyPress={e => { if (e.key === 'Enter') this.login(); }}
+                                                onKeyPress={e => { if (e.key === 'Enter') this.register(); }}
                                                 disabled={false}
                                                 ref={(input) => { this.passwordInput = input }}
                                             />
                                             <Icon align="left"><FontAwesomeIcon icon="key" /></Icon>
                                         </Control>
+                                    </Field>
+
+                                    <Field>
+                                        <Control iconLeft>
+                                            <input
+                                                className={`input ${!this.state.loginValid.password2 ? 'is-danger' : ''}`}
+                                                type="password"
+                                                placeholder="Confirmez"
+                                                onChange={(e) => this.setState({ data: { ...this.state.data, password2: e.target.value } })}
+                                                value={this.state.data.password2}
+                                                onKeyPress={e => { if (e.key === 'Enter') this.register(); }}
+                                                disabled={false}
+                                                ref={(input) => { this.password2Input = input }}
+                                            />
+                                            <Icon align="left"><FontAwesomeIcon icon="key" /></Icon>
+                                        </Control>
                                         <Help color="danger">{this.state.errorMessage}</Help>
+                                        <Help color="success">{this.state.successMessage}</Help>
                                     </Field>
                                     <Columns>
                                         <Columns.Column style={{ paddingBottom: 0 }}>
                                             <Button
                                                 color="primary"
                                                 className="is-fullwidth"
-                                                onClick={this.login.bind(this)}
+                                                onClick={this.register.bind(this)}
                                             >
                                                 {/* <FontAwesomeIcon icon="sign-in-alt" style={{ marginRight: '5px' }} /> */}
-                                                Se connecter
+                                                S'inscrire
                                             </Button>
                                         </Columns.Column>
                                         <Columns.Column >
                                             <Button
                                                 color="primary"
                                                 className="is-fullwidth"
-                                                onClick={() => history.push('/register')}
+                                                onClick={() => history.push('/login')}
                                             >
                                                 {/* <FontAwesomeIcon icon="sign-in-alt" style={{ marginRight: '5px' }} /> */}
-                                                S'inscrire
+                                                Se connecter
                                             </Button>
                                         </Columns.Column>
                                     </Columns>

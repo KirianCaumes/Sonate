@@ -1,4 +1,5 @@
 import $ from 'jquery'
+import { history } from '../components/history'
 
 export default class Request {
     static send(method, url, data, success, error) {
@@ -7,22 +8,11 @@ export default class Request {
 
         if (!data) data = {}
 
-        if (error === undefined)
-            error = (data) => {
-                switch (data.status) {
-                    case 401:
-                        console.error("something bad happend :'(")
-                        break;
-                    default:
-                        console.error("something bad happend :'(")
-                }
-            };
-
         if (success === undefined) success = (data) => { console.log(data) }
 
         return $.ajax({
             crossDomain: true,
-            url: url.join("/"),            
+            url: url.join("/"),
             headers: {
                 Authorization: localStorage.getItem('sonateToken') || null,
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -31,9 +21,18 @@ export default class Request {
             contentType: "application/json",
             data: data,
             success: success,
-            error: error,
-            timeout: 10000
-        });
+            error: (e, request, status, err) => {
+                switch (e.status) {
+                    case 401:
+                        history.push({ pathname: '/login', error: "Vous n'êtes plus authentifié, veuillez vous reconnecter" })
+                        break
+                    default:
+                        console.error("something bad happend :'(")
+                }
+                if (error !== undefined) error(e, request, status, err)
+            },
+            // timeout: 10000
+        })
     }
 
     static toQueryData(data) {

@@ -159,7 +159,7 @@ export default class Game extends Component {
             (e) => {
                 this.setState({ loading: false, error: true, errorMessage: e.responseJSON ? e.responseJSON.error : "La connexion à l'API à été perdue" })
             }
-        );
+        )
 
     }
 
@@ -369,9 +369,17 @@ export default class Game extends Component {
                                                             <Timer
                                                                 time={this.state.time}
                                                                 play={!this.state.loading && !this.state.showAnswer}
-                                                                onDone={() => {
+                                                                won={this.state.songs === 0}
+                                                                onDone={(time) => {
                                                                     clearTimeout(this.state.timeOut)
                                                                     this.setState({ showAnswer: true, gameOver: true, disableAnswer: true, lyricsDisplay: this.state.song.lyricsTranslated })
+                                                                    Request.send('POST', ['scores', 'history'],
+                                                                        {
+                                                                            level: this.props.match.params.modeId,
+                                                                            time: time,
+                                                                            songs: { found: this.state.songs, total: this.props.location.songs || '∞' }
+                                                                        }
+                                                                    )
                                                                 }}
                                                             />
                                                         </p>

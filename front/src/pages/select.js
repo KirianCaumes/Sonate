@@ -3,6 +3,7 @@ import { Columns, Button, Card, Container, Content, Icon } from 'react-bulma-com
 import { Field, Control, Label, Input, Help } from 'react-bulma-components/lib/components/form'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Layout from '../components/layout'
+import { history } from '../components/history'
 
 export default class SelectMode extends Component {
     constructor(props) {
@@ -58,8 +59,8 @@ export default class SelectMode extends Component {
                     songs: false
                 }
             })
-            this.props.history.push({
-                pathname: "/jeu/" + this.props.match.params.modeId,
+            history.push({
+                pathname: "/mode/" + this.props.match.params.modeId + "/jeu",
                 title: this.state.title,
                 artist: this.state.artist,
                 album: this.state.album,

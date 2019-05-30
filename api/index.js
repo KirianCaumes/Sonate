@@ -5,7 +5,7 @@ const passport = require('passport')
 const routes = require('./application/routes.js')
 const mongoose = require('mongoose')
 
-mongoose.connect('mongodb://@mongo-sonate-dev/sonate', { user: 'root', pass: 'root', auth: { authdb: "admin" }, useNewUrlParser: true })
+mongoose.connect('mongodb://@mongo-sonate-dev/sonate', { user: 'root', pass: 'root', auth: { authdb: "admin" }, useNewUrlParser: true, useCreateIndex: true })
 
 require('dotenv').config()
 
@@ -21,7 +21,7 @@ let HOST = '0.0.0.0'
 // }
 
 app.use(cors())
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(passport.initialize())
 require('./application/config/passeport')(passport)

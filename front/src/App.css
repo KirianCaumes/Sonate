@@ -152,5 +152,10 @@ button:active, a:active, button, a {
     width: 100%;
 }
 
+/****************
+*** Highscore ***
+*****************/
 
-
+table.table th, table.table td {
+    text-align: center;
+}

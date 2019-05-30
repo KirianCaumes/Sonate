@@ -10,15 +10,21 @@ export default class Timer extends React.Component {
             timer: {
                 sec: 0,
                 min: 0
-            }
+            },
+            won: this.props.won
         }
         this.timerInterval = null
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({
-            isOn: nextProps.play
-        })
+    componentDidUpdate(prevProps) {
+        if (prevProps.play !== this.state.isOn || prevProps.won !== this.state.won) {
+            this.setState({
+                isOn: prevProps.play,
+                won: prevProps.won
+            }, () => {
+                if (prevProps.won) this.props.onDone(this.state.timeRemaining)
+            })
+        }
     }
 
     componentDidMount() {
@@ -40,7 +46,7 @@ export default class Timer extends React.Component {
                 })
                 if (this.state.timeRemaining < 0 ){
                     this.stopTimer()
-                    this.props.onDone()
+                    this.props.onDone(0)
                 }
             }        
         }, 1000);

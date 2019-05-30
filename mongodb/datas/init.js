@@ -1539,3 +1539,23 @@ db.param_countries.insert(
         }
     ]
 )
+
+// HIGHSCORES
+let scores = []
+for (let i = 0; i < 300 + 1; i++) {
+    let k = Math.floor(Math.random() * 4)
+    let songsFound = Math.floor(Math.random() * [2, 5, 12, 99][k]) + 1
+    scores.push(
+        {
+            username: Math.random().toString(36).substring(7),
+            level: ['court', 'moyen', 'long', 'personalisé'][k],
+            time: songsFound === [2, 5, 12, 99][k] ? Math.floor(Math.random() * 300 + 0): 0,
+            songs: {
+                found: songsFound,
+                total: [2, 5, 12, 99][k]
+            },
+            date: new Date()
+        }
+    )
+}
+db.history.insert(scores)

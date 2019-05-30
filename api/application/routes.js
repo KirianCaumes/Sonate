@@ -1,39 +1,50 @@
-const songController = require('./modules/songController')
+const songController = require('./modules/songsController')
 const constController = require('./modules/constantsController')
 const usersController = require('./modules/usersController')
+const scoresController = require('./modules/historyController')
 const path = require('path')
 const express = require('express')
 const fs = require('fs')
 const passport = require('passport')
 
-exports.setRequestUrl = (app) => {
-    const baseUrl = "/api"
-    const songUrl = "/song"
-    const constUrl = "/constants"
-    const userUrl = "/user"
+const apiRouter = express.Router()
+const constantsRouter = express.Router()
+const songsRouter = express.Router()
+const usersRouter = express.Router()
+const historyRouter = express.Router()
 
-    // API    
+exports.setRequestUrl = (app) => {
+    app.use('/api', apiRouter)
+    apiRouter.use('/constants', constantsRouter)
+    apiRouter.use('/song', songsRouter)
+    apiRouter.use('/user', usersRouter)
+    apiRouter.use('/scores', historyRouter)
+ 
     //ex: http://localhost:5000/api/constants
-    app.get(baseUrl + constUrl, passport.authenticate('jwt', { session: false }), constController.getConstants)
+    constantsRouter.get('', passport.authenticate('jwt', { session: false }), constController.getConstants)
 
     //ex: http://localhost:5000/api/song/byname?song=abnegation&band=in%20flames&lang=fr
-    app.get(baseUrl + songUrl + '/byname', passport.authenticate('jwt', { session: false }), songController.getByName)
+    songsRouter.get('/byname', passport.authenticate('jwt', { session: false }), songController.getByName)
     //ex: http://localhost:5000/api/song/byband?band=in%20flames&lang=fr
-    app.get(baseUrl + songUrl + '/byband', passport.authenticate('jwt', { session: false }), songController.getByBand)
+    songsRouter.get('/byband', passport.authenticate('jwt', { session: false }), songController.getByBand)
     //ex: http://localhost:5000/api/song/byalbum?band=in%20flames&album=come%20clarity&year=2006&lang=fr
-    app.get(baseUrl + songUrl + '/byalbum', passport.authenticate('jwt', { session: false }), songController.getByAlbum)
-
+    songsRouter.get('/byalbum', passport.authenticate('jwt', { session: false }), songController.getByAlbum)
     //ex: http://localhost:5000/api/song/art?band=in%20flames&album=come%20clarity&year=2006
-    app.get(baseUrl + songUrl + '/art', passport.authenticate('jwt', { session: false }), songController.getArt)
+    songsRouter.get('/art', passport.authenticate('jwt', { session: false }), songController.getArt)
     //ex: http://localhost:5000/api/song/clues?band=in%20flames
-    app.get(baseUrl + songUrl + '/clues', passport.authenticate('jwt', { session: false }), songController.getClues)
+    songsRouter.get('/clues', passport.authenticate('jwt', { session: false }), songController.getClues)
 
     //ex: http://localhost:5000/api/user/register  { username: 'test', password: 'pass' }
-    app.post(baseUrl + userUrl + '/register', usersController.register)
+    usersRouter.post('/register', usersController.register)
     //ex: http://localhost:5000/api/user/login  { username: 'test', password: 'pass' }
-    app.post(baseUrl + userUrl + '/login', usersController.login)
+    usersRouter.post('/login', usersController.login)
     //ex: http://localhost:5000/api/user/test  (with token in header)
-    app.get(baseUrl + userUrl + '/test', passport.authenticate('jwt', { session: false }), usersController.test)
+    usersRouter.get('/test', passport.authenticate('jwt', { session: false }), usersController.test)
+
+    //ex: http://localhost:5000/api/scores/history
+    historyRouter.get('/history', passport.authenticate('jwt', { session: false }), scoresController.getHistory)
+    //ex: http://localhost:5000/api/scores/history
+    historyRouter.post('/history', passport.authenticate('jwt', { session: false }), scoresController.postHistory)
 
     // Render React App Build 
     if (fs.existsSync('../front/build/')) {
