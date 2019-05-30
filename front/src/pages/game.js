@@ -10,6 +10,7 @@ import Popover from '../components/popover'
 import Request from "../helpers/request"
 import Similarity from "../helpers/similarity"
 import Layout from '../components/layout';
+import Clue from '../components/clue';
 
 export default class Game extends Component {
     constructor(props) {
@@ -54,12 +55,16 @@ export default class Game extends Component {
             time: this.props.location.time || "00:59:59",
             songs: this.props.location.songs || 999,
             hints: {
-                country: null,
-                flag: null,
+                country: {
+                    name: null,
+                    flag: null
+                },
                 band: null,
                 styles: [],
                 members: [],
-                labels: []
+                labels: [],
+                letters: '',
+                art: null
             },
             hintsContent: [],
             displayHints: [false, false],
@@ -76,6 +81,7 @@ export default class Game extends Component {
         clearTimeout(this.state.timeOutAnswer.artist)
     }
 
+    //Main function : get a song, it's cover and it's clues
     getSong() {
         $("html, body").animate({ scrollTop: 0 }, 500);
         clearTimeout(this.state.timeOut)
@@ -133,19 +139,20 @@ export default class Game extends Component {
                                 let getParameterClues = { band: this.props.location.artist || this.state.song.artist }
                                 Request.send('GET', ['song', 'clues'], getParameterClues,
                                     (data) => {
-                                        this.generateHints({
-                                            country:
-                                                data.country && this.countries.find(x => x.en === data.country.toLowerCase())
-                                                    ?
-                                                    this.countries.find(x => x.en === data.country.toLowerCase()).fr
-                                                    :
-                                                    null,
-                                            flag: data.flag || null,
-                                            band: data.band || null,
-                                            styles: data.styles || [],
-                                            members: data.members || [],
-                                            labels: data.labels || []
-                                        })
+                                        this.setState({
+                                            hints: {
+                                                country: {
+                                                    name: data.country && this.countries.find(x => x.en === data.country.toLowerCase()) ? this.countries.find(x => x.en === data.country.toLowerCase()).fr : null,
+                                                    flag: data.flag || null
+                                                },
+                                                band: data.band || null,
+                                                styles: data.styles || [],
+                                                members: data.members || [],
+                                                labels: data.labels || [],
+                                                letters: this.state.song.title,
+                                                art: this.state.art 
+                                            }
+                                        }, () => this.generateHints())                                        
                                     }
                                 )
                             })
@@ -163,6 +170,7 @@ export default class Game extends Component {
 
     }
 
+    //Progressively displays the text
     showText(message, index, interval) {
         if (index < message.length) {
             if (message[index] === "<" && message[index + 1] === "b" && message[index + 2] === "r" && message[index + 3] === ">") {
@@ -180,6 +188,7 @@ export default class Game extends Component {
         }
     }
 
+    //Check user's answers
     check() {
         let artist = !this.settings.inputGame.artist || Similarity.isOk(this.state.answer.artist, this.state.song.artist)
         let title = !this.settings.inputGame.title || Similarity.isOk(this.state.answer.title, this.state.song.title)
@@ -203,6 +212,7 @@ export default class Game extends Component {
         }
     }
 
+    //Show answer 
     showAnswer() {
         if (!this.state.showAnswer) {
             if ($(window).width() < '768') $("html, body").animate({ scrollTop: $(document).height() }, 1000);
@@ -217,63 +227,17 @@ export default class Game extends Component {
         }
     }
 
-    generateHints(hints) {
-        Object.keys(hints).forEach(key => (!hints[key] || !hints[key].length) && delete hints[key])
-        let keys = Object.keys(hints)
-        keys.push("letters", "art") // add clues not return by api
-        keys.splice(keys.indexOf("flag"), 1) // delete useless clue (same as 'country')
-        keys = keys.filter(key => this.settings.hint[key])
+    //Generate unique ints
+    generateHints() {
+        Object.keys(this.state.hints).forEach(key => (!this.state.hints[key] || !this.state.hints[key].length) && delete this.state.hints[key]) //Delete key when empty value
+        let keys = Object.keys(this.state.hints)
+        keys = keys.filter(key => this.settings.hint[key]) //Filter by settings of the game
         if (!this.state.art) keys.splice(keys.indexOf("art"), 1)
         let hintsContent = []
         for (let i = 0; i < 2; i++) {
             let key = keys[Math.floor(Math.random() * keys.length)]
-            let content, title
-            switch (key) {
-                case "country":
-                    title = "Pays d'origine :"
-                    content = <p style={{ display: 'flex', justifyContent: 'center' }}><img style={{ width: '30px' }} src={hints.flag || require('../static/flag.png')} alt="flag" />&nbsp;&nbsp;{hints.country}</p>
-                    keys.splice(keys.indexOf('country'), 1)
-                    keys.splice(keys.indexOf('flag'), 1)
-                    break
-                case "band":
-                    title = "Photo du groupe/artiste :"
-                    content = <p><img src={hints.band || ""} alt="band" /></p>
-                    keys.splice(keys.indexOf('band'), 1)
-                    break
-                case "styles":
-                    title = "Styles musicaux :"
-                    content = <p>{hints.styles.join(' / ')}</p>
-                    keys.splice(keys.indexOf('styles'), 1)
-                    break
-                case "members":
-                    title = "Membres actifs :"
-                    content = <p>{hints.members.join(' / ')}</p>
-                    keys.splice(keys.indexOf('members'), 1)
-                    break
-                case "labels":
-                    title = "Labels discographique :"
-                    content = <p>{hints.labels.join(' / ')}</p>
-                    keys.splice(keys.indexOf('labels'), 1)
-                    break
-                case "letters":
-                    title = "Titre de la chanson :"
-                    let temp = this.state.song.title
-                    content = <p>{temp.split(' ').map(x => x.substring(0, 1) + x.replace(/[a-zA-Z]/g, '_').substring(1).substring(0, x.length - 1)).join(' ')}</p>
-                    keys.splice(keys.indexOf('letters'), 1)
-                    break
-                case "art":
-                    let transform = ["scaleX(-1)", "rotate(90deg)", "rotate(180deg)", "rotate(-90deg)"]
-                    transform = transform[Math.floor(Math.random() * transform.length)]
-                    title = "Pochette de l'album :"
-                    content = <div style={{ overflow: 'hidden', width: '128px', margin: '0 auto', boxShadow: '0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1)', transform: transform }}>{this.state.test}<Image size={128} src={this.state.art} style={{ background: 'rgba(0,0,0,0.15)', overflow: 'hidden', margin: '0 auto', filter: 'blur(10px)' }} /></div>
-                    keys.splice(keys.indexOf('art'), 1)
-                    break
-                default:
-                    title = "Aucun autre indice disponible 🤷"
-                    content = ""
-                    break
-            }
-            hintsContent[i] = <div><h6 className="title is-6" style={{ marginBottom: content ? '.5em' : '0' }}>{title}</h6>{content}</div>
+            hintsContent.push(key)
+            keys.splice(keys.indexOf(key), 1)
         }
         this.setState({ hintsContent: hintsContent })
     }
@@ -320,7 +284,7 @@ export default class Game extends Component {
                             show={this.state.hintsContent.length && this.state.displayHints[0]}
                             style={{ top: 'calc(50% - 20px)' }}
                         >
-                            {this.state.hintsContent[0]}
+                            <Clue type={this.state.hintsContent[0]} hints={this.state.hints} />
                         </Popover>
 
                         <Popover
@@ -329,7 +293,7 @@ export default class Game extends Component {
                             show={this.state.hintsContent.length && this.state.displayHints[1]}
                             style={{ top: 'calc(50% + 20px)' }}
                         >
-                            {this.state.hintsContent[1]}
+                            <Clue type={this.state.hintsContent[1]} hints={this.state.hints} />
                         </Popover>
                     </div>
 

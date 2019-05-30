@@ -31,29 +31,28 @@ export default class History extends Component {
                                     <Card.Header.Title>Découvrez les dernières parties de Sonate !</Card.Header.Title>
                                 </Card.Header>
                                 <Card.Content style={{ padding: '1.5rem 0' }}>
-                                    <Table className="table is-striped is-hoverable is-fullwidth">
-                                        <thead>
-                                            <tr>
-                                                {/* <th><abbr title="Position">Pos.</abbr></th> */}
-                                                <th>Date</th>
-                                                <th>Joueur</th>
-                                                <th>Niveau</th>
-                                                <th><abbr title="Temps restant">Temps</abbr></th>
-                                                <th>Chansons</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {
-                                                this.state.loading
-                                                    ?
-                                                    <tr><td colSpan={5} style={{ border: 'none' }}><Loader style={{ width: 50, height: 50, margin: '0 auto' }} /></td></tr>
-                                                    :
-                                                    this.state.rows && this.state.rows.length ?
-                                                        this.state.rows.map((row, i) => {
+                                    {
+                                        this.state.loading
+                                            ?
+                                            <Loader style={{ width: 50, height: 50, margin: '0 auto' }} />
+                                            :
+                                            this.state.rows && this.state.rows.length
+                                                ?
+                                                <Table className="table is-striped is-hoverable is-fullwidth">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Date</th>
+                                                            <th>Joueur</th>
+                                                            <th>Niveau</th>
+                                                            <th><abbr title="Temps restant">Temps</abbr></th>
+                                                            <th>Chansons</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {this.state.rows.map((row, i) => {
                                                             let d = new Date(row.date)
                                                             return (
                                                                 <tr key={row._id}>
-                                                                    {/* <th>{i + 1}</th> */}
                                                                     <td>
                                                                         {[d.getDate(), d.getMonth() + 1, d.getFullYear()].map(n => n < 10 ? `0${n}` : `${n}`).join('/')} à {[d.getHours(), d.getMinutes() + 1, d.getSeconds()].map(n => n < 10 ? `0${n}` : `${n}`).join(':')}
                                                                     </td>
@@ -63,16 +62,12 @@ export default class History extends Component {
                                                                     <td>{row.songs.found}/{row.songs.total}</td>
                                                                 </tr>
                                                             )
-                                                        })
-                                                        :
-                                                        <tr>
-                                                            <td colSpan={5} style={{ border: 'none' }}>
-                                                                <p style={{ padding: '2em' }}>Il n'y a aucune partie pour le moment...</p>
-                                                            </td>
-                                                        </tr>
-                                            }
-                                        </tbody>
-                                    </Table>
+                                                        })}
+                                                    </tbody>
+                                                </Table>
+                                                :
+                                                <p style={{ padding: '2em', textAlign: "center" }}>Il n'y a aucune partie pour le moment...</p>
+                                    }
                                 </Card.Content>
                             </Card>
                         </Columns.Column>
