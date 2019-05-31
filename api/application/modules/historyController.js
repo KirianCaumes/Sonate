@@ -16,15 +16,6 @@ module.exports = class HistoryController {
     }
 
     static postHistory(req, res, next) {
-        console.log({
-            username: Jwt.verify(req.headers.authorization).username,
-            level: req.body.level,
-            time: req.body.time,
-            songs: {
-                found: req.body.songs.found,
-                total: req.body.songs.total
-            }
-        })
         new HistoryModel({
             username: Jwt.verify(req.headers.authorization).username,
             level: req.body.level,

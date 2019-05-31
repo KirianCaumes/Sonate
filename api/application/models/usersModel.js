@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt')
 let schema = new mongoose.Schema({
     username: {
         type: String,
-        required: true, 
+        required: true,
         index: { unique: true }
     },
     password: {
@@ -15,16 +15,12 @@ let schema = new mongoose.Schema({
 
 // Enregistrement de l'utilisateur (toujours hasher les mots de passe en production) 
 schema.pre('save', function (next) {
-    var user = this
+    let user = this
     if (this.isModified('password') || this.isNew) {
-        bcrypt.genSalt(10, function (err, salt) {
-            if (err) {
-                return next(err)
-            }
-            bcrypt.hash(user.password, salt, function (err, hash) {
-                if (err) {
-                    return next(err)
-                }
+        bcrypt.genSalt(10, (err, salt) => {
+            if (err) return next(err)
+            bcrypt.hash(user.password, salt, (err, hash) => {
+                if (err) return next(err)
                 user.password = hash
                 next()
             })
@@ -35,11 +31,10 @@ schema.pre('save', function (next) {
 })
 
 // Comparaison des mots de passes reçus et en base
-schema.methods.comparePassword = (pw, pwUser, cb) => {
-    bcrypt.compare(pw, pwUser, (err, isMatch) => {
-        if (err) return cb(err)
-        cb(null, isMatch)
-    })
+schema.methods.comparePassword = (pw, pwUser) => {
+    return bcrypt.compare(pw, pwUser)
+        .then(isMatch => { return isMatch })
+        .catch(err => { throw err })
 }
 
 module.exports = mongoose.model('User', schema)  

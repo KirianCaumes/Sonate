@@ -2,12 +2,9 @@ const SettingsModel = require('../models/settingsModel')
 const LevelsModel = require('../models/levelsModel')
 const GoogleTradLangsModel = require('../models/googleTradLangsModel')
 const CountriesModel = require('../models/countriesModel')
-const Connector = require('../models/_connector')
 
 module.exports = class ConstantsController {
     static getConstants(req, res, next) {
-        // let conn = new Connector()
-
         let array = []
         array.push(SettingsModel.find().then(data => { return data }))
         array.push(LevelsModel.find().then(data => { return data }))
@@ -26,6 +23,5 @@ module.exports = class ConstantsController {
             .catch(e => {
                 res.json({ error: e })
             })
-            // .finally(() => conn.close())
     }
 }
