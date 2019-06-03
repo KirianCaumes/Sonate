@@ -2,18 +2,40 @@ import React, { Component } from 'react'
 import { Link } from "react-router-dom"
 import { Navbar } from 'react-bulma-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { history } from './history'
 import $ from 'jquery'
+import Request from '../helpers/request';
 
 export default class Header extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            open: false
+            open: false,
+            hide: false,
+            history: history.location.pathname
+        }
+        this.exclude = ["/login", "/register"]
+    }
+
+    componentDidUpdate(nextProps) {
+        if (history.location.pathname !== this.state.history) {
+            this.setState({
+                history: history.location.pathname,
+                hide: this.exclude.includes(history.location.pathname)
+            })
         }
     }
 
     componentDidMount() {
+        this.setState({
+            hide: this.exclude.includes(history.location.pathname)
+        })
         document.addEventListener('scroll', this.listenScroll(), false)
+        Request.send('GET', ['constants'], {},
+            (data) => {
+                localStorage.setItem('sonateConstants', JSON.stringify(data))
+                window.constants = data
+            })
     }
 
     componentWillUnmount() {
@@ -31,6 +53,7 @@ export default class Header extends Component {
     }
 
     render() {
+        if (this.state.hide) return (<Navbar style={{ backgroundColor: '#F8F8F8' }} />)
         return (
             <Navbar
                 color="primary"

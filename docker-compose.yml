@@ -1,64 +1,68 @@
 version: "3"
 services:
-    # api:
-    #   build: ./api
-    #   container_name: api-sonate
-    #   ports:
-    #    - "5001:5000"  
-    #   restart: always
-    #   networks:
-    #     - sonate_net
-    #   environment: 
-    #     - NODE_ENV=production
-
-    # app:
-    #   build:         
-    #     context: ./front
-    #     dockerfile: Dockerfile-prod
-    #   container_name: front-sonate
-    #   restart: always
-    #   depends_on:
-    #     - api
-    #   ports:
-    #    - "8085:80"
-    #   networks:
-    #     - sonate_net
-
-    api-dev:
-      build: 
+    api:
+      build:       
         context: ./api
-        dockerfile: Dockerfile-dev
-      container_name: api-sonate-dev
-      depends_on:
-        - mongo
+        dockerfile: Dockerfile-prod
+      container_name: api-sonate
       ports:
-       - "5000:5000"  
+       - "5001:5000" 
+      depends_on:
+        - mongo 
       restart: always
       networks:
         - sonate_net
       environment: 
-        - NODE_ENV=development
-      volumes:
-        - ./api:/app/api
-        - '/app/api/node_modules' 
+        - NODE_ENV=production
 
-    app-dev:
-      build: 
+    app:
+      build:         
         context: ./front
-        dockerfile: Dockerfile-dev
-      container_name: front-sonate-dev
-      ports:
-       - '3000:3000'
+        dockerfile: Dockerfile-prod
+      container_name: front-sonate
       restart: always
       depends_on:
-        - api-dev
+        - api
+      ports:
+       - "3001:80"
       networks:
-        - sonate_net     
-      environment:
-        - NODE_ENV=development    
-      volumes:
-        - ./front:/app/front
-        - '/app/front/node_modules'   
+        - sonate_net
+
+    # api-dev:
+    #   build: 
+    #     context: ./api
+    #     dockerfile: Dockerfile
+    #   container_name: api-sonate-dev
+    #   depends_on:
+    #     - mongo
+    #   ports:
+    #    - "5000:5000"  
+    #   restart: always
+    #   networks:
+    #     - sonate_net
+    #   environment: 
+    #     - NODE_ENV=development
+    #   volumes:
+    #     - ./api:/app/api
+    #     - '/app/api/node_modules' 
+
+    # app-dev:
+    #   build: 
+    #     context: ./front
+    #     dockerfile: Dockerfile
+    #   container_name: front-sonate-dev
+    #   ports:
+    #    - '3000:3000'
+    #   restart: always
+    #   depends_on:
+    #     - api-dev
+    #   networks:
+    #     - sonate_net     
+    #   environment:
+    #     - NODE_ENV=development    
+    #   volumes:
+    #     - ./front:/app/front
+    #     - '/app/front/node_modules'   
 
     mongo:
       image: mongo

@@ -11,6 +11,7 @@ import Request from "../helpers/request"
 import Similarity from "../helpers/similarity"
 import Layout from '../components/layout';
 import Clue from '../components/clue';
+import ProgressiveDisplay from '../components/progressiveDisplay';
 
 export default class Game extends Component {
     constructor(props) {
@@ -29,8 +30,6 @@ export default class Game extends Component {
                 albums: []
             },
             art: null,
-            lyricsDisplay: "",
-            timeOut: null,
             loading: true,
             answer: {
                 title: "",
@@ -45,7 +44,6 @@ export default class Game extends Component {
                 artist: false
             },
             showAnswer: false,
-            disableAnswer: false,
             timeOutAnswer: {
                 title: null,
                 artist: null
@@ -76,7 +74,6 @@ export default class Game extends Component {
     }
 
     componentWillUnmount() {
-        clearTimeout(this.state.timeOut)
         clearTimeout(this.state.timeOutAnswer.title)
         clearTimeout(this.state.timeOutAnswer.artist)
     }
@@ -84,16 +81,13 @@ export default class Game extends Component {
     //Main function : get a song, it's cover and it's clues
     getSong() {
         $("html, body").animate({ scrollTop: 0 }, 500);
-        clearTimeout(this.state.timeOut)
         this.setState({
             song: { url: null, lyricsTranslated: null, lyrics: null, title: null, artist: null, albums: [] },
-            lyricsDisplay: "",
             loading: true,
-            timeOut: null,
             answer: { title: "", artist: "" },
             answerValid: { title: false, artist: false },
+            answerWrong: { title: false, artist: false },
             showAnswer: false,
-            disableAnswer: false,
             hintsContent: []
         })
         if (!this.settings.infosGame.album) this.setState({ art: null })
@@ -124,8 +118,6 @@ export default class Game extends Component {
                         displayHints: [false, false]
                     })
                     if (this.state.song.lyricsTranslated && data.lyrics !== "♪") {
-
-                        this.showText(this.state.song.lyricsTranslated, 0, 80)
                         this.bandInput ? this.bandInput.focus() : this.titleInput.focus()
 
                         let getParametersArt = {
@@ -150,15 +142,18 @@ export default class Game extends Component {
                                                 members: data.members || [],
                                                 labels: data.labels || [],
                                                 letters: this.state.song.title,
-                                                art: this.state.art 
+                                                art: this.state.art
                                             }
-                                        }, () => this.generateHints())                                        
+                                        }, () => this.generateHints())
                                     }
                                 )
                             })
                     } else {
                         this.setState({
-                            lyricsDisplay: "<i>♪ Cette chanson ne contient pas de paroles ♪</i>"
+                            song: {
+                                ...this.state.song,
+                                lyricsTranslated: "<i>♪ Cette chanson ne contient pas de paroles ♪</i>"
+                            }
                         })
                     }
                 }
@@ -170,24 +165,6 @@ export default class Game extends Component {
 
     }
 
-    //Progressively displays the text
-    showText(message, index, interval) {
-        if (index < message.length) {
-            if (message[index] === "<" && message[index + 1] === "b" && message[index + 2] === "r" && message[index + 3] === ">") {
-                this.setState({ lyricsDisplay: this.state.lyricsDisplay + "<br>" })
-                index += 4
-            } else {
-                this.setState({ lyricsDisplay: this.state.lyricsDisplay + message[index++] })
-            }
-            if (index >= message.length * 0.66) {
-                this.setState({ displayHints: [true, true] })
-            } else if (index >= message.length * 0.33) {
-                this.setState({ displayHints: [true, false] })
-            }
-            this.setState({ timeOut: setTimeout(() => { this.showText(message, index, interval); }, interval) })
-        }
-    }
-
     //Check user's answers
     check() {
         let artist = !this.settings.inputGame.artist || Similarity.isOk(this.state.answer.artist, this.state.song.artist)
@@ -197,12 +174,9 @@ export default class Game extends Component {
         if (title && this.titleInput) this.titleInput.blur()
         if (artist && title) {
             if ($(window).width() < '768') $("html, body").animate({ scrollTop: $(document).height() }, 1000);
-            clearTimeout(this.state.timeOut)
             this.setState(
                 {
                     showAnswer: true,
-                    disableAnswer: true,
-                    lyricsDisplay: this.state.song.lyricsTranslated,
                     songs: this.state.songs - 1,
                     gameOver: this.state.songs - 1 < 1
                 }
@@ -216,14 +190,7 @@ export default class Game extends Component {
     showAnswer() {
         if (!this.state.showAnswer) {
             if ($(window).width() < '768') $("html, body").animate({ scrollTop: $(document).height() }, 1000);
-            clearTimeout(this.state.timeOut)
-            this.setState(
-                {
-                    showAnswer: !this.state.showAnswer,
-                    disableAnswer: true,
-                    lyricsDisplay: this.state.song.lyricsTranslated
-                }
-            )
+            this.setState({ showAnswer: !this.state.showAnswer })
         }
     }
 
@@ -311,7 +278,11 @@ export default class Game extends Component {
                                                 ?
                                                 <Loader style={{ width: 50, height: 50, margin: '0 auto' }} />
                                                 :
-                                                <p dangerouslySetInnerHTML={{ __html: this.state.lyricsDisplay }} />
+                                                <ProgressiveDisplay
+                                                    lyrics={this.state.song.lyricsTranslated}
+                                                    displayHints={(x) => this.setState({ displayHints: x })}
+                                                    stop={this.state.showAnswer}
+                                                />
                                         }
                                     </Content>
                                 </Card.Content>
@@ -335,8 +306,7 @@ export default class Game extends Component {
                                                                 play={!this.state.loading && !this.state.showAnswer}
                                                                 won={this.state.songs === 0}
                                                                 onDone={(time) => {
-                                                                    clearTimeout(this.state.timeOut)
-                                                                    this.setState({ showAnswer: true, gameOver: true, disableAnswer: true, lyricsDisplay: this.state.song.lyricsTranslated })
+                                                                    this.setState({ showAnswer: true, gameOver: true })
                                                                     Request.send('POST', ['scores', 'history'],
                                                                         {
                                                                             level: this.props.match.params.modeId,
@@ -402,7 +372,7 @@ export default class Game extends Component {
                                                                     }}
                                                                     onKeyPress={e => { if (e.key === 'Enter') this.check(); clearInterval(this.state.timeOutAnswer.artist); }}
                                                                     value={this.state.answer.artist}
-                                                                    disabled={this.state.loading || this.state.answerValid.artist || this.state.disableAnswer}
+                                                                    disabled={this.state.loading || this.state.answerValid.artist || this.state.showAnswer}
                                                                     ref={(input) => { this.bandInput = input }}
                                                                 />
                                                                 <Icon align="left"><FontAwesomeIcon icon="users" /></Icon>
@@ -434,7 +404,7 @@ export default class Game extends Component {
                                                                     }}
                                                                     onKeyPress={e => { if (e.key === 'Enter') this.check(); clearInterval(this.state.timeOutAnswer.title); }}
                                                                     value={this.state.answer.title}
-                                                                    disabled={this.state.loading || this.state.answerValid.title || this.state.disableAnswer}
+                                                                    disabled={this.state.loading || this.state.answerValid.title || this.state.showAnswer}
                                                                     ref={(input) => { this.titleInput = input }}
                                                                 />
                                                                 <Icon align="left"><FontAwesomeIcon icon="compact-disc" /></Icon>
@@ -465,7 +435,7 @@ export default class Game extends Component {
                                                 ''
                                         }
                                         <Columns.Column>
-                                            <Button className="is-fullwidth" onClick={this.showAnswer.bind(this)} color="primary" disabled={this.state.loading || this.state.disableAnswer}>
+                                            <Button className="is-fullwidth" onClick={this.showAnswer.bind(this)} color="primary" disabled={this.state.loading || this.state.showAnswer}>
                                                 <FontAwesomeIcon icon="eye" style={{ marginRight: '5px' }} />
                                                 <span>Réponse</span>
                                             </Button>

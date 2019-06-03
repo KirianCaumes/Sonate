@@ -16,15 +16,6 @@ export default class Index extends Component {
         }
     }
 
-    componentDidMount() {        
-        Request.send('GET', ['constants'], {},
-            (data) => {
-                localStorage.setItem('sonateConstants', JSON.stringify(data))
-                window.constants = data
-                this.setState({ isInit: true })
-            })
-    }
-
     render() {
         return (
             <Layout>

@@ -49,7 +49,7 @@ export default class Login extends Component {
     render() {
         return (
             <Container>
-                <Columns className="is-vcentered" style={{ height: '100vh', display: 'flex' }}>
+                <Columns className="is-vcentered" style={{ height: 'calc(100vh - 3.25rem)', display: 'flex' }}>
                     <Columns.Column>
                         <Card style={{ maxWidth: '450px', margin: '0 auto' }}>
                             <Card.Header>

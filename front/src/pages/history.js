@@ -6,7 +6,7 @@ import Layout from '../components/layout'
 export default class History extends Component {
     constructor(props) {
         super(props)
-        document.title = "Sonate ♪ Highscore"
+        document.title = "Sonate ♪ Historique"
         this.state = {
             rows: [{}],
             loading: true
@@ -43,7 +43,7 @@ export default class History extends Component {
                                                         <tr>
                                                             <th>Date</th>
                                                             <th>Joueur</th>
-                                                            <th>Niveau</th>
+                                                            <th>Mode</th>
                                                             <th><abbr title="Temps restant">Temps</abbr></th>
                                                             <th>Chansons</th>
                                                         </tr>

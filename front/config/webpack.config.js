@@ -575,7 +575,7 @@ module.exports = function (webpackEnv) {
             }
           },
           {
-            urlPattern: new RegExp('^http:\/\/localhost:5000\/'),
+            urlPattern: new RegExp('^http:\/\/localhost:5001\/'),
             handler: 'networkFirst',
             options: {
               networkTimeoutSeconds: 5,

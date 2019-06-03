@@ -21,7 +21,7 @@ exports.setRequestUrl = (app) => {
     apiRouter.use('/scores', historyRouter)
  
     //ex: http://localhost:5000/api/constants
-    constantsRouter.get('', passport.authenticate('jwt', { session: false }), constController.getConstants)
+    constantsRouter.get('', constController.getConstants)
 
     //ex: http://localhost:5000/api/song/byname?song=abnegation&band=in%20flames&lang=fr
     songsRouter.get('/byname', passport.authenticate('jwt', { session: false }), songController.getByName)
@@ -45,12 +45,6 @@ exports.setRequestUrl = (app) => {
     historyRouter.get('/history', passport.authenticate('jwt', { session: false }), scoresController.getHistory)
     //ex: http://localhost:5000/api/scores/history
     historyRouter.post('/history', passport.authenticate('jwt', { session: false }), scoresController.postHistory)
-
-    // Render React App Build 
-    if (fs.existsSync('../front/build/')) {
-        app.use(express.static(path.join(__dirname, '../../front/build/')))
-        app.get('/', (req, res) => res.sendFile('index.html', { root: '../../front/build/' }))
-    }
 
     // Other
     app.get('*', (req, res) => res.status(404).send("Sonate"));
