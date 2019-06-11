@@ -214,7 +214,7 @@ export default class Game extends Component {
             <Layout>
                 <Container>
 
-                    <Modal show={this.state.error} onClose={() => null}>
+                    <Modal show={this.state.error} onClose={() => { this.setState({ error: false }); this.getSong() }}>
                         <Modal.Card>
                             <Modal.Card.Head showClose={false}>
                                 <Modal.Card.Title>
