@@ -10,13 +10,12 @@ export default class ProgressiveDisplay extends Component {
     }
 
     componentDidMount() {
-        this.showText(this.props.lyrics, 0, 80)
+        if (this.props.lyrics) this.showText(this.props.lyrics, 0, 80)
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.lyrics !== this.props.lyrics) {
-            console.log("coucou")
-            this.showText(this.props.lyrics, 0, 80)
+            if (this.props.lyrics) this.showText(this.props.lyrics, 0, 80)
         }
         if (prevProps.stop !== this.props.stop) {
             clearTimeout(this.timeOut)

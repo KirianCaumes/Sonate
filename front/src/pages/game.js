@@ -227,7 +227,7 @@ export default class Game extends Component {
                             </Modal.Card.Body>
                             <Modal.Card.Foot>
                                 <Button
-                                    onClick={() => { window.history.back() }}
+                                    onClick={() => { this.setState({ error: false }); window.history.back() }}
                                     color="primary"
                                 >
                                     <FontAwesomeIcon icon="chevron-left" style={{ marginRight: '5px' }} />

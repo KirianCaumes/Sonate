@@ -46,10 +46,12 @@ export default class App extends Component {
                 <>
                     <Header />
                     <AnimatedSwitch
-                        atEnter={{ opacity: 0, translateX: -450 }}
-                        atLeave={{ opacity: this.bounce(0), translateX: this.bounce(450) }}
-                        atActive={{ opacity: this.bounce(1), translateX: this.bounce(0) }}
-                        mapStyles={(styles) => { return { opacity: styles.opacity, transform: `translateX(${styles.translateX}px)` } }}
+                        atEnter={{ opacity: 0, left: -450 }}
+                        atLeave={{ opacity: this.bounce(0), left: this.bounce(450) }}
+                        atActive={{ opacity: this.bounce(1), left: this.bounce(0) }}
+                        mapStyles={(styles) => {
+                            return { opacity: styles.opacity, left: styles.left }
+                        }}
                         className="switch-wrapper"
                     >
                         <Route path="/erreur" component={Error} />
